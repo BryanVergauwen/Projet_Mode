@@ -1,12 +1,15 @@
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.util.List;
 
 import javax.swing.JFrame;
 
-public class Fenetre extends JFrame {
+public class Fenetre extends JFrame implements MouseWheelListener{
 	private static final long serialVersionUID = 1L;
-	private GtsReader reader = new GtsReader();
+	private int zoom = 300;
+	private GtsReader reader = new GtsReader(zoom);
 	private List<Segment> listeSegments = reader.getListSegments();
 	private List<Face> listeFaces = reader.getListFaces();
 
@@ -16,6 +19,7 @@ public class Fenetre extends JFrame {
 		setSize(1000, 700);
 		setBackground(Color.white);
 		setLocationRelativeTo(null);
+		addMouseWheelListener(this);
 	}
 
 	public void paint(Graphics g) {
@@ -44,5 +48,16 @@ public class Fenetre extends JFrame {
 		
 		g.drawLine(getWidth()/2, getHeight(), getWidth()/2, -getHeight());
 		g.drawLine(0, getHeight()/2, getWidth(), getHeight()/2);
+	}
+
+	public void mouseWheelMoved(MouseWheelEvent e) {
+		if(e.getWheelRotation() < 0)
+			zoom += 50;
+		else
+			zoom -= 50;
+		reader = new GtsReader(zoom);
+		listeFaces = reader.getListFaces();
+		listeSegments = reader.getListSegments();
+		repaint();
 	}
 }

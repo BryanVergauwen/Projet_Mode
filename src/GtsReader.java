@@ -10,7 +10,7 @@ public class GtsReader {
 	private List<Segment> segments;
 	private List<Face> faces;
 
-	public GtsReader() {
+	public GtsReader(int coef) {
 		points = new LinkedList<Point>();
 		segments = new LinkedList<Segment>();
 		faces = new LinkedList<Face>();
@@ -24,7 +24,6 @@ public class GtsReader {
 			int nbSegments = Integer.parseInt(result[1]);
 			int nbFaces = Integer.parseInt(result[2]);
 			int limite = 0;
-			int coef = 300;
 			
 			// Points
 			while (ligne != null && limite < nbPoint) {
