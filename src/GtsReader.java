@@ -8,10 +8,12 @@ import java.util.List;
 public class GtsReader {
 	private List<Point> points;
 	private List<Segment> segments;
+	private List<Face> faces;
 
 	public GtsReader() {
 		points = new LinkedList<Point>();
 		segments = new LinkedList<Segment>();
+		faces = new LinkedList<Face>();
 
 		try {
 			InputStream ips = new FileInputStream("ressources/sphere.gts");
@@ -55,6 +57,28 @@ public class GtsReader {
 				}
 				ligne = br.readLine();
 			}
+			// Faces
+			ligne = br.readLine();
+			limite = 0;
+			while (ligne != null && limite < nbFaces) {
+				if (ligne.charAt(0) != '#') {
+					result = ligne.split(" ");
+					int f = Integer.parseInt(result[0]);
+					int g = Integer.parseInt(result[1]);
+					int h = Integer.parseInt(result[2]);
+					
+					if(f == nbSegments)
+						f = nbSegments - 1;
+					if(g == nbSegments)
+						g = nbSegments - 1;
+					if(h == nbSegments)
+						h = nbSegments - 1;
+					
+					faces.add(new Face(segments.get(f), segments.get(g), segments.get(h)));
+					limite++;
+				}
+				ligne = br.readLine();
+			}
 			// Fermeture du reader
 			br.close();
 		} catch (Exception e) {
@@ -68,5 +92,9 @@ public class GtsReader {
 
 	public List<Segment> getListSegments() {
 		return segments;
+	}
+
+	public List<Face> getListFaces() {
+		return faces;
 	}
 }

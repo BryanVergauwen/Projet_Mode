@@ -9,6 +9,7 @@ public class Fenetre extends JFrame {
 	private GtsReader reader = new GtsReader();
 	private List<Point> listePoint = reader.getListPoint();
 	private List<Segment> listeSegments = reader.getListSegments();
+	private List<Face> listeFaces = reader.getListFaces();
 
 	public Fenetre() {
 		super("Fenetre_Test");
@@ -19,12 +20,11 @@ public class Fenetre extends JFrame {
 	}
 
 	public void paint(Graphics g) {
-		if (listePoint != null) {
-			for (Segment s : listeSegments)
-				g.drawLine(500 + s.getOrigine().getX(), 350 + s.getOrigine().getY(), 
-						500 + s.getFin().getX(), 350 + s.getFin().getY());
-			g.drawLine(getWidth()/2, getHeight(), getWidth()/2, -getHeight());
-			g.drawLine(0, getHeight()/2, getWidth(), getHeight()/2);
-		}
+		for (Segment s : listeSegments)
+			g.drawLine(500 + s.getOrigine().getX(), 350 + s.getOrigine().getY(), 
+					500 + s.getFin().getX(), 350 + s.getFin().getY());
+		
+		g.drawLine(getWidth()/2, getHeight(), getWidth()/2, -getHeight());
+		g.drawLine(0, getHeight()/2, getWidth(), getHeight()/2);
 	}
 }

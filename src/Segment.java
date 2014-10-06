@@ -11,4 +11,7 @@ public class Segment {
 	public Point getFin(){
 		return y;
 	}
+	public String toString(){
+		return x+";"+y;
+	}
 }

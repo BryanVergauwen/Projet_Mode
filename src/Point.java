@@ -15,4 +15,7 @@ public class Point {
 	public int getZ(){
 		return z;
 	}
+	public String toString(){
+		return x+";"+y+";"+z;
+	}
 }
