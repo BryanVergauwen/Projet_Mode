@@ -19,14 +19,14 @@ public class Fenetre extends JFrame {
 	}
 
 	public void paint(Graphics g) {
-		for (Segment s : listeSegments)
-			g.drawLine(500 + s.getOrigine().getX(), 350 + s.getOrigine().getY(), 
-					500 + s.getFin().getX(), 350 + s.getFin().getY());
-		
-		int[] tabX = new int[3];
-		int[] tabY = new int[3];
 		int coeff1 = 500;
 		int coeff2 = 350;
+		int[] tabX = new int[3];
+		int[] tabY = new int[3];
+		
+		for (Segment s : listeSegments)
+			g.drawLine(coeff1 + s.getOrigine().getX(), coeff2 + s.getOrigine().getY(), 
+					coeff1 + s.getFin().getX(), coeff2 + s.getFin().getY());
 		
 		g.setColor(Color.GRAY);
 		for(int i = 0; i < listeFaces.size(); i++){
