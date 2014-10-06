@@ -1,5 +1,4 @@
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,7 +22,6 @@ public class Fenetre extends JFrame{
 	}
 	public void paint(Graphics g){
 		if(listePoint != null){
-			g.setColor(Color.black);
 			for(Point p : listePoint)
 				g.fillOval(30 + p.getX() * 20, 50 + p.getY() * 20, 10, 10);
 		}
