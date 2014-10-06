@@ -1,4 +1,5 @@
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.util.List;
 
@@ -28,6 +29,7 @@ public class Fenetre extends JFrame {
 			g.drawLine(coeff1 + s.getOrigine().getX(), coeff2 + s.getOrigine().getY(), 
 					coeff1 + s.getFin().getX(), coeff2 + s.getFin().getY());
 		
+		g.setFont(new Font("Arial", Font.PLAIN, 2));
 		g.setColor(Color.GRAY);
 		for(int i = 0; i < listeFaces.size(); i++){
 			tabX[0] = coeff1 + listeFaces.get(i).getA().getOrigine().getX();
@@ -40,7 +42,8 @@ public class Fenetre extends JFrame {
 			
 			g.drawPolygon(tabX, tabY, 3);
 		}
-
+		
+		g.setColor(Color.BLACK);
 		g.drawLine(getWidth()/2, getHeight(), getWidth()/2, -getHeight());
 		g.drawLine(0, getHeight()/2, getWidth(), getHeight()/2);
 	}
