@@ -4,21 +4,27 @@ import java.util.List;
 
 import javax.swing.JFrame;
 
-public class Fenetre extends JFrame{
+public class Fenetre extends JFrame {
 	private static final long serialVersionUID = 1L;
-	private List<Point> listePoint = new GtsReader().getListPoint();
-	
-	public Fenetre(){
+	private GtsReader reader = new GtsReader();
+	private List<Point> listePoint = reader.getListPoint();
+	private List<Segment> listeSegments = reader.getListSegments();
+
+	public Fenetre() {
 		super("Fenetre_Test");
 		setVisible(true);
-		setSize(800, 600);
+		setSize(1000, 700);
 		setBackground(Color.white);
 		setLocationRelativeTo(null);
 	}
-	public void paint(Graphics g){
-		if(listePoint != null){
-			for(Point p : listePoint)
-				g.fillOval(30 + p.getX() * 40, 50 + p.getY() * 40, 10, 10);
+
+	public void paint(Graphics g) {
+		if (listePoint != null) {
+			for (Segment s : listeSegments)
+				g.drawLine(500 + s.getOrigine().getX(), 350 + s.getOrigine().getY(), 
+						500 + s.getFin().getX(), 350 + s.getFin().getY());
+			g.drawLine(getWidth()/2, getHeight(), getWidth()/2, -getHeight());
+			g.drawLine(0, getHeight()/2, getWidth(), getHeight()/2);
 		}
 	}
 }
