@@ -7,7 +7,6 @@ import javax.swing.JFrame;
 public class Fenetre extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private GtsReader reader = new GtsReader();
-	private List<Point> listePoint = reader.getListPoint();
 	private List<Segment> listeSegments = reader.getListSegments();
 	private List<Face> listeFaces = reader.getListFaces();
 
