@@ -16,7 +16,7 @@ public class GtsReader {
 		faces = new LinkedList<Face>();
 
 		try {
-			InputStream ips = new FileInputStream("ressources/sphere.gts");
+			InputStream ips = new FileInputStream("ressources/sphereSimple.gts");
 			BufferedReader br = new BufferedReader(new InputStreamReader(ips));
 			String ligne = br.readLine();
 			String result[] = ligne.split(" ");
