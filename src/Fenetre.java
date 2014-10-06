@@ -25,11 +25,10 @@ public class Fenetre extends JFrame {
 		int[] tabX = new int[3];
 		int[] tabY = new int[3];
 		
-		for (Segment s : listeSegments)
-			g.drawLine(coeff1 + s.getOrigine().getX(), coeff2 + s.getOrigine().getY(), 
-					coeff1 + s.getFin().getX(), coeff2 + s.getFin().getY());
+	//	for (Segment s : listeSegments)
+	//		g.drawLine(coeff1 + s.getOrigine().getX(), coeff2 + s.getOrigine().getY(), 
+	//				coeff1 + s.getFin().getX(), coeff2 + s.getFin().getY());
 		
-		g.setFont(new Font("Arial", Font.PLAIN, 2));
 		g.setColor(Color.GRAY);
 		for(int i = 0; i < listeFaces.size(); i++){
 			tabX[0] = coeff1 + listeFaces.get(i).getA().getOrigine().getX();
