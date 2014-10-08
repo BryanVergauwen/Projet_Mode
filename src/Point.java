@@ -27,4 +27,7 @@ public class Point {
 	public void setZ(double z) {
 		this.z = z;
 	}
+	public boolean equals(Point p) {
+		return x == p.x && y == p.y && z == p.z;
+	}
 }

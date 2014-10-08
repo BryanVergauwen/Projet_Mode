@@ -36,40 +36,16 @@ public class Fenetre extends JFrame implements MouseWheelListener {
 		g.setColor(Color.GRAY);
 		for (int i = 0; i < listeFaces.size(); i++) {
 			Face current = listeFaces.get(i);
-			Segment s1 = current.getA();
-			Segment s2 = current.getB();
-			Segment s3 = current.getC();
-			boolean b1, b2, b3, b4;
 
 			// Tab X
-			tabX[0] = (int)s1.getOrigine().getX();
-			if((int)s2.getOrigine().getX() == tabX[0])
-				tabX[1] = (int)s2.getFin().getX();
-			else
-				tabX[1] = (int)s2.getOrigine().getX();
-			
-			b1 = (int)s3.getOrigine().getX() == tabX[0];
-			b2 = (int)s3.getOrigine().getX() == tabX[1];
-			
-			if((b1 || b2) && tabX[1] != (int)s3.getFin().getX())
-				tabX[2] = (int)s3.getFin().getX();
-			else
-				tabX[2] = (int)s3.getOrigine().getX();
+			tabX[0] = (int)current.getSommetA().getX();
+			tabX[1] = (int)current.getSommetB().getX();
+			tabX[2] = (int)current.getSommetC().getX();
 			
 			// Tab Y
-			tabY[0] =(int)s1.getOrigine().getY();
-			if((int)s2.getOrigine().getY() == tabY[0])
-				tabY[1] = (int)s2.getFin().getY();
-			else
-				tabY[1] = (int)s2.getOrigine().getY();
-			
-			b3 = (int)s3.getOrigine().getY() == tabY[0];
-			b4 = (int)s3.getOrigine().getY() == tabY[1];
-			
-			if((b3 || b4) && tabY[1] != (int)s3.getFin().getY())
-				tabY[2] = (int)s3.getFin().getY();
-			else
-				tabY[2] = (int)s3.getOrigine().getY();
+			tabY[0] = (int)current.getSommetA().getY();
+			tabY[1] = (int)current.getSommetB().getY();
+			tabY[2] = (int)current.getSommetC().getY();
 			
 			// ajout des coeffs
 			for(int tmp = 0; tmp < tabX.length; tmp++)

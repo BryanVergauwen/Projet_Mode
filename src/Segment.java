@@ -14,4 +14,7 @@ public class Segment {
 	public String toString(){
 		return x+";"+y;
 	}
+	public boolean equals(Segment s){
+		return x.equals(s.x) && y.equals(s.y);
+	}
 }
