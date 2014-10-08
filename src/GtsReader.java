@@ -2,29 +2,30 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 public class GtsReader {
 	private List<Point> points;
 	private List<Segment> segments;
 	private List<Face> faces;
+	private int nbPoint, nbSegments, nbFaces;
 
 	public GtsReader(int coef) {
-		points = new LinkedList<Point>();
-		segments = new LinkedList<Segment>();
-		faces = new LinkedList<Face>();
+		points = new ArrayList<Point>();
+		segments = new ArrayList<Segment>();
+		faces = new ArrayList<Face>();
 
 		try {
-			InputStream ips = new FileInputStream("ressources/sphere.gts");
+			InputStream ips = new FileInputStream("ressources/sphereSimple.gts");
 			BufferedReader br = new BufferedReader(new InputStreamReader(ips));
 			String ligne = br.readLine();
 			String result[] = ligne.split(" ");
-			int nbPoint = Integer.parseInt(result[0]);
-			int nbSegments = Integer.parseInt(result[1]);
-			int nbFaces = Integer.parseInt(result[2]);
+			nbPoint = Integer.parseInt(result[0]);
+			nbSegments = Integer.parseInt(result[1]);
+			nbFaces = Integer.parseInt(result[2]);
 			int limite = 0;
-			
+			ligne = br.readLine();
 			// Points
 			while (ligne != null && limite < nbPoint) {
 				if (ligne.charAt(0) != '#') {
@@ -33,45 +34,33 @@ public class GtsReader {
 					double b = Double.parseDouble(result[1]) * coef;
 					double c = Double.parseDouble(result[2]) * coef;
 
-					points.add(new Point((int) a, (int) b, (int) c));
+					points.add(new Point(a, b, c));
 					limite++;
 				}
 				ligne = br.readLine();
 			}
 			// Segments
-			ligne = br.readLine();
+	
 			limite = 0;
 			while (ligne != null && limite < nbSegments) {
 				if (ligne.charAt(0) != '#') {
 					result = ligne.split(" ");
-					int d = Integer.parseInt(result[0]);
-					int e = Integer.parseInt(result[1]);
+					int d = Integer.parseInt(result[0]) - 1;
+					int e = Integer.parseInt(result[1]) - 1;
 					
-					if(d == nbPoint)
-						d = nbPoint - 1;
-					if(e == nbPoint)
-						e = nbPoint - 1;
 					segments.add(new Segment(points.get(d), points.get(e)));
 					limite++;
 				}
 				ligne = br.readLine();
 			}
 			// Faces
-			ligne = br.readLine();
 			limite = 0;
 			while (ligne != null && limite < nbFaces) {
 				if (ligne.charAt(0) != '#') {
 					result = ligne.split(" ");
-					int f = Integer.parseInt(result[0]);
-					int g = Integer.parseInt(result[1]);
-					int h = Integer.parseInt(result[2]);
-					
-					if(f == nbSegments)
-						f = nbSegments - 1;
-					if(g == nbSegments)
-						g = nbSegments - 1;
-					if(h == nbSegments)
-						h = nbSegments - 1;
+					int f = Integer.parseInt(result[0]) - 1;
+					int g = Integer.parseInt(result[1]) - 1;
+					int h = Integer.parseInt(result[2]) - 1;
 					
 					faces.add(new Face(segments.get(f), segments.get(g), segments.get(h)));
 					limite++;
@@ -82,6 +71,14 @@ public class GtsReader {
 			br.close();
 		} catch (Exception e) {
 			System.err.println(e);
+		}
+	}
+	
+	public void updatePoints(double zoom){
+		for(Point p : points){
+			p.setX(p.getX() * zoom);
+			p.setY(p.getY() * zoom);
+			p.setZ(p.getZ() * zoom);
 		}
 	}
 
