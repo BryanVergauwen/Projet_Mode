@@ -22,7 +22,7 @@ public class Face {
 	}
 
 	public Point getSommetC() {
-		if(!c.getFin().equals(getSommetA()) && !c.getFin().equals(getSommetB()))
+		if(!c.getFin().equals(getSommetB()))
 			return c.getFin();
 		return c.getOrigine();
 	}
