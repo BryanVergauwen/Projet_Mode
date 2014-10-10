@@ -57,14 +57,14 @@ public class Fenetre extends JFrame implements MouseWheelListener {
 			g.fillPolygon(tabX, tabY, 3);
 		}
 		
-		// Dessin des segments
+	/*	// Dessin des segments
 		g.setColor(Color.BLACK);
 		for (Segment s : listeSegments)
 			g.drawLine(coeff1 + (int)s.getOrigine().getX(), coeff2 + (int)s.getOrigine().getY(), 
 					coeff1 + (int)s.getFin().getX(), coeff2 + (int)s.getFin().getY());
 
 		g.drawLine(getWidth() / 2, getHeight(), getWidth() / 2, -getHeight());
-		g.drawLine(0, getHeight() / 2, getWidth(), getHeight() / 2);
+		g.drawLine(0, getHeight() / 2, getWidth(), getHeight() / 2); */
 	}
 
 	public void mouseWheelMoved(MouseWheelEvent e) {
