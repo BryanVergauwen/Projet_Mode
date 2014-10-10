@@ -12,7 +12,7 @@ public class Fenetre extends JFrame implements MouseWheelListener, MouseMotionLi
 	private static final long serialVersionUID = 1L;
 	private double zoom;
 	private GtsReader reader = new GtsReader(100);
-	private List<Segment> listeSegments = reader.getListSegments();
+//	private List<Segment> listeSegments = reader.getListSegments();
 	private List<Face> listeFaces = reader.getListFaces();
 	private int mouseX=0, mouseY=0;
 
@@ -62,14 +62,14 @@ public class Fenetre extends JFrame implements MouseWheelListener, MouseMotionLi
 			g.fillPolygon(tabX, tabY, 3);
 		}
 		
-		// Dessin des segments
+	/*	// Dessin des segments
 		g.setColor(Color.BLACK);
 		for (Segment s : listeSegments)
 			g.drawLine(coeff1 + (int)s.getOrigine().getX(), coeff2 + (int)s.getOrigine().getY(), 
 					coeff1 + (int)s.getFin().getX(), coeff2 + (int)s.getFin().getY());
 
 		g.drawLine(getWidth() / 2, getHeight(), getWidth() / 2, -getHeight());
-		g.drawLine(0, getHeight() / 2, getWidth(), getHeight() / 2);
+		g.drawLine(0, getHeight() / 2, getWidth(), getHeight() / 2); */
 	}
 
 	public void mouseWheelMoved(MouseWheelEvent e) {
