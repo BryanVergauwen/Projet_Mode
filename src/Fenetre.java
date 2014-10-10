@@ -100,7 +100,7 @@ public class Fenetre extends JFrame implements MouseWheelListener, MouseMotionLi
 	@Override
 	public void mouseDragged(MouseEvent e) {
 		//TODO Operation de rotation sur les points
-		reader.rotatePoints(Math.PI/4);
+		reader.rotatePoints(Math.PI);
 		mouseX=e.getX();
 		mouseY=e.getY();
 		repaint();
