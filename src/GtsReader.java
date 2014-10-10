@@ -93,4 +93,11 @@ public class GtsReader {
 	public List<Face> getListFaces() {
 		return faces;
 	}
+	public void rotatePoints(double angle) {
+		for(Point p : points){
+			p.setX(p.getX()*Math.cos(angle)-p.getX()*Math.sin(angle));
+			p.setY(p.getY()*Math.sin(angle)+p.getY()*Math.cos(angle));
+			p.setZ(p.getZ());
+		}
+	}
 }
