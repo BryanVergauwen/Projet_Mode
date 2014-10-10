@@ -10,7 +10,7 @@ public class Fenetre extends JFrame implements MouseWheelListener {
 	private static final long serialVersionUID = 1L;
 	private double zoom;
 	private GtsReader reader = new GtsReader(100);
-	private List<Segment> listeSegments = reader.getListSegments();
+//	private List<Segment> listeSegments = reader.getListSegments();
 	private List<Face> listeFaces = reader.getListFaces();
 
 	public Fenetre() {
