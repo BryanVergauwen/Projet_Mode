@@ -17,7 +17,7 @@ public class GtsReader {
 		faces = new ArrayList<Face>();
 
 		try {
-			InputStream ips = new FileInputStream("ressources/sphereSimple.gts");
+			InputStream ips = new FileInputStream("ressources/SphereSimple.gts");
 			BufferedReader br = new BufferedReader(new InputStreamReader(ips));
 			String ligne = br.readLine();
 			String result[] = ligne.split(" ");
@@ -79,6 +79,14 @@ public class GtsReader {
 			p.setX(p.getX() * zoom);
 			p.setY(p.getY() * zoom);
 			p.setZ(p.getZ() * zoom);
+		}
+	}
+	
+	public void rotatePoints(double angle) {
+		for(Point p : points){
+			p.setX(p.getX()*Math.cos(angle)-p.getX()*Math.sin(angle));
+			p.setY(p.getY()*Math.sin(angle)+p.getY()*Math.cos(angle));
+			p.setZ(p.getZ());
 		}
 	}
 

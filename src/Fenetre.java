@@ -1,25 +1,30 @@
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.util.List;
 
 import javax.swing.JFrame;
 
-public class Fenetre extends JFrame implements MouseWheelListener {
+public class Fenetre extends JFrame implements MouseWheelListener, MouseMotionListener {
 	private static final long serialVersionUID = 1L;
 	private double zoom;
 	private GtsReader reader = new GtsReader(100);
 	private List<Segment> listeSegments = reader.getListSegments();
 	private List<Face> listeFaces = reader.getListFaces();
+	private int mouseX=0, mouseY=0;
 
 	public Fenetre() {
 		super("Fenetre_Test");
 		setVisible(true);
 		setSize(1000, 700);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBackground(Color.white);
 		setLocationRelativeTo(null);
 		addMouseWheelListener(this);
+		addMouseMotionListener(this);
 	}
 
 	public void paint(Graphics g) {
@@ -75,4 +80,34 @@ public class Fenetre extends JFrame implements MouseWheelListener {
 		reader.updatePoints(zoom);
 		repaint();
 	}
+
+	public int getMouseX() {
+		return mouseX;
+	}
+
+	public void setMouseX(int mouseX) {
+		this.mouseX = mouseX;
+	}
+
+	public int getMouseY() {
+		return mouseY;
+	}
+
+	public void setMouseY(int mouseY) {
+		this.mouseY = mouseY;
+	}
+
+	@Override
+	public void mouseDragged(MouseEvent e) {
+		//TODO Operation de rotation sur les points
+		reader.rotatePoints(Math.PI/4);
+		mouseX=e.getX();
+		mouseY=e.getY();
+		repaint();
+	}
+
+	@Override
+	public void mouseMoved(MouseEvent e) {
+	}
+	
 }
