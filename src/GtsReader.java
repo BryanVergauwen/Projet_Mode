@@ -40,14 +40,14 @@ public class GtsReader {
 				ligne = br.readLine();
 			}
 			// Segments
-	
+
 			limite = 0;
 			while (ligne != null && limite < nbSegments) {
 				if (ligne.charAt(0) != '#') {
 					result = ligne.split(" ");
 					int d = Integer.parseInt(result[0]) - 1;
 					int e = Integer.parseInt(result[1]) - 1;
-					
+
 					segments.add(new Segment(points.get(d), points.get(e)));
 					limite++;
 				}
@@ -61,8 +61,9 @@ public class GtsReader {
 					int f = Integer.parseInt(result[0]) - 1;
 					int g = Integer.parseInt(result[1]) - 1;
 					int h = Integer.parseInt(result[2]) - 1;
-					
-					faces.add(new Face(segments.get(f), segments.get(g), segments.get(h)));
+
+					faces.add(new Face(segments.get(f), segments.get(g),
+							segments.get(h)));
 					limite++;
 				}
 				ligne = br.readLine();
@@ -73,9 +74,9 @@ public class GtsReader {
 			System.err.println(e);
 		}
 	}
-	
-	public void updatePoints(double zoom){
-		for(Point p : points){
+
+	public void updatePoints(double zoom) {
+		for (Point p : points) {
 			p.setX(p.getX() * zoom);
 			p.setY(p.getY() * zoom);
 			p.setZ(p.getZ() * zoom);
@@ -93,11 +94,19 @@ public class GtsReader {
 	public List<Face> getListFaces() {
 		return faces;
 	}
-	public void rotatePoints(double angle) {
-		for(Point p : points){
-			p.setX(p.getX()*Math.cos(angle)-p.getX()*Math.sin(angle));
-			p.setY(p.getY()*Math.sin(angle)+p.getY()*Math.cos(angle));
-			p.setZ(p.getZ());
+	
+	public void rotateY(double angle) {
+		for (Point p : points){
+			p.setX(p.getX() * Math.cos(angle) + p.getX() * Math.sin(-angle));
+			p.setY(p.getY());
+			p.setZ(p.getZ() * Math.sin(angle) + p.getZ() * Math.cos(angle));
+		}
+	}
+	public void rotateX(double angle) {
+		for (Point p : points){
+			p.setX(p.getX());
+			p.setY(p.getY() * Math.cos(angle) + p.getY() * Math.sin(-angle));
+			p.setZ(p.getZ() * Math.sin(angle) + p.getZ() * Math.cos(angle));
 		}
 	}
 }

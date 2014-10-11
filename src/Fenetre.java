@@ -1,30 +1,30 @@
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.util.List;
 
 import javax.swing.JFrame;
 
-public class Fenetre extends JFrame implements MouseWheelListener, MouseMotionListener {
+public class Fenetre extends JFrame implements MouseWheelListener, MouseListener {
 	private static final long serialVersionUID = 1L;
 	private double zoom;
 	private GtsReader reader = new GtsReader(100);
-//	private List<Segment> listeSegments = reader.getListSegments();
+	private List<Segment> listeSegments = reader.getListSegments();
 	private List<Face> listeFaces = reader.getListFaces();
-	private int mouseX=0, mouseY=0;
-
+	
 	public Fenetre() {
 		super("Fenetre_Test");
 		setVisible(true);
 		setSize(1000, 700);
+
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBackground(Color.white);
 		setLocationRelativeTo(null);
 		addMouseWheelListener(this);
-		addMouseMotionListener(this);
+		addMouseListener(this);
 	}
 
 	public void paint(Graphics g) {
@@ -62,13 +62,13 @@ public class Fenetre extends JFrame implements MouseWheelListener, MouseMotionLi
 			g.fillPolygon(tabX, tabY, 3);
 		}
 		
-	/*	// Dessin des segments
+		// Dessin des segments
 		g.setColor(Color.BLACK);
 		for (Segment s : listeSegments)
 			g.drawLine(coeff1 + (int)s.getOrigine().getX(), coeff2 + (int)s.getOrigine().getY(), 
 					coeff1 + (int)s.getFin().getX(), coeff2 + (int)s.getFin().getY());
 
-		g.drawLine(getWidth() / 2, getHeight(), getWidth() / 2, -getHeight());
+		/* g.drawLine(getWidth() / 2, getHeight(), getWidth() / 2, -getHeight());
 		g.drawLine(0, getHeight() / 2, getWidth(), getHeight() / 2); */
 	}
 
@@ -81,33 +81,23 @@ public class Fenetre extends JFrame implements MouseWheelListener, MouseMotionLi
 		repaint();
 	}
 
-	public int getMouseX() {
-		return mouseX;
-	}
-
-	public void setMouseX(int mouseX) {
-		this.mouseX = mouseX;
-	}
-
-	public int getMouseY() {
-		return mouseY;
-	}
-
-	public void setMouseY(int mouseY) {
-		this.mouseY = mouseY;
-	}
-
-	@Override
-	public void mouseDragged(MouseEvent e) {
-		//TODO Operation de rotation sur les points
-		reader.rotatePoints(Math.PI);
-		mouseX=e.getX();
-		mouseY=e.getY();
+	public void mouseClicked(MouseEvent e) {
+		if(e.getButton() == MouseEvent.BUTTON1)
+			reader.rotateY(Math.toRadians(10));
+		else if(e.getButton() == MouseEvent.BUTTON3)
+			reader.rotateX(Math.toRadians(10));
 		repaint();
 	}
 
-	@Override
-	public void mouseMoved(MouseEvent e) {
+	public void mouseEntered(MouseEvent arg0) {
 	}
-	
+
+	public void mouseExited(MouseEvent arg0) {
+	}
+
+	public void mousePressed(MouseEvent arg0) {
+	}
+
+	public void mouseReleased(MouseEvent arg0) {
+	}
 }
