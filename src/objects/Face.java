@@ -1,3 +1,4 @@
+package objects;
 public class Face {
 	private Segment a, b, c;
 

@@ -1,3 +1,4 @@
+package objects;
 public class Point {
 	private double x, y, z;
 	

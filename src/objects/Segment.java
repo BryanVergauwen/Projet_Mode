@@ -1,3 +1,4 @@
+package objects;
 public class Segment {
 	private Point x, y;
 	

@@ -1,9 +1,14 @@
+package io;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+
+import objects.Face;
+import objects.Point;
+import objects.Segment;
 
 public class GtsReader {
 	private List<Point> points;
@@ -26,6 +31,7 @@ public class GtsReader {
 			nbFaces = Integer.parseInt(result[2]);
 			int limite = 0;
 			ligne = br.readLine();
+			
 			// Points
 			while (ligne != null && limite < nbPoint) {
 				if (ligne.charAt(0) != '#') {
@@ -75,14 +81,6 @@ public class GtsReader {
 		}
 	}
 
-	public void updatePoints(double zoom) {
-		for (Point p : points) {
-			p.setX(p.getX() * zoom);
-			p.setY(p.getY() * zoom);
-			p.setZ(p.getZ() * zoom);
-		}
-	}
-
 	public List<Point> getListPoint() {
 		return points;
 	}
@@ -93,20 +91,5 @@ public class GtsReader {
 
 	public List<Face> getListFaces() {
 		return faces;
-	}
-	
-	public void rotateY(double angle) {
-		for (Point p : points){
-			p.setX(p.getX() * Math.cos(angle) + p.getX() * Math.sin(-angle));
-			p.setY(p.getY());
-			p.setZ(p.getZ() * Math.sin(angle) + p.getZ() * Math.cos(angle));
-		}
-	}
-	public void rotateX(double angle) {
-		for (Point p : points){
-			p.setX(p.getX());
-			p.setY(p.getY() * Math.cos(angle) + p.getY() * Math.sin(-angle));
-			p.setZ(p.getZ() * Math.sin(angle) + p.getZ() * Math.cos(angle));
-		}
 	}
 }

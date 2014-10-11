@@ -1,3 +1,5 @@
+package io;
+
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
@@ -8,12 +10,21 @@ import java.util.List;
 
 import javax.swing.JFrame;
 
+import objects.Face;
+import objects.Point;
+import objects.Segment;
+
+import transformations.Homothétie;
+import transformations.Rotation;
+
+
 public class Fenetre extends JFrame implements MouseWheelListener, MouseListener {
 	private static final long serialVersionUID = 1L;
 	private double zoom;
 	private GtsReader reader = new GtsReader(100);
 	private List<Segment> listeSegments = reader.getListSegments();
 	private List<Face> listeFaces = reader.getListFaces();
+	private List<Point> listePoints = reader.getListPoint();
 	
 	public Fenetre() {
 		super("Fenetre_Test");
@@ -77,27 +88,27 @@ public class Fenetre extends JFrame implements MouseWheelListener, MouseListener
 			zoom = 1.1;
 		else
 			zoom = 0.9;
-		reader.updatePoints(zoom);
+		new Homothétie(listePoints, zoom);
 		repaint();
 	}
 
 	public void mouseClicked(MouseEvent e) {
 		if(e.getButton() == MouseEvent.BUTTON1)
-			reader.rotateY(Math.toRadians(10));
+			new Rotation(listePoints, Math.toRadians(10), "X");
 		else if(e.getButton() == MouseEvent.BUTTON3)
-			reader.rotateX(Math.toRadians(10));
+			new Rotation(listePoints, Math.toRadians(10), "Y");
 		repaint();
 	}
 
-	public void mouseEntered(MouseEvent arg0) {
+	public void mouseEntered(MouseEvent e) {
 	}
 
-	public void mouseExited(MouseEvent arg0) {
+	public void mouseExited(MouseEvent e) {
 	}
 
-	public void mousePressed(MouseEvent arg0) {
+	public void mousePressed(MouseEvent e) {
 	}
 
-	public void mouseReleased(MouseEvent arg0) {
+	public void mouseReleased(MouseEvent e) {
 	}
 }
