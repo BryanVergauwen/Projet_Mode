@@ -13,8 +13,7 @@ import javax.swing.JFrame;
 import objects.Face;
 import objects.Point;
 import objects.Segment;
-
-import transformations.Homothétie;
+import transformations.Homothetie;
 import transformations.Rotation;
 
 
@@ -92,7 +91,7 @@ public class Fenetre extends JFrame implements MouseWheelListener, MouseListener
 			zoom = 1.1;
 		else
 			zoom = 0.9;
-		new Homothétie(listePoints, zoom);
+		new Homothetie(listePoints, zoom);
 		repaint();
 	}
 
@@ -101,6 +100,8 @@ public class Fenetre extends JFrame implements MouseWheelListener, MouseListener
 			new Rotation(listePoints, Math.toRadians(10), "X");
 		else if(e.getButton() == MouseEvent.BUTTON3)
 			new Rotation(listePoints, Math.toRadians(10), "Y");
+		else if(e.getButton() == MouseEvent.BUTTON2)
+			new Rotation(listePoints, Math.toRadians(10), "Z");
 		repaint();
 	}
 
