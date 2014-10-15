@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.util.List;
@@ -17,23 +18,24 @@ import transformations.Homothetie;
 import transformations.Rotation;
 
 
-public class Fenetre extends JFrame implements MouseWheelListener, MouseListener {
+public class Fenetre extends JFrame implements MouseWheelListener, MouseMotionListener, MouseListener {
 	private static final long serialVersionUID = 1L;
 	private double zoom;
 	private GtsReader reader = new GtsReader(100);
 	private List<Segment> listeSegments = reader.getListSegments();
 	private List<Face> listeFaces = reader.getListFaces();
 	private List<Point> listePoints = reader.getListPoint();
+	private Point current;
 	
 	public Fenetre() {
 		super("Fenetre_Test");
 		setVisible(true);
 		setSize(1000, 700);
-
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBackground(Color.white);
 		setLocationRelativeTo(null);
 		addMouseWheelListener(this);
+		addMouseMotionListener(this);
 		addMouseListener(this);
 	}
 
@@ -85,7 +87,8 @@ public class Fenetre extends JFrame implements MouseWheelListener, MouseListener
 		/* g.drawLine(getWidth() / 2, getHeight(), getWidth() / 2, -getHeight());
 		g.drawLine(0, getHeight() / 2, getWidth(), getHeight() / 2); */
 	}
-
+	
+	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
 		if (e.getWheelRotation() < 0)
 			zoom = 1.1;
@@ -95,25 +98,46 @@ public class Fenetre extends JFrame implements MouseWheelListener, MouseListener
 		repaint();
 	}
 
-	public void mouseClicked(MouseEvent e) {
-		if(e.getButton() == MouseEvent.BUTTON1)
+	@Override
+	public void mouseDragged(MouseEvent e) {
+		Point p = new Point(e.getX(), e.getY(), 0);
+		
+		if(p.getY() < current.getY())
 			new Rotation(listePoints, Math.toRadians(10), "X");
-		else if(e.getButton() == MouseEvent.BUTTON3)
+		else if(p.getX() < current.getX())
 			new Rotation(listePoints, Math.toRadians(10), "Y");
-		else if(e.getButton() == MouseEvent.BUTTON2)
+		else if(p.getY() > current.getY())
 			new Rotation(listePoints, Math.toRadians(10), "Z");
+		current = p;
 		repaint();
 	}
 
+	@Override
+	public void mouseMoved(MouseEvent arg0) {}
+
+	@Override
+	public void mouseClicked(MouseEvent arg0) {
+	}
+
+	@Override
 	public void mouseEntered(MouseEvent e) {
 	}
 
-	public void mouseExited(MouseEvent e) {
+	@Override
+	public void mouseExited(MouseEvent arg0) {
 	}
 
+	@Override
 	public void mousePressed(MouseEvent e) {
+		if(current == null)
+			current = new Point(e.getX(), e.getY(), 0);
+		else{
+			current.setX(e.getX());
+			current.setY(e.getY());
+		}
 	}
 
-	public void mouseReleased(MouseEvent e) {
+	@Override
+	public void mouseReleased(MouseEvent arg0) {
 	}
 }
