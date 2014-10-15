@@ -26,6 +26,7 @@ public class Fenetre extends JFrame implements MouseWheelListener, MouseMotionLi
 	private List<Face> listeFaces = reader.getListFaces();
 	private List<Point> listePoints = reader.getListPoint();
 	private Point current;
+	private int cptMouse = 0;
 	
 	public Fenetre() {
 		super("Fenetre_Test");
@@ -102,14 +103,18 @@ public class Fenetre extends JFrame implements MouseWheelListener, MouseMotionLi
 	public void mouseDragged(MouseEvent e) {
 		Point p = new Point(e.getX(), e.getY(), 0);
 		
-		if(p.getY() < current.getY())
-			new Rotation(listePoints, Math.toRadians(10), "X");
-		else if(p.getX() < current.getX())
-			new Rotation(listePoints, Math.toRadians(10), "Y");
-		else if(p.getY() > current.getY())
-			new Rotation(listePoints, Math.toRadians(10), "Z");
-		current = p;
-		repaint();
+		cptMouse++;
+		if(cptMouse == 4){
+			if(p.getY() < current.getY())
+				new Rotation(listePoints, Math.toRadians(10), "X");
+			else if(p.getX() < current.getX())
+				new Rotation(listePoints, Math.toRadians(10), "Y");
+			else if(p.getY() > current.getY())
+				new Rotation(listePoints, Math.toRadians(10), "Z");
+			current = p;
+			cptMouse = 0;
+			repaint();
+		}
 	}
 
 	@Override
