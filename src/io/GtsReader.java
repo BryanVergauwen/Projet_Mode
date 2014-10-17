@@ -22,7 +22,7 @@ public class GtsReader {
 		faces = new ArrayList<Face>();
 
 		try {
-			InputStream ips = new FileInputStream("ressources/cube.gts");
+			InputStream ips = new FileInputStream("ressources/tie.gts");
 			BufferedReader br = new BufferedReader(new InputStreamReader(ips));
 			String ligne = br.readLine();
 			String result[] = ligne.split(" ");
@@ -68,8 +68,7 @@ public class GtsReader {
 					int g = Integer.parseInt(result[1]) - 1;
 					int h = Integer.parseInt(result[2]) - 1;
 
-					faces.add(new Face(segments.get(f), segments.get(g),
-							segments.get(h)));
+					faces.add(new Face(segments.get(f), segments.get(g), segments.get(h)));
 					limite++;
 				}
 				ligne = br.readLine();

@@ -21,6 +21,7 @@ import objects.Point;
 import objects.Segment;
 import transformations.Homothetie;
 import transformations.Rotation;
+import transformations.Translation;
 
 public class Fenetre extends JPanel implements MouseWheelListener, MouseMotionListener, MouseListener {
 	private static final long serialVersionUID = 1L;
@@ -34,12 +35,12 @@ public class Fenetre extends JPanel implements MouseWheelListener, MouseMotionLi
 	private int cptMouse = 0;
 	private JPanel arretes, faces;
 	private Graphics2D ga, gf;
-	
+
 	public Fenetre() {
 		frame = new JFrame();
 		faces = new JPanel();
 		arretes = new JPanel();
-		
+
 		frame.setTitle("Fenetre_Test");
 		frame.setLayout(new BorderLayout());
 		frame.setVisible(true);
@@ -51,11 +52,11 @@ public class Fenetre extends JPanel implements MouseWheelListener, MouseMotionLi
 		frame.addMouseMotionListener(this);
 		frame.addMouseListener(this);
 
-		arretes.setPreferredSize(new Dimension(frame.getWidth()/2 - 30, frame.getHeight() - 60));
+		arretes.setPreferredSize(new Dimension(frame.getWidth() / 2 - 30, frame.getHeight() - 60));
+		faces.setPreferredSize(new Dimension(frame.getWidth() / 2 - 30, frame.getHeight() - 60));
 		arretes.setBackground(Color.white);
-		faces.setPreferredSize(new Dimension(frame.getWidth()/2 - 30, frame.getHeight() - 60));
 		faces.setBackground(Color.white);
-		
+
 		frame.setContentPane(this);
 		frame.getContentPane().add(arretes, BorderLayout.WEST);
 		frame.getContentPane().add(faces, BorderLayout.EAST);
@@ -66,7 +67,7 @@ public class Fenetre extends JPanel implements MouseWheelListener, MouseMotionLi
 		int coeff2 = 300;
 		int[] tabX = new int[3];
 		int[] tabY = new int[3];
-		
+
 		// init graphics
 		ga = (Graphics2D) arretes.getGraphics();
 		gf = (Graphics2D) faces.getGraphics();
@@ -74,43 +75,43 @@ public class Fenetre extends JPanel implements MouseWheelListener, MouseMotionLi
 		// Reset fenetre
 		ga.clearRect(0, 0, frame.getWidth(), frame.getHeight());
 		gf.clearRect(0, 0, frame.getWidth(), frame.getHeight());
-		
+
 		// Dessin des faces
 		gf.setColor(Color.GRAY);
 		for (int i = 0; i < listeFaces.size(); i++) {
 			Face current = listeFaces.get(i);
 
 			// Tab X
-			tabX[0] = (int)current.getSommetA().getX();
-			tabX[1] = (int)current.getSommetB().getX();
-			tabX[2] = (int)current.getSommetC().getX();
-			
+			tabX[0] = (int) current.getSommetA().getX();
+			tabX[1] = (int) current.getSommetB().getX();
+			tabX[2] = (int) current.getSommetC().getX();
+
 			// Tab Y
-			tabY[0] = (int)current.getSommetA().getY();
-			tabY[1] = (int)current.getSommetB().getY();
-			tabY[2] = (int)current.getSommetC().getY();
-			
+			tabY[0] = (int) current.getSommetA().getY();
+			tabY[1] = (int) current.getSommetB().getY();
+			tabY[2] = (int) current.getSommetC().getY();
+
 			// ajout des coeffs
-			for(int tmp = 0; tmp < tabX.length; tmp++)
+			for (int tmp = 0; tmp < tabX.length; tmp++)
 				tabX[tmp] += coeff1;
-			for(int tmp = 0; tmp < tabY.length; tmp++)
+			for (int tmp = 0; tmp < tabY.length; tmp++)
 				tabY[tmp] += coeff2;
-			
+
 			// Dessin du triangle
 			gf.fillPolygon(tabX, tabY, 3);
 		}
-		
+
 		// Dessin des segments
 		ga.setColor(Color.BLACK);
-		for (Segment s : listeSegments){
-			int x1 = coeff1 + (int)s.getOrigine().getX();
-			int x2 = coeff2 + (int)s.getOrigine().getY();
-			int x3 = coeff1 + (int)s.getFin().getX();
-			int x4 = coeff2 + (int)s.getFin().getY();
+		for (Segment s : listeSegments) {
+			int x1 = coeff1 + (int) s.getOrigine().getX();
+			int x2 = coeff2 + (int) s.getOrigine().getY();
+			int x3 = coeff1 + (int) s.getFin().getX();
+			int x4 = coeff2 + (int) s.getFin().getY();
 			ga.drawLine(x1, x2, x3, x4);
 		}
 	}
-	
+
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
 		if (e.getWheelRotation() < 0)
@@ -123,29 +124,45 @@ public class Fenetre extends JPanel implements MouseWheelListener, MouseMotionLi
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		if(SwingUtilities.isLeftMouseButton(e)){
+		if (SwingUtilities.isLeftMouseButton(e)) {
 			Point p = new Point(e.getX(), e.getY(), 0);
-			
+
 			cptMouse++;
-			if(cptMouse == 4){
-				if(p.getY() < current.getY())
+			if (cptMouse == 4) {
+				if (p.getY() < current.getY())
 					new Rotation(listePoints, Math.toRadians(10), "X");
-				else if(p.getX() < current.getX())
+				else if (p.getX() < current.getX())
 					new Rotation(listePoints, Math.toRadians(10), "Y");
-				else if(p.getY() > current.getY())
+				else if (p.getY() > current.getY())
 					new Rotation(listePoints, Math.toRadians(10), "Z");
 				current = p;
 				cptMouse = 0;
 				paintComponent(getGraphics());
 			}
-		}
-		else if(SwingUtilities.isRightMouseButton(e)){
-			
+		} 
+		else if (SwingUtilities.isRightMouseButton(e)) {
+			Point p = new Point(e.getX(), e.getY(), 0);
+
+			if (p.getY() < current.getY())
+				new Translation(listePoints, -5, "X");
+			else if (p.getY() > current.getY())
+				new Translation(listePoints, 5, "X");
+			else if (p.getX() > current.getX())
+				new Translation(listePoints, 5, "Y");
+			else if (p.getX() < current.getX())
+				new Translation(listePoints, -5, "Y");
+			else if (p.getZ() > current.getZ())
+				new Translation(listePoints, 5, "Z");
+			else if (p.getZ() < current.getZ())
+				new Translation(listePoints, -5, "Z");
+			current = p;
+			paintComponent(getGraphics());
 		}
 	}
 
 	@Override
-	public void mouseMoved(MouseEvent arg0) {}
+	public void mouseMoved(MouseEvent arg0) {
+	}
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
@@ -161,9 +178,9 @@ public class Fenetre extends JPanel implements MouseWheelListener, MouseMotionLi
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		if(current == null)
+		if (current == null)
 			current = new Point(e.getX(), e.getY(), 0);
-		else{
+		else {
 			current.setX(e.getX());
 			current.setY(e.getY());
 		}
