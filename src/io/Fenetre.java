@@ -16,6 +16,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import data.Constantes;
+
 import objects.Face;
 import objects.Point;
 import objects.Segment;
@@ -28,8 +30,8 @@ public class Fenetre extends JPanel implements MouseWheelListener, MouseMotionLi
 	private JFrame frame;
 	private double zoom;
 	private GtsReader reader = new GtsReader(100);
-	private List<Segment> listeSegments = reader.getListSegments();
 	private List<Face> listeFaces = reader.getListFaces();
+	private List<Segment> listeSegments = reader.getListSegments();
 	private List<Point> listePoints = reader.getListPoint();
 	private Point current;
 	private int cptMouse = 0;
@@ -63,11 +65,6 @@ public class Fenetre extends JPanel implements MouseWheelListener, MouseMotionLi
 	}
 
 	public void paintComponent(Graphics g) {
-		int coeff1 = 250;
-		int coeff2 = 300;
-		int[] tabX = new int[3];
-		int[] tabY = new int[3];
-
 		// init graphics
 		ga = (Graphics2D) arretes.getGraphics();
 		gf = (Graphics2D) faces.getGraphics();
@@ -77,37 +74,40 @@ public class Fenetre extends JPanel implements MouseWheelListener, MouseMotionLi
 		gf.clearRect(0, 0, frame.getWidth(), frame.getHeight());
 
 		// Dessin des faces
+		int[] triangleX = new int[3];
+		int[] triangleY = new int[3];
+
 		gf.setColor(Color.GRAY);
 		for (int i = 0; i < listeFaces.size(); i++) {
 			Face current = listeFaces.get(i);
 
 			// Tab X
-			tabX[0] = (int) current.getSommetA().getX();
-			tabX[1] = (int) current.getSommetB().getX();
-			tabX[2] = (int) current.getSommetC().getX();
+			triangleX[0] = (int) current.getSommetA().getX();
+			triangleX[1] = (int) current.getSommetB().getX();
+			triangleX[2] = (int) current.getSommetC().getX();
 
 			// Tab Y
-			tabY[0] = (int) current.getSommetA().getY();
-			tabY[1] = (int) current.getSommetB().getY();
-			tabY[2] = (int) current.getSommetC().getY();
+			triangleY[0] = (int) current.getSommetA().getY();
+			triangleY[1] = (int) current.getSommetB().getY();
+			triangleY[2] = (int) current.getSommetC().getY();
 
 			// ajout des coeffs
-			for (int tmp = 0; tmp < tabX.length; tmp++)
-				tabX[tmp] += coeff1;
-			for (int tmp = 0; tmp < tabY.length; tmp++)
-				tabY[tmp] += coeff2;
+			for (int tmp = 0; tmp < triangleX.length; tmp++)
+				triangleX[tmp] += Constantes.COEFF1;
+			for (int tmp = 0; tmp < triangleY.length; tmp++)
+				triangleY[tmp] += Constantes.COEFF2;
 
 			// Dessin du triangle
-			gf.fillPolygon(tabX, tabY, 3);
+			gf.fillPolygon(triangleX, triangleY, 3);
 		}
 
 		// Dessin des segments
 		ga.setColor(Color.BLACK);
 		for (Segment s : listeSegments) {
-			int x1 = coeff1 + (int) s.getOrigine().getX();
-			int x2 = coeff2 + (int) s.getOrigine().getY();
-			int x3 = coeff1 + (int) s.getFin().getX();
-			int x4 = coeff2 + (int) s.getFin().getY();
+			int x1 = Constantes.COEFF1 + (int) s.getOrigine().getX();
+			int x2 = Constantes.COEFF2 + (int) s.getOrigine().getY();
+			int x3 = Constantes.COEFF1 + (int) s.getFin().getX();
+			int x4 = Constantes.COEFF2 + (int) s.getFin().getY();
 			ga.drawLine(x1, x2, x3, x4);
 		}
 	}

@@ -1,4 +1,5 @@
 package io;
+
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -31,7 +32,7 @@ public class GtsReader {
 			nbFaces = Integer.parseInt(result[2]);
 			int limite = 0;
 			ligne = br.readLine();
-			
+
 			// Points
 			while (ligne != null && limite < nbPoint) {
 				if (ligne.charAt(0) != '#') {
@@ -73,6 +74,7 @@ public class GtsReader {
 				}
 				ligne = br.readLine();
 			}
+
 			// Fermeture du reader
 			br.close();
 		} catch (Exception e) {
