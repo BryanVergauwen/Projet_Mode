@@ -21,6 +21,7 @@ import data.Constantes;
 import objects.Face;
 import objects.Point;
 import objects.Segment;
+import objects.Vecteur;
 import transformations.Homothetie;
 import transformations.Rotation;
 import transformations.Translation;
@@ -76,11 +77,18 @@ public class Fenetre extends JPanel implements MouseWheelListener, MouseMotionLi
 		// Dessin des faces
 		int[] triangleX = new int[3];
 		int[] triangleY = new int[3];
-
-		gf.setColor(Color.GRAY);
+		double scal=0.0;//porduit scalaire pour la lumiere
 		for (int i = 0; i < listeFaces.size(); i++) {
 			Face current = listeFaces.get(i);
-
+			
+			//modif
+			
+			scal=Constantes.lumiere.prodScalaire(current.getNormal());
+			//ATTENTION CECI EST JUSTE EN ATTENTE DE CORRECTION
+			if(scal<0)
+				scal=scal*-1;
+			//FIN
+			gf.setColor(new Color((int)(Constantes.COLOR*scal),(int)(Constantes.COLOR*scal), (int)(Constantes.COLOR*scal)));
 			// Tab X
 			triangleX[0] = (int) current.getSommetA().getX();
 			triangleX[1] = (int) current.getSommetB().getX();
@@ -99,9 +107,11 @@ public class Fenetre extends JPanel implements MouseWheelListener, MouseMotionLi
 
 			// Dessin du triangle
 			gf.fillPolygon(triangleX, triangleY, 3);
+			
+			
 		}
 
-		// Dessin des segments
+		/*Dessin des segments
 		ga.setColor(Color.BLACK);
 		for (Segment s : listeSegments) {
 			int x1 = Constantes.COEFF1 + (int) s.getOrigine().getX();
@@ -110,6 +120,7 @@ public class Fenetre extends JPanel implements MouseWheelListener, MouseMotionLi
 			int x4 = Constantes.COEFF2 + (int) s.getFin().getY();
 			ga.drawLine(x1, x2, x3, x4);
 		}
+		*/
 	}
 
 	@Override
@@ -130,11 +141,11 @@ public class Fenetre extends JPanel implements MouseWheelListener, MouseMotionLi
 			cptMouse++;
 			if (cptMouse == 4) {
 				if (p.getY() < current.getY())
-					new Rotation(listePoints, Math.toRadians(10), "X");
+					new Rotation(listePoints, listeFaces, Math.toRadians(10), "X");
 				else if (p.getX() < current.getX())
-					new Rotation(listePoints, Math.toRadians(10), "Y");
+					new Rotation(listePoints, listeFaces, Math.toRadians(10), "Y");
 				else if (p.getY() > current.getY())
-					new Rotation(listePoints, Math.toRadians(10), "Z");
+					new Rotation(listePoints, listeFaces, Math.toRadians(10), "Z");
 				current = p;
 				cptMouse = 0;
 				paintComponent(getGraphics());

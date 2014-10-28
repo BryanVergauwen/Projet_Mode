@@ -2,6 +2,7 @@ package transformations;
 
 import java.util.List;
 
+import objects.Face;
 import objects.Point;
 
 public class Rotation {
@@ -9,7 +10,7 @@ public class Rotation {
 	private final String Y = "Y";
 	private final String Z = "Z";
 
-	public Rotation(List<Point> points, double angle, String axe) {
+	public Rotation(List<Point> points, List<Face> faces, double angle, String axe) {
 		double x = 0, y = 0, z = 0;
 
 		if (axe.equalsIgnoreCase(X)) {
@@ -22,6 +23,9 @@ public class Rotation {
 				p.setY(x * Math.sin(angle) + y * Math.cos(angle));
 				p.setZ(z);
 			}
+			for (Face f : faces){
+				f.normalisation();
+			}
 		} 
 		else if (axe.equalsIgnoreCase(Y)) {
 			for (Point p : points) {
@@ -33,6 +37,9 @@ public class Rotation {
 				p.setY(y);
 				p.setZ(x * Math.sin(angle) + z * Math.cos(angle));
 			}
+			for (Face f : faces){
+				f.normalisation();
+			}
 		}
 		else if (axe.equalsIgnoreCase(Z)) {
 			for (Point p : points) {
@@ -43,6 +50,9 @@ public class Rotation {
 				p.setY(y * Math.cos(angle) - z * Math.sin(angle));
 				p.setX(x);
 				p.setZ(y * Math.sin(angle) + z * Math.cos(angle));
+			}
+			for (Face f : faces){
+				f.normalisation();
 			}
 		}
 	}
