@@ -1,6 +1,5 @@
 package io;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -37,7 +36,6 @@ public class Fenetre extends JPanel implements MouseWheelListener, MouseMotionLi
 		frame = new JFrame();
 
 		frame.setTitle("Fenetre_Test");
-		frame.setLayout(new BorderLayout());
 		frame.setVisible(true);
 		frame.setSize(1000, 700);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -47,6 +45,11 @@ public class Fenetre extends JPanel implements MouseWheelListener, MouseMotionLi
 		frame.addMouseMotionListener(this);
 		frame.addMouseListener(this);
 		frame.setContentPane(this);
+
+		// Temporaire !
+		new Homothetie(listePoints, 0.2);
+		paintComponent(getGraphics());
+		paintComponent(getGraphics());
 	}
 
 	public void paintComponent(Graphics g) {
