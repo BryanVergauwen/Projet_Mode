@@ -23,9 +23,8 @@ public class Rotation {
 				p.setY(x * Math.sin(angle) + y * Math.cos(angle));
 				p.setZ(z);
 			}
-			for (Face f : faces){
+			for (Face f : faces)
 				f.normalisation();
-			}
 		} 
 		else if (axe.equalsIgnoreCase(Y)) {
 			for (Point p : points) {
@@ -37,9 +36,8 @@ public class Rotation {
 				p.setY(y);
 				p.setZ(x * Math.sin(angle) + z * Math.cos(angle));
 			}
-			for (Face f : faces){
+			for (Face f : faces)
 				f.normalisation();
-			}
 		}
 		else if (axe.equalsIgnoreCase(Z)) {
 			for (Point p : points) {
@@ -51,9 +49,8 @@ public class Rotation {
 				p.setX(x);
 				p.setZ(y * Math.sin(angle) + z * Math.cos(angle));
 			}
-			for (Face f : faces){
+			for (Face f : faces)
 				f.normalisation();
-			}
 		}
 	}
 }
