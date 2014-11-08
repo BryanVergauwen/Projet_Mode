@@ -33,7 +33,7 @@ public class Fenetre extends JFrame implements MouseWheelListener, MouseMotionLi
 
 	public Fenetre() {
 		JLabel wallpaper = new JLabel(Constantes.wallpaper);
-
+		
 		setTitle("Fenetre_Test");
 		setVisible(true);
 		add(wallpaper);
@@ -43,7 +43,7 @@ public class Fenetre extends JFrame implements MouseWheelListener, MouseMotionLi
 		addMouseWheelListener(this);
 		addMouseMotionListener(this);
 		addMouseListener(this);
-
+		
 		// Temporaire !
 		new Homothetie(listePoints, 0.2);
 		paintComponent(getGraphics());
