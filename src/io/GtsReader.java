@@ -23,7 +23,7 @@ public class GtsReader {
 		faces = new ArrayList<Face>();
 
 		try {
-			InputStream ips = new FileInputStream("ressources/tie.gts");
+			InputStream ips = new FileInputStream("ressources/x_wing.gts");
 			BufferedReader br = new BufferedReader(new InputStreamReader(ips));
 			String ligne = br.readLine();
 			String result[] = ligne.split(" ");

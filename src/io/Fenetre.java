@@ -11,7 +11,7 @@ import java.awt.event.MouseWheelListener;
 import java.util.List;
 
 import javax.swing.JFrame;
-import javax.swing.JPanel;
+import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 
 import objects.Face;
@@ -21,9 +21,8 @@ import transformations.Rotation;
 import transformations.Translation;
 import data.Constantes;
 
-public class Fenetre extends JPanel implements MouseWheelListener, MouseMotionListener, MouseListener {
+public class Fenetre extends JFrame implements MouseWheelListener, MouseMotionListener, MouseListener {
 	private static final long serialVersionUID = 1L;
-	private JFrame frame;
 	private double zoom;
 	private GtsReader reader = new GtsReader(100);
 	private List<Face> listeFaces = reader.getListFaces();
@@ -33,18 +32,17 @@ public class Fenetre extends JPanel implements MouseWheelListener, MouseMotionLi
 	private Graphics2D g2;
 
 	public Fenetre() {
-		frame = new JFrame();
+		JLabel wallpaper = new JLabel(Constantes.wallpaper);
 
-		frame.setTitle("Fenetre_Test");
-		frame.setVisible(true);
-		frame.setSize(1000, 700);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setBackground(Color.white);
-		frame.setLocationRelativeTo(null);
-		frame.addMouseWheelListener(this);
-		frame.addMouseMotionListener(this);
-		frame.addMouseListener(this);
-		frame.setContentPane(this);
+		setTitle("Fenetre_Test");
+		setVisible(true);
+		add(wallpaper);
+		setSize(1000, 700);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setLocationRelativeTo(null);
+		addMouseWheelListener(this);
+		addMouseMotionListener(this);
+		addMouseListener(this);
 
 		// Temporaire !
 		new Homothetie(listePoints, 0.2);
@@ -53,12 +51,12 @@ public class Fenetre extends JPanel implements MouseWheelListener, MouseMotionLi
 	}
 
 	public void paintComponent(Graphics g) {
+		// clear
+		super.paintComponents(g);
+		
 		// init graphics
-		g2 = (Graphics2D) getGraphics();
-
-		// Reset fenetre
-		g2.clearRect(0, 0, frame.getWidth(), frame.getHeight());
-
+		g2 = (Graphics2D) g;
+		
 		// Dessin des faces
 		int[] triangleX = new int[3];
 		int[] triangleY = new int[3];
@@ -67,7 +65,6 @@ public class Fenetre extends JPanel implements MouseWheelListener, MouseMotionLi
 			Face current = listeFaces.get(i);
 			
 			//modif
-			
 			scal=Constantes.lumiere.prodScalaire(current.getNormal());
 			//ATTENTION CECI EST JUSTE EN ATTENTE DE CORRECTION
 			if(scal<0)
