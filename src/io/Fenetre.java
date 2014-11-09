@@ -3,6 +3,8 @@ package io;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -12,6 +14,9 @@ import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.SwingUtilities;
 
 import objects.Face;
@@ -30,6 +35,9 @@ public class Fenetre extends JFrame implements MouseWheelListener, MouseMotionLi
 	private Point current;
 	private int cptMouse = 0;
 	private Graphics2D g2;
+	private JMenuBar menuBar = new JMenuBar();
+	private JMenu fichier = new JMenu("Fichier");
+	private JMenuItem quitter = new JMenuItem("Quitter");
 
 	public Fenetre() {
 		JLabel wallpaper = new JLabel(Constantes.wallpaper);
@@ -43,10 +51,18 @@ public class Fenetre extends JFrame implements MouseWheelListener, MouseMotionLi
 		addMouseWheelListener(this);
 		addMouseMotionListener(this);
 		addMouseListener(this);
+		quitter.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				System.exit(0);
+			}
+		});
+		
+		/* fichier.add(quitter);
+		menuBar.add(fichier);
+		setJMenuBar(menuBar); */
 		
 		// Temporaire !
 		new Homothetie(listePoints, 0.2);
-		paintComponent(getGraphics());
 		paintComponent(getGraphics());
 	}
 
