@@ -2,9 +2,10 @@ package objects;
 
 import exceptions.MalFormedFaceException;
 
-public class Face {
+public class Face implements Comparable<Face>{
 	private Point a, b, c;
 	private Vecteur normal;
+	private int barycentre;
 
 	public Face(Segment a, Segment b, Segment c) {
 		this.a = a.getOrigine();
@@ -17,6 +18,11 @@ public class Face {
 		else
 			throw new MalFormedFaceException();
 		normalisation();
+		barycentre();
+	}
+	
+	public void barycentre(){
+		barycentre=(int)(a.getZ()+b.getZ()+c.getZ())/3;
 	}
 	
 	public Vecteur getNormal(){
@@ -43,5 +49,11 @@ public class Face {
 	}
 	public void normalisation(){
 		this.normal = new Vecteur(new Vecteur(this.a, this.b), new Vecteur(this.a, this.c));
+	}
+
+	@Override
+	public int compareTo(Face arg0) {
+		// TODO Auto-generated method stub
+		return this.barycentre-arg0.barycentre;
 	}
 }

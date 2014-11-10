@@ -57,9 +57,9 @@ public class Fenetre extends JFrame implements MouseWheelListener, MouseMotionLi
 			}
 		});
 		
-		/* fichier.add(quitter);
+		/*fichier.add(quitter);
 		menuBar.add(fichier);
-		setJMenuBar(menuBar); */
+		setJMenuBar(menuBar);*/
 		
 		// Temporaire !
 		new Homothetie(listePoints, 0.2);
