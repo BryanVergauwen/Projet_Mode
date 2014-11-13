@@ -18,13 +18,13 @@ public class GtsReader {
 	private List<Face> faces;
 	private int nbPoint, nbSegments, nbFaces;
 
-	public GtsReader(int coef) {
+	public GtsReader(int coef, String file) {
 		points = new ArrayList<Point>();
 		segments = new ArrayList<Segment>();
 		faces = new ArrayList<Face>();
 
 		try {
-			InputStream ips = new FileInputStream("ressources/head.gts");
+			InputStream ips = new FileInputStream("ressources/gts/" + file);
 			BufferedReader br = new BufferedReader(new InputStreamReader(ips));
 			String ligne = br.readLine();
 			String result[] = ligne.split(" ");

@@ -3,6 +3,6 @@ import io.Fenetre;
 
 public class Main {
 	public static void main(String[] args) {
-		new Fenetre();
+		new Fenetre("x_wing.gts");
 	}
 }
