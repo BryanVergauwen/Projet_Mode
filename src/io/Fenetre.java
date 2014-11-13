@@ -3,6 +3,7 @@ package io;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -13,7 +14,6 @@ import java.awt.event.MouseWheelListener;
 import java.util.List;
 
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -38,13 +38,10 @@ public class Fenetre extends JFrame implements MouseWheelListener, MouseMotionLi
 	private JMenuBar menuBar = new JMenuBar();
 	private JMenu fichier = new JMenu("Fichier");
 	private JMenuItem quitter = new JMenuItem("Quitter");
-
+	
 	public Fenetre() {
-		JLabel wallpaper = new JLabel(Constantes.wallpaper);
-		
 		setTitle("Fenetre_Test");
 		setVisible(true);
-		add(wallpaper);
 		setSize(1000, 700);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLocationRelativeTo(null);
@@ -64,26 +61,31 @@ public class Fenetre extends JFrame implements MouseWheelListener, MouseMotionLi
 		// Temporaire !
 		new Homothetie(listePoints, 0.05);
 		paintComponent(getGraphics());
+		paintComponent(getGraphics());
 	}
 
 	public void paintComponent(Graphics g) {
-		// clear
-		super.paintComponents(g);
-		
-		// init graphics
 		g2 = (Graphics2D) g;
+		Graphics offgc;
+		Image offscreen = null;
+
+		offscreen = createImage(this.getWidth(), this.getHeight());
+		offgc = offscreen.getGraphics();
 		
 		// Dessin des faces
 		double scal = 0.0; // Produit scalaire pour la lumiere
+		
+		offgc.drawImage(Constantes.wallpaper, 0, 0, this);
 		for (Face f : listeFaces) {
 			scal=Constantes.lumiere.prodScalaire(f.getNormal());
 			scal = Math.abs(scal);
 			
-			g2.setColor(new Color((int)(Constantes.COLOR*scal),(int)(Constantes.COLOR*scal), (int)(Constantes.COLOR*scal)));
+			offgc.setColor(new Color((int)(Constantes.COLOR*scal),(int)(Constantes.COLOR*scal), (int)(Constantes.COLOR*scal)));
 			
 			// Dessin du triangle
-			g2.fillPolygon(f.getTriangleX(), f.getTriangleY(), 3);
+			offgc.fillPolygon(f.getTriangleX(), f.getTriangleY(), 3);
 		}
+		g2.drawImage(offscreen, 0, 0, this);
 	}
 
 	@Override
