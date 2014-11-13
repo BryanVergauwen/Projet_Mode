@@ -62,7 +62,7 @@ public class Fenetre extends JFrame implements MouseWheelListener, MouseMotionLi
 		setJMenuBar(menuBar);*/
 		
 		// Temporaire !
-		new Homothetie(listePoints, 0.2);
+		new Homothetie(listePoints, 0.05);
 		paintComponent(getGraphics());
 	}
 
@@ -74,37 +74,15 @@ public class Fenetre extends JFrame implements MouseWheelListener, MouseMotionLi
 		g2 = (Graphics2D) g;
 		
 		// Dessin des faces
-		int[] triangleX = new int[3];
-		int[] triangleY = new int[3];
-		double scal=0.0;//porduit scalaire pour la lumiere
-		for (int i = 0; i < listeFaces.size(); i++) {
-			Face current = listeFaces.get(i);
+		double scal = 0.0; // Produit scalaire pour la lumiere
+		for (Face f : listeFaces) {
+			scal=Constantes.lumiere.prodScalaire(f.getNormal());
+			scal = Math.abs(scal);
 			
-			//modif
-			scal=Constantes.lumiere.prodScalaire(current.getNormal());
-			//ATTENTION CECI EST JUSTE EN ATTENTE DE CORRECTION
-			if(scal<0)
-				scal=scal*-1;
-			//FIN
 			g2.setColor(new Color((int)(Constantes.COLOR*scal),(int)(Constantes.COLOR*scal), (int)(Constantes.COLOR*scal)));
-			// Tab X
-			triangleX[0] = (int) current.getSommetA().getX();
-			triangleX[1] = (int) current.getSommetB().getX();
-			triangleX[2] = (int) current.getSommetC().getX();
-
-			// Tab Y
-			triangleY[0] = (int) current.getSommetA().getY();
-			triangleY[1] = (int) current.getSommetB().getY();
-			triangleY[2] = (int) current.getSommetC().getY();
-
-			// ajout des coeffs
-			for (int tmp = 0; tmp < triangleX.length; tmp++)
-				triangleX[tmp] += Constantes.COEFF1;
-			for (int tmp = 0; tmp < triangleY.length; tmp++)
-				triangleY[tmp] += Constantes.COEFF2;
-
+			
 			// Dessin du triangle
-			g2.fillPolygon(triangleX, triangleY, 3);
+			g2.fillPolygon(f.getTriangleX(), f.getTriangleY(), 3);
 		}
 	}
 
@@ -127,9 +105,9 @@ public class Fenetre extends JFrame implements MouseWheelListener, MouseMotionLi
 			if (cptMouse == 4) {
 				if (p.getY() < current.getY())
 					new Rotation(listePoints, listeFaces, Math.toRadians(10), "X");
-				else if (p.getX() < current.getX())
+				if (p.getX() < current.getX())
 					new Rotation(listePoints, listeFaces, Math.toRadians(10), "Y");
-				else if (p.getY() > current.getY())
+				if (p.getY() > current.getY())
 					new Rotation(listePoints, listeFaces, Math.toRadians(10), "Z");
 				current = p;
 				cptMouse = 0;
@@ -141,16 +119,12 @@ public class Fenetre extends JFrame implements MouseWheelListener, MouseMotionLi
 
 			if (p.getY() < current.getY())
 				new Translation(listePoints, -5, "X");
-			else if (p.getY() > current.getY())
+			if (p.getY() > current.getY())
 				new Translation(listePoints, 5, "X");
-			else if (p.getX() > current.getX())
+			if (p.getX() > current.getX())
 				new Translation(listePoints, 5, "Y");
-			else if (p.getX() < current.getX())
+			if (p.getX() < current.getX())
 				new Translation(listePoints, -5, "Y");
-			else if (p.getZ() > current.getZ())
-				new Translation(listePoints, 5, "Z");
-			else if (p.getZ() < current.getZ())
-				new Translation(listePoints, -5, "Z");
 			current = p;
 			paintComponent(getGraphics());
 		}

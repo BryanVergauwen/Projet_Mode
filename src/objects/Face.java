@@ -1,5 +1,6 @@
 package objects;
 
+import data.Constantes;
 import exceptions.MalFormedFaceException;
 
 public class Face implements Comparable<Face>{
@@ -55,5 +56,29 @@ public class Face implements Comparable<Face>{
 	public int compareTo(Face arg0) {
 		// TODO Auto-generated method stub
 		return this.barycentre-arg0.barycentre;
+	}
+	public int[] getTriangleX(){
+		int[] tmp = new int[3];
+		
+		tmp[0] = (int) getSommetA().getX();
+		tmp[1] = (int) getSommetB().getX();
+		tmp[2] = (int) getSommetC().getX();
+		
+		for (int i = 0; i < tmp.length; i++)
+			tmp[i] += Constantes.COEFF1;
+		
+		return tmp;
+	}
+	public int[] getTriangleY(){
+		int[] tmp = new int[3];
+		
+		tmp[0] = (int) getSommetA().getY();
+		tmp[1] = (int) getSommetB().getY();
+		tmp[2] = (int) getSommetC().getY();
+		
+		for (int i = 0; i < tmp.length; i++)
+			tmp[i] += Constantes.COEFF2;
+		
+		return tmp;
 	}
 }

@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import objects.Face;
@@ -23,7 +24,7 @@ public class GtsReader {
 		faces = new ArrayList<Face>();
 
 		try {
-			InputStream ips = new FileInputStream("ressources/sphereSimple.gts");
+			InputStream ips = new FileInputStream("ressources/head.gts");
 			BufferedReader br = new BufferedReader(new InputStreamReader(ips));
 			String ligne = br.readLine();
 			String result[] = ligne.split(" ");
@@ -74,6 +75,7 @@ public class GtsReader {
 				}
 				ligne = br.readLine();
 			}
+			Collections.sort(faces);
 
 			// Fermeture du reader
 			br.close();

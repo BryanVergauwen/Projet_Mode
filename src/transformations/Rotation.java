@@ -14,7 +14,7 @@ public class Rotation {
 	public Rotation(List<Point> points, List<Face> faces, double angle, String axe) {
 		double x = 0, y = 0, z = 0;
 
-		if (axe.equalsIgnoreCase(X)) {
+		if (axe.equalsIgnoreCase(Z)) {
 			for (Point p : points) {
 				x = p.getX();
 				y = p.getY();
@@ -36,7 +36,7 @@ public class Rotation {
 				p.setZ(x * Math.sin(angle) + z * Math.cos(angle));
 			}
 		}
-		else if (axe.equalsIgnoreCase(Z)) {
+		else if (axe.equalsIgnoreCase(X)) {
 			for (Point p : points) {
 				x = p.getX();
 				y = p.getY();
