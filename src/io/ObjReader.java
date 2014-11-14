@@ -20,7 +20,7 @@ public class ObjReader extends Reader{
 
 			// Points
 			while (true) {
-				if(ligne.length() == 0 || (ligne.length() > 2 && (ligne.substring(0, 2).equals("vt") || ligne.charAt(0) == 'f')))
+				if(ligne.length() == 0 || (ligne.length() > 2 && (ligne.substring(0, 2).equals("vt") || ligne.substring(0, 2).equals("vn") || ligne.charAt(0) == 'f')))
 					break;
 				if (ligne.charAt(0) == 'v') {
 					result = ligne.split(" ");
