@@ -46,6 +46,7 @@ public class Fenetre extends JFrame implements MouseWheelListener, MouseMotionLi
 		setLayout(new BorderLayout());
 		setVisible(true);
 		setSize(1000, 700);
+		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLocationRelativeTo(null);
 		addMouseWheelListener(this);
