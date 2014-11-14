@@ -11,6 +11,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.io.File;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.BoxLayout;
@@ -78,7 +79,15 @@ public class Fenetre extends JFrame implements MouseWheelListener, MouseMotionLi
 
 	private String[] getGTSFiles(){
 		File[] f = new File("ressources/gts").listFiles();
-		String[] result = new String[f.length];
+		List<File> gtsFiles = new LinkedList<File>();
+		int lengthFile;
+		
+		for(int i = 0; i < f.length; i++){
+			lengthFile = f[i].getName().length();
+			if(f[i].getName().substring(lengthFile-4, lengthFile).equalsIgnoreCase(".gts"))
+				gtsFiles.add(f[i]);
+		}
+		String[] result = new String[gtsFiles.size()];
 		
 		for(int i = 0; i < result.length; i++)
 			result[i] = f[i].getName()+"   ";

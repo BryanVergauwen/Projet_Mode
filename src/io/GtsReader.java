@@ -80,7 +80,7 @@ public class GtsReader {
 			// Fermeture du reader
 			br.close();
 		} catch (Exception e) {
-			System.err.println(e);
+			e.printStackTrace();
 		}
 	}
 
