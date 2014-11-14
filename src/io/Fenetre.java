@@ -24,6 +24,7 @@ import javax.swing.event.ListSelectionListener;
 
 import objects.Face;
 import objects.Point;
+import objects.Segment;
 import transformations.Homothetie;
 import transformations.Rotation;
 import transformations.Translation;
@@ -36,11 +37,12 @@ public class Fenetre extends JFrame implements MouseWheelListener, MouseMotionLi
 	private int cptMouse = 0;
 	private Graphics2D g2;
 	private JList<String> listeModeles;
-	private GtsReader reader;
+	private Reader reader;
 	private List<Face> listeFaces;
 	private List<Point> listePoints;
+	private List<Segment> listeSegment;
 	private JPanel dessin, modeles;
-	private String[] gtsFiles = getGTSFiles();
+	private String[] files = getFiles();
 	
 	public Fenetre(String modele) {
 		updateModel(modele);
@@ -59,7 +61,7 @@ public class Fenetre extends JFrame implements MouseWheelListener, MouseMotionLi
 		modeles.setLayout(new BoxLayout(modeles, BoxLayout.Y_AXIS));
 		modeles.setBackground(Color.white);
 
-		listeModeles = new JList<String>(gtsFiles);
+		listeModeles = new JList<String>(files);
 		listeModeles.addListSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent lse) {
@@ -70,6 +72,7 @@ public class Fenetre extends JFrame implements MouseWheelListener, MouseMotionLi
 		modeles.add(listeModeles);
 		getContentPane().add(modeles, BorderLayout.WEST);
 		getContentPane().add(dessin, BorderLayout.EAST);
+		getContentPane().setBackground(Color.white);
 		
 		// Temporaire !
 		new Homothetie(listePoints, 0.05);
@@ -77,26 +80,41 @@ public class Fenetre extends JFrame implements MouseWheelListener, MouseMotionLi
 		paintComponent(getGraphics());
 	}
 
-	private String[] getGTSFiles(){
+	private String[] getFiles(){
 		File[] f = new File("ressources/gts").listFiles();
-		List<File> gtsFiles = new LinkedList<File>();
+		List<File> files = new LinkedList<File>();
 		int lengthFile;
 		
 		for(int i = 0; i < f.length; i++){
 			lengthFile = f[i].getName().length();
 			if(f[i].getName().substring(lengthFile-4, lengthFile).equalsIgnoreCase(".gts"))
-				gtsFiles.add(f[i]);
+				files.add(f[i]);
 		}
-		String[] result = new String[gtsFiles.size()];
 		
-		for(int i = 0; i < result.length; i++)
-			result[i] = f[i].getName()+"   ";
-		return result;
+		f = new File("ressources/obj").listFiles();
+		for(int i = 0; i < f.length; i++){
+			lengthFile = f[i].getName().length();
+			if(f[i].getName().substring(lengthFile-4, lengthFile).equalsIgnoreCase(".obj"))
+				files.add(f[i]);
+		}
+		
+		String[] tmp = new String[files.size()];
+		
+		for(int i = 0; i < files.size(); i++)
+			tmp[i] = files.get(i).getName();
+		
+		return tmp;
 	}
 	private void updateModel(String modele){
-		reader = new GtsReader(100, modele);
+		int lengthFile = modele.length();
+
+		if(modele.substring(lengthFile-4, lengthFile).equalsIgnoreCase(".obj"))
+			reader = new ObjReader(100, modele);
+		else if(modele.substring(lengthFile-4, lengthFile).equalsIgnoreCase(".gts"))
+			reader = new GtsReader(100, modele);
 		listeFaces = reader.getListFaces();
 		listePoints = reader.getListPoint();
+		listeSegment = reader.getListSegments();
 		paintComponent(getGraphics());
 	}
 
@@ -104,7 +122,7 @@ public class Fenetre extends JFrame implements MouseWheelListener, MouseMotionLi
 		g2 = (Graphics2D) g;
 		Graphics offgc;
 		Image offscreen = null;
-
+		
 		offscreen = createImage(this.getWidth() - 122, this.getHeight());
 		if(offscreen != null){
 			offgc = offscreen.getGraphics();
@@ -113,14 +131,20 @@ public class Fenetre extends JFrame implements MouseWheelListener, MouseMotionLi
 			double scal = 0.0; // Produit scalaire pour la lumiere
 			
 			offgc.drawImage(Constantes.wallpaper, 0, 0, this);
-			for (Face f : listeFaces) {
-				scal = Constantes.lumiere.prodScalaire(f.getNormal());
-				scal = Math.abs(scal);
-				
-				offgc.setColor(new Color((int)(Constantes.COLOR*scal),(int)(Constantes.COLOR*scal), (int)(Constantes.COLOR*scal)));
-				
-				// Dessin du triangle
-				offgc.fillPolygon(f.getTriangleX(), f.getTriangleY(), 3);
+			if(reader instanceof GtsReader){
+				for (Face f : listeFaces) {
+					scal = Constantes.lumiere.prodScalaire(f.getNormal());
+					scal = Math.abs(scal);
+					
+					offgc.setColor(new Color((int)(Constantes.COLOR*scal),(int)(Constantes.COLOR*scal), (int)(Constantes.COLOR*scal)));
+					offgc.fillPolygon(f.getTriangleX(), f.getTriangleY(), 3);
+				}
+			}
+			else if(reader instanceof ObjReader){
+				offgc.setColor(Color.black);
+
+				for (Segment s : listeSegment)
+					offgc.drawLine((int)(Constantes.COEFF1 + s.getOrigine().getX()), (int)(Constantes.COEFF2 + s.getOrigine().getY()), (int)(Constantes.COEFF1 + s.getFin().getX()), (int)(Constantes.COEFF2 + s.getFin().getY()));
 			}
 			g2.drawImage(offscreen, 122, 0, this);
 		}
