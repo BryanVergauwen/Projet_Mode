@@ -24,7 +24,6 @@ import javax.swing.event.ListSelectionListener;
 
 import objects.Face;
 import objects.Point;
-import objects.Segment;
 import transformations.Homothetie;
 import transformations.Rotation;
 import transformations.Translation;
@@ -40,7 +39,6 @@ public class Fenetre extends JFrame implements MouseWheelListener, MouseMotionLi
 	private Reader reader;
 	private List<Face> listeFaces;
 	private List<Point> listePoints;
-	private List<Segment> listeSegment;
 	private JPanel dessin, modeles;
 	private String[] files = getFiles();
 	
@@ -114,7 +112,6 @@ public class Fenetre extends JFrame implements MouseWheelListener, MouseMotionLi
 			reader = new GtsReader(100, modele);
 		listeFaces = reader.getListFaces();
 		listePoints = reader.getListPoint();
-		listeSegment = reader.getListSegments();
 		paintComponent(getGraphics());
 	}
 
@@ -131,20 +128,12 @@ public class Fenetre extends JFrame implements MouseWheelListener, MouseMotionLi
 			double scal = 0.0; // Produit scalaire pour la lumiere
 			
 			offgc.drawImage(Constantes.wallpaper, 0, 0, this);
-			if(reader instanceof GtsReader){
-				for (Face f : listeFaces) {
-					scal = Constantes.lumiere.prodScalaire(f.getNormal());
-					scal = Math.abs(scal);
-					
-					offgc.setColor(new Color((int)(Constantes.COLOR*scal),(int)(Constantes.COLOR*scal), (int)(Constantes.COLOR*scal)));
-					offgc.fillPolygon(f.getTriangleX(), f.getTriangleY(), 3);
-				}
-			}
-			else if(reader instanceof ObjReader){
-				offgc.setColor(Color.black);
-
-				for (Segment s : listeSegment)
-					offgc.drawLine((int)(Constantes.COEFF1 + s.getOrigine().getX()), (int)(Constantes.COEFF2 + s.getOrigine().getY()), (int)(Constantes.COEFF1 + s.getFin().getX()), (int)(Constantes.COEFF2 + s.getFin().getY()));
+			for (Face f : listeFaces) {
+				scal = Constantes.lumiere.prodScalaire(f.getNormal());
+				scal = Math.abs(scal);
+				
+				offgc.setColor(new Color((int)(Constantes.COLOR*scal),(int)(Constantes.COLOR*scal), (int)(Constantes.COLOR*scal)));
+				offgc.fillPolygon(f.getTriangleX(), f.getTriangleY(), 3);
 			}
 			g2.drawImage(offscreen, 122, 0, this);
 		}
