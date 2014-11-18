@@ -2,6 +2,8 @@ package transformations;
 
 import java.util.List;
 
+import data.Constantes;
+
 import objects.Point;
 
 public class Translation {
@@ -17,6 +19,7 @@ public class Translation {
 
 				p.setY(y + coeff);
 			}
+			Constantes.barycentre.setY(Constantes.barycentre.getY() + coeff);
 		} 
 		else if (axe.equalsIgnoreCase(Y)) {
 			for (Point p : points) {
@@ -24,6 +27,7 @@ public class Translation {
 				
 				p.setX(x + coeff);
 			}
+			Constantes.barycentre.setX(Constantes.barycentre.getX() + coeff);
 		}
 	}
 }

@@ -69,11 +69,12 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		addKeyListener(this);
 		
 		listeModeles.setFocusable(false);
-		
+
 		dessin = new JPanel();
 		modeles = new JPanel();
 		modeles.setLayout(new BoxLayout(modeles, BoxLayout.Y_AXIS));
 		modeles.setBackground(Color.white);
+
 		for(int i = 0; i < files.length; i++)
 			dl.add(i, files[i]);
 		listeModeles.addListSelectionListener(new ListSelectionListener() {
@@ -82,6 +83,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 				updateModel(listeModeles.getSelectedValue().toString());
 			}
 		});
+		
 		
 		quitter.addActionListener(new ActionListener() {
 			@Override
@@ -93,7 +95,6 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		fichier.add(quitter);
 		menuBar.add(fichier);
 		setJMenuBar(menuBar);
-		
 		triListe();
 		modeles.add(listeModeles);
 		getContentPane().add(modeles, BorderLayout.WEST);
@@ -145,13 +146,23 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	}
 	private void updateModel(String modele){
 		int lengthFile = modele.length();
-
+		double x=0,y=0,z=0;
+		
 		if(modele.substring(lengthFile-4, lengthFile).equalsIgnoreCase(".obj"))
 			reader = new ObjReader(100, modele);
 		else if(modele.substring(lengthFile-4, lengthFile).equalsIgnoreCase(".gts"))
 			reader = new GtsReader(100, modele);
 		listeFaces = reader.getListFaces();
 		listePoints = reader.getListPoint();
+		for(int i=0 ; listePoints.size()>i ; i++){
+			x=+listePoints.get(i).getX();
+			y=+listePoints.get(i).getY();
+			z=+listePoints.get(i).getZ();
+		}
+		x=x/listePoints.size();
+		y=y/listePoints.size();
+		z=z/listePoints.size();
+		Constantes.barycentre=new Point(x, y, z);
 		paintComponent(getGraphics());
 	}
 
@@ -254,7 +265,6 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	@Override
 	public void mouseReleased(MouseEvent arg0) {
 	}
-
 	@Override
 	public void keyPressed(KeyEvent e) {
 		if (e.getKeyCode() == KeyEvent.VK_Z)
