@@ -38,6 +38,7 @@ import transformations.Rotation;
 import transformations.Translation;
 import data.Constantes;
 
+@SuppressWarnings("unchecked")
 public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, MouseMotionListener, MouseListener {
 	private static final long serialVersionUID = 1L;
 	private double zoom;
@@ -48,7 +49,9 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	private List<Face> listeFaces;
 	private List<Point> listePoints;
 	private JPanel dessin, modeles;
+	@SuppressWarnings("rawtypes")
 	private DefaultListModel dl = new DefaultListModel();
+	@SuppressWarnings("rawtypes")
 	private JList listeModeles = new JList(dl);
 	private String[] files = getFiles();
 	private JMenuBar menuBar = new JMenuBar();
