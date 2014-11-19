@@ -17,7 +17,7 @@ public class Translation {
 			for (Point p : points) {
 				y = p.getY();
 
-				p.setY(y + coeff);
+				p.setY(y + 2*coeff);
 			}
 			Constantes.barycentre.setY(Constantes.barycentre.getY() + coeff);
 		} 
@@ -25,7 +25,7 @@ public class Translation {
 			for (Point p : points) {
 				x = p.getX();
 				
-				p.setX(x + coeff);
+				p.setX(x + 2*coeff);
 			}
 			Constantes.barycentre.setX(Constantes.barycentre.getX() + coeff);
 		}
