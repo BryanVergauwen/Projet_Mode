@@ -54,7 +54,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	private Point current;
 	private int cptMouse = 0;
 	private Graphics2D g2;
-	private Reader reader;
+	private GtsReader reader;
 	private List<Face> listeFaces;
 	private List<Point> listePoints;
 	private JPanel modeles;
@@ -147,8 +147,6 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 					fileopen = new JFileChooser(new File( "." ).getCanonicalPath());
 				} catch (IOException e) {}
 				FileFilter filter = new FileNameExtensionFilter(".gts", "gts");
-				fileopen.addChoosableFileFilter(filter);
-				filter = new FileNameExtensionFilter(".obj", "obj");
 				fileopen.addChoosableFileFilter(filter);
 
 				int ret = fileopen.showDialog(null, "Open file");
@@ -253,13 +251,6 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 				files.add(f[i]);
 		}
 		
-		f = new File("ressources/obj").listFiles();
-		for(int i = 0; i < f.length; i++){
-			lengthFile = f[i].getName().length();
-			if(f[i].getName().substring(lengthFile-4, lengthFile).equalsIgnoreCase(".obj"))
-				files.add(f[i]);
-		}
-		
 		String[] tmp = new String[files.size()];
 		
 		for(int i = 0; i < files.size(); i++)
@@ -268,13 +259,9 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		return tmp;
 	}
 	private void updateModel(String modele){
-		int lengthFile = modele.length();
 		double x=0,y=0,z=0;
 		
-		if(modele.substring(lengthFile-4, lengthFile).equalsIgnoreCase(".obj"))
-			reader = new ObjReader(100, modele);
-		else if(modele.substring(lengthFile-4, lengthFile).equalsIgnoreCase(".gts"))
-			reader = new GtsReader(100, modele);
+		reader = new GtsReader(100, modele);
 		listeFaces = reader.getListFaces();
 		listePoints = reader.getListPoint();
 		for(int i=0 ; listePoints.size()>i ; i++){

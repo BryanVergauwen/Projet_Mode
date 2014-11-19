@@ -4,13 +4,20 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import objects.Face;
 import objects.Point;
 import objects.Segment;
 
-public class GtsReader extends Reader{
+public class GtsReader{
+	private List<Point> points = new ArrayList<Point>();
+	private List<Segment> segments = new ArrayList<Segment>();
+	private List<Face> faces = new ArrayList<Face>();
+	private int nbPoint, nbSegments, nbFaces;
+	
 	public GtsReader(int coef, String file) {
 		try {
 			InputStream ips = new FileInputStream("ressources/gts/" + file);
@@ -75,5 +82,16 @@ public class GtsReader extends Reader{
 	}
 	public String toString(){
 		return "GTSReader";
+	}
+	public List<Point> getListPoint() {
+		return points;
+	}
+
+	public List<Segment> getListSegments() {
+		return segments;
+	}
+
+	public List<Face> getListFaces() {
+		return faces;
 	}
 }
