@@ -53,7 +53,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	private static final long serialVersionUID = 1L;
 	private double zoom;
 	private Point current;
-	private int cptMouse = 0;
+	private int cptMouse = 0, decalX = 231, decalY = 55;
 	private Graphics2D g2;
 	private GtsReader reader;
 	private List<Face> listeFaces;
@@ -212,7 +212,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 			export = true;
 			save = new JFileChooser(new File(".").getCanonicalPath());
 			if(save.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-				BufferedImage bi = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_RGB); 
+				BufferedImage bi = new BufferedImage(this.getWidth() - decalX, this.getHeight(), BufferedImage.TYPE_INT_RGB); 
 				Graphics g = bi.createGraphics();
 				paintComponent(g);
 				g.dispose();
@@ -284,7 +284,6 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		g2 = (Graphics2D) g;
 		Graphics offgc;
 		Image offscreen = null;
-		int decalX = 231, decalY = 55;
 		
 		if(export)
 			decalX = decalY = 0;
