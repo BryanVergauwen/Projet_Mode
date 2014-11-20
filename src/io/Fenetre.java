@@ -35,6 +35,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -60,6 +61,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	private JPanel modeles;
 	private DefaultListModel dl = new DefaultListModel();
 	private JList listeModeles = new JList(dl);
+	private JScrollPane scrollPane = new JScrollPane(listeModeles);
 	private String[] files = getFiles();
 	private JMenuBar menuBar = new JMenuBar();
 	private List<JMenu> jMenus;
@@ -87,7 +89,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		modeles.setLayout(new BoxLayout(modeles, BoxLayout.Y_AXIS));
 		modeles.setBackground(Color.white);
 		
-		modeles.add(listeModeles);
+		modeles.add(scrollPane);
 		getContentPane().add(modeles, BorderLayout.WEST);
 		getContentPane().setBackground(Color.white);
 
@@ -282,7 +284,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		g2 = (Graphics2D) g;
 		Graphics offgc;
 		Image offscreen = null;
-		int decalX = 150, decalY = 55;
+		int decalX = 231, decalY = 55;
 		
 		if(export)
 			decalX = decalY = 0;
