@@ -3,6 +3,6 @@ import io.Fenetre;
 
 public class Main {
 	public static void main(String[] args) {
-		new Fenetre("tie.gts");
+		new Fenetre("ressources/gts/tie.gts");
 	}
 }

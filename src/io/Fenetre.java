@@ -5,6 +5,11 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetAdapter;
+import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -17,8 +22,10 @@ import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -62,7 +69,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	private DefaultListModel dl = new DefaultListModel();
 	private JList listeModeles = new JList(dl);
 	private JScrollPane scrollPane = new JScrollPane(listeModeles);
-	private String[] files = getFiles();
+	private Map<String, String> files = getFiles();
 	private JMenuBar menuBar = new JMenuBar();
 	private List<JMenu> jMenus;
 	private List<JMenuItem> jMenuItems;
@@ -75,6 +82,24 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		setLayout(new BorderLayout());
 		setVisible(true);
 		setSize(1000, 700);
+		setDropTarget(new DropTarget(this, new DropTargetAdapter() {
+			@SuppressWarnings("unchecked")
+			@Override
+			public void drop(DropTargetDropEvent e) {
+				e.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
+				for (DataFlavor flavor : e.getCurrentDataFlavors()) {
+					try {
+						List<File> files = (List<File>) e.getTransferable().getTransferData(flavor);
+						String s = files.get(0).getAbsolutePath();
+						if(s.substring(s.length() - 4, s.length()).equalsIgnoreCase(".gts"))
+							updateModel(s);
+					} 
+					catch (Exception ex) {
+						ex.printStackTrace();
+					}
+				}
+			}
+		}));
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLocationRelativeTo(null);
@@ -93,12 +118,13 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		getContentPane().add(modeles, BorderLayout.WEST);
 		getContentPane().setBackground(Color.white);
 
-		for(int i = 0; i < files.length; i++)
-			dl.add(i, files[i]);
+		Iterator<String> it = files.keySet().iterator();
+		for(int i = 0; i < files.keySet().size(); i++)
+			dl.add(i, it.next());
 		listeModeles.addListSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent lse) {
-				updateModel(listeModeles.getSelectedValue().toString());
+				updateModel(files.get(listeModeles.getSelectedValue().toString()));
 			}
 		});
 		
@@ -153,7 +179,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 
 				int ret = fileopen.showDialog(null, "Open file");
 				if (ret == JFileChooser.APPROVE_OPTION)
-					updateModel(fileopen.getSelectedFile().getName());
+					updateModel(fileopen.getSelectedFile().getAbsolutePath());
 			}
 		});
 		
@@ -232,7 +258,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		Collections.sort(tmp);
 		dl.clear();
 		
-		for(int i = 0; i < files.length; i++)
+		for(int i = 0; i < files.size(); i++)
 			dl.add(i, tmp.get(i));
 	}
 	
@@ -242,22 +268,21 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		return new Color(r.nextInt(256), r.nextInt(256), r.nextInt(256));
 	}
 
-	private String[] getFiles(){
+	private Map<String, String> getFiles(){
 		File[] f = new File("ressources/gts").listFiles();
 		List<File> files = new LinkedList<File>();
 		int lengthFile;
 		
 		for(int i = 0; i < f.length; i++){
-			lengthFile = f[i].getName().length();
-			if(f[i].getName().substring(lengthFile-4, lengthFile).equalsIgnoreCase(".gts"))
+			lengthFile = f[i].getAbsolutePath().length();
+			if(f[i].getAbsolutePath().substring(lengthFile-4, lengthFile).equalsIgnoreCase(".gts"))
 				files.add(f[i]);
 		}
 		
-		String[] tmp = new String[files.size()];
+		Map<String, String> tmp = new HashMap<String, String>();
 		
 		for(int i = 0; i < files.size(); i++)
-			tmp[i] = files.get(i).getName();
-		
+			tmp.put(files.get(i).getName(), files.get(i).getAbsolutePath());
 		return tmp;
 	}
 	private void updateModel(String modele){

@@ -20,7 +20,7 @@ public class GtsReader{
 	
 	public GtsReader(int coef, String file) {
 		try {
-			InputStream ips = new FileInputStream("ressources/gts/" + file);
+			InputStream ips = new FileInputStream(file);
 			BufferedReader br = new BufferedReader(new InputStreamReader(ips));
 			String ligne = br.readLine();
 			String result[] = ligne.split(" ");
