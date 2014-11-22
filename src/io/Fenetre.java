@@ -22,7 +22,6 @@ import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -44,6 +43,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileFilter;
@@ -75,7 +76,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	private List<JMenuItem> jMenuItems;
 	private Color color = new Color(125, 125, 125);
 	private Map<Face, Color> alea;
-	private boolean export = false;
+	private boolean export = false, fullScreen = false;
 	
 	public Fenetre(String modele) {
 		updateModel(modele);
@@ -101,12 +102,16 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 			}
 		}));
 		setResizable(false);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setLocationRelativeTo(null);
 		addMouseWheelListener(this);
 		addMouseMotionListener(this);
 		addMouseListener(this);
 		addKeyListener(this);
+		
+		Iterator<String> it = files.keySet().iterator();
+		for(int i = 0; i < files.keySet().size(); i++)
+			dl.add(i, it.next());
 		
 		listeModeles.setFocusable(false);
 		
@@ -118,9 +123,6 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		getContentPane().add(modeles, BorderLayout.WEST);
 		getContentPane().setBackground(Color.white);
 
-		Iterator<String> it = files.keySet().iterator();
-		for(int i = 0; i < files.keySet().size(); i++)
-			dl.add(i, it.next());
 		listeModeles.addListSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent lse) {
@@ -135,6 +137,12 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		new Homothetie(listePoints, 0.05);
 		paintComponent(getGraphics());
 		paintComponent(getGraphics());
+		
+		try {
+			UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e1) {
+			e1.printStackTrace();
+		}
 	}
 
 	private void initJMenuBar() {
@@ -143,13 +151,16 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 
 		jMenus.add(new JMenu("Fichier"));
 		jMenus.add(new JMenu("Edition"));
+		jMenus.add(new JMenu("Affichage"));
 		jMenus.add(new JMenu("Outils"));
 		jMenus.add(new JMenu("Aide"));
 		
+		jMenuItems.add(new JMenuItem("Nouvelle fenêtre"));
 		jMenuItems.add(new JMenuItem("Ouvrir"));
 		jMenuItems.add(new JMenuItem("Enregistrer"));
 		jMenuItems.add(new JMenuItem("Exporter"));
 		jMenuItems.add(new JMenuItem("Quitter"));
+		jMenuItems.add(new JMenuItem("Plein écran"));
 		jMenuItems.add(new JMenuItem("Modifier la couleur"));
 		jMenuItems.add(new JMenuItem("Couleur aléatoire (uniforme)"));
 		jMenuItems.add(new JMenuItem("Toutes couleurs aleatoires"));
@@ -158,16 +169,26 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		jMenus.get(0).add(jMenuItems.get(1));
 		jMenus.get(0).add(jMenuItems.get(2));
 		jMenus.get(0).add(jMenuItems.get(3));
-		jMenus.get(2).add(jMenuItems.get(4));
+		jMenus.get(0).add(jMenuItems.get(4));
 		jMenus.get(2).add(jMenuItems.get(5));
-		jMenus.get(2).add(jMenuItems.get(6));
+		jMenus.get(3).add(jMenuItems.get(6));
+		jMenus.get(3).add(jMenuItems.get(7));
+		jMenus.get(3).add(jMenuItems.get(8));
 		
 		for(JMenu j : jMenus)
 			menuBar.add(j);
 		setJMenuBar(menuBar);
 		
-		// Bouton ouvrir
+		// Bouton nouvelle fenetre
 		jMenuItems.get(0).addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				new Fenetre(Constantes.FIGURE_BASE);
+			}
+		});
+		
+		// Bouton ouvrir
+		jMenuItems.get(1).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				JFileChooser fileopen = null;
@@ -184,7 +205,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		});
 		
 		// boutton exporter
-		jMenuItems.get(2).addActionListener(new ActionListener() {
+		jMenuItems.get(3).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				exportImage();
@@ -192,15 +213,31 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		});
 		
 		// Bouton quitter
-		jMenuItems.get(3).addActionListener(new ActionListener() {
+		jMenuItems.get(4).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				System.exit(0);
+				dispose(); // Dans le cas où plusieurs fenetres sont ouvertes, une seule est fermée
 			}
 		});
 		
+		// Bouton full Screen
+		jMenuItems.get(5).addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				if(!fullScreen){
+					setExtendedState(JFrame.MAXIMIZED_BOTH);
+					fullScreen = true;
+				}
+				else{
+					setExtendedState(JFrame.NORMAL);
+					fullScreen = false;
+				}
+			}
+		});
+		
+		
 		// Bouton modif couleur
-		jMenuItems.get(4).addActionListener(new ActionListener() {
+		jMenuItems.get(6).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				alea = null;
@@ -210,7 +247,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		});
 		
 		// Bouton couleur aléatoire
-		jMenuItems.get(5).addActionListener(new ActionListener() {
+		jMenuItems.get(7).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				alea = null;
@@ -220,7 +257,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		});
 		
 		// Bouton couleurs aleatoires
-		jMenuItems.get(6).addActionListener(new ActionListener() {
+		jMenuItems.get(8).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				alea = new HashMap<Face, Color>();
