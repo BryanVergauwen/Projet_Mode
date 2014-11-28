@@ -2,7 +2,6 @@ package io;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -42,6 +41,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -68,9 +68,8 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	private List<Face> listeFaces;
 	private List<Point> listePoints;
 	private JPanel modeles;
-	private DefaultListModel<String> dl = new DefaultListModel<String>();
+	private DefaultListModel<String> dl;
 	private JList<String> listeModeles;
-	private JScrollPane scrollPane;
 	private JMenuBar menuBar = new JMenuBar();
 	private List<JMenu> jMenus;
 	private List<JMenuItem> jMenuItems;
@@ -94,9 +93,11 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 				for (DataFlavor flavor : e.getCurrentDataFlavors()) {
 					try {
 						List<File> files = (List<File>) e.getTransferable().getTransferData(flavor);
-						String s = files.get(0).getAbsolutePath();
-						if(s.substring(s.length() - 4, s.length()).equalsIgnoreCase(".gts"))
-							updateModel(s);
+						File f = files.get(0);
+						if(f.getAbsolutePath().substring(f.getAbsolutePath().length() - 4, f.getAbsolutePath().length()).equalsIgnoreCase(".gts")){
+							g.insert(f.getName(), f.getAbsolutePath());
+							updateModel(g.selectWhere("nom = '" + f.getName() + "'"));
+						}
 					} 
 					catch (Exception ex) {
 						ex.printStackTrace();
@@ -113,30 +114,31 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		addKeyListener(this);
 		
 		List<String> tmp = g.select("nom");
+		dl = new DefaultListModel<String>();
 		for(int i = 0; i < g.getNbLignes(); i++)
 			dl.add(i, tmp.get(i));
 		
 		listeModeles = new JList<String>(dl);
-		listeModeles.setFocusable(false);
-		scrollPane = new JScrollPane(listeModeles);
 		
+		listeModeles.setFocusable(false);
+		listeModeles.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		triListe();
+
 		modeles = new JPanel();
 		modeles.setLayout(new BoxLayout(modeles, BoxLayout.Y_AXIS));
 		modeles.setBackground(Color.white);
 		
-		modeles.add(scrollPane);
+		modeles.add(new JScrollPane(listeModeles));
 		getContentPane().add(modeles, BorderLayout.WEST);
 		getContentPane().setBackground(Color.white);
 		
 		listeModeles.addListSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent lse) {
-				updateModel(g.selectWhere("nom = listeModeles.getSelectedValue().toString()"));
+				updateModel(g.selectWhere("nom = '" + listeModeles.getSelectedValue().toString() + "'"));
 			}
 		});
-		
-		triListe();
-		
+
 		// Temporaire !
 		new Homothetie(listePoints, 0.05);
 		paintComponent(getGraphics());
@@ -147,7 +149,8 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		}
 		catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e1) { 
 			e1.printStackTrace(); 
-		} 
+		}
+		validate();
 	}
 
 	private void initBDD() {
@@ -161,8 +164,18 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 				files.add(f[i]);
 		}
 		
+		// Mise à jour des fichiers dans le dossier .gts
 		for(int i = 0; i < files.size(); i++)
 			g.insert(files.get(i).getName().toLowerCase(), files.get(i).getAbsolutePath());
+		
+		// Suppression dans la base des fichiers supprimes de l'ordinateur
+		List<String> tmp = g.select("path");
+		File file;
+		for(String path : tmp){
+			file = new File(path);
+			if(!file.exists())
+				g.delete("path = '" + path + "'");
+		}
 	}
 
 	private void initJMenuBar() {
@@ -219,8 +232,10 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 				fileopen.addChoosableFileFilter(filter);
 
 				int ret = fileopen.showDialog(null, "Open file");
-				if (ret == JFileChooser.APPROVE_OPTION)
-					updateModel(fileopen.getSelectedFile().getAbsolutePath());
+				if (ret == JFileChooser.APPROVE_OPTION){
+					g.insert(fileopen.getSelectedFile().getName(), fileopen.getSelectedFile().getAbsolutePath());
+					updateModel(g.selectWhere("nom = '" + fileopen.getSelectedFile().getName() + "'"));
+				}
 			}
 		});
 		
