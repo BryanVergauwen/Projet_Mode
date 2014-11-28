@@ -60,9 +60,9 @@ public class Face implements Comparable<Face>{
 	public int[] getTriangleX(){
 		int[] tmp = new int[3];
 		
-		tmp[0] = (int) getSommetA().getX();
-		tmp[1] = (int) getSommetB().getX();
-		tmp[2] = (int) getSommetC().getX();
+		tmp[0] = (int) (getSommetA().getX()+Constantes.alphaX);
+		tmp[1] = (int) (getSommetB().getX()+Constantes.alphaX);
+		tmp[2] = (int) (getSommetC().getX()+Constantes.alphaX);
 		
 		for (int i = 0; i < tmp.length; i++)
 			tmp[i] += Constantes.COEFF1;
@@ -72,9 +72,9 @@ public class Face implements Comparable<Face>{
 	public int[] getTriangleY(){
 		int[] tmp = new int[3];
 		
-		tmp[0] = (int) getSommetA().getY();
-		tmp[1] = (int) getSommetB().getY();
-		tmp[2] = (int) getSommetC().getY();
+		tmp[0] = (int) (getSommetA().getY()+Constantes.alphaY);
+		tmp[1] = (int) (getSommetB().getY()+Constantes.alphaY);
+		tmp[2] = (int) (getSommetC().getY()+Constantes.alphaY);
 		
 		for (int i = 0; i < tmp.length; i++)
 			tmp[i] += Constantes.COEFF2;

@@ -61,14 +61,14 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	private static final long serialVersionUID = 1L;
 	private double zoom;
 	private Point current;
-	private int cptMouse = 0, decalX = 231, decalY = 55;
+	private int cptMouse = 0, decalX = 185, decalY = 45;
 	private Graphics2D g2;
 	private GtsReader reader;
 	private List<Face> listeFaces;
 	private List<Point> listePoints;
 	private JPanel modeles;
-	private DefaultListModel dl = new DefaultListModel();
-	private JList listeModeles = new JList(dl);
+	private DefaultListModel<String> dl = new DefaultListModel<String>();
+	private JList<String> listeModeles = new JList<String>(dl);
 	private JScrollPane scrollPane = new JScrollPane(listeModeles);
 	private Map<String, String> files = getFiles();
 	private JMenuBar menuBar = new JMenuBar();
@@ -80,6 +80,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	
 	public Fenetre(String modele) {
 		updateModel(modele);
+		initJMenuBar();
 		setLayout(new BorderLayout());
 		setVisible(true);
 		setSize(1000, 700);
@@ -130,19 +131,19 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 			}
 		});
 		
-		initJMenuBar();
 		triListe();
-
+		
 		// Temporaire !
 		new Homothetie(listePoints, 0.05);
 		paintComponent(getGraphics());
 		paintComponent(getGraphics());
 		
-		try {
-			UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e1) {
-			e1.printStackTrace();
+		try { 
+			UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel"); 
 		}
+		catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e1) { 
+			e1.printStackTrace(); 
+		} 
 	}
 
 	private void initJMenuBar() {
@@ -155,14 +156,14 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		jMenus.add(new JMenu("Outils"));
 		jMenus.add(new JMenu("Aide"));
 		
-		jMenuItems.add(new JMenuItem("Nouvelle fenêtre"));
+		jMenuItems.add(new JMenuItem("Nouvelle fenetre"));
 		jMenuItems.add(new JMenuItem("Ouvrir"));
 		jMenuItems.add(new JMenuItem("Enregistrer"));
 		jMenuItems.add(new JMenuItem("Exporter"));
 		jMenuItems.add(new JMenuItem("Quitter"));
-		jMenuItems.add(new JMenuItem("Plein écran"));
+		jMenuItems.add(new JMenuItem("Plein ecran"));
 		jMenuItems.add(new JMenuItem("Modifier la couleur"));
-		jMenuItems.add(new JMenuItem("Couleur aléatoire (uniforme)"));
+		jMenuItems.add(new JMenuItem("Couleur aleatoire (uniforme)"));
 		jMenuItems.add(new JMenuItem("Toutes couleurs aleatoires"));
 		
 		jMenus.get(0).add(jMenuItems.get(0));
@@ -216,7 +217,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		jMenuItems.get(4).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				dispose(); // Dans le cas où plusieurs fenetres sont ouvertes, une seule est fermée
+				dispose(); // Dans le cas ou plusieurs fenetres sont ouvertes, une seule est fermï¿½e
 			}
 		});
 		
@@ -246,7 +247,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 			}
 		});
 		
-		// Bouton couleur aléatoire
+		// Bouton couleur aleatoire
 		jMenuItems.get(7).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -319,7 +320,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		Map<String, String> tmp = new HashMap<String, String>();
 		
 		for(int i = 0; i < files.size(); i++)
-			tmp.put(files.get(i).getName(), files.get(i).getAbsolutePath());
+			tmp.put(files.get(i).getName().toLowerCase(), files.get(i).getAbsolutePath());
 		return tmp;
 	}
 	private void updateModel(String modele){
@@ -336,7 +337,6 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		x=x/listePoints.size();
 		y=y/listePoints.size();
 		z=z/listePoints.size();
-		Constantes.barycentre=new Point(x, y, z);
 		alea = null;
 		color = new Color(125, 125, 125);
 		paintComponent(getGraphics());
@@ -364,8 +364,10 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 				
 				if(alea == null)
 					offgc.setColor((new Color((int)(color.getRed() * scal), (int)(color.getGreen() * scal), (int)(color.getBlue() * scal))));
-				else
-					offgc.setColor(alea.get(listeFaces.get(i)));
+				else{
+					Color tmp = alea.get(listeFaces.get(i));
+					offgc.setColor(new Color((int)(tmp.getRed() * scal), (int)(tmp.getGreen() * scal), (int)(tmp.getBlue() * scal)));
+				}
 				offgc.fillPolygon(listeFaces.get(i).getTriangleX(), listeFaces.get(i).getTriangleY(), 3);
 			}
 			g2.drawImage(offscreen, decalX, decalY, this);
@@ -406,13 +408,13 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 			Point p = new Point(e.getX(), e.getY(), 0);
 
 			if (p.getY() < current.getY())
-				new Translation(listePoints, -5, "X");
-			if (p.getY() > current.getY())
-				new Translation(listePoints, 5, "X");
-			if (p.getX() > current.getX())
-				new Translation(listePoints, 5, "Y");
-			if (p.getX() < current.getX())
 				new Translation(listePoints, -5, "Y");
+			if (p.getY() > current.getY())
+				new Translation(listePoints, 5, "Y");
+			if (p.getX() > current.getX())
+				new Translation(listePoints, 5, "X");
+			if (p.getX() < current.getX())
+				new Translation(listePoints, -5, "X");
 			current = p;
 			paintComponent(getGraphics());
 		}
