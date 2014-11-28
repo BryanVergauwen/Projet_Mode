@@ -1,6 +1,6 @@
 package objects;
 
-import data.Constantes;
+import data.Data;
 import exceptions.MalFormedFaceException;
 
 public class Face implements Comparable<Face>{
@@ -60,24 +60,24 @@ public class Face implements Comparable<Face>{
 	public int[] getTriangleX(){
 		int[] tmp = new int[3];
 		
-		tmp[0] = (int) (getSommetA().getX()+Constantes.alphaX);
-		tmp[1] = (int) (getSommetB().getX()+Constantes.alphaX);
-		tmp[2] = (int) (getSommetC().getX()+Constantes.alphaX);
+		tmp[0] = (int) (getSommetA().getX()+Data.alphaX);
+		tmp[1] = (int) (getSommetB().getX()+Data.alphaX);
+		tmp[2] = (int) (getSommetC().getX()+Data.alphaX);
 		
 		for (int i = 0; i < tmp.length; i++)
-			tmp[i] += Constantes.COEFF1;
+			tmp[i] += Data.COEFF1;
 		
 		return tmp;
 	}
 	public int[] getTriangleY(){
 		int[] tmp = new int[3];
 		
-		tmp[0] = (int) (getSommetA().getY()+Constantes.alphaY);
-		tmp[1] = (int) (getSommetB().getY()+Constantes.alphaY);
-		tmp[2] = (int) (getSommetC().getY()+Constantes.alphaY);
+		tmp[0] = (int) (getSommetA().getY()+Data.alphaY);
+		tmp[1] = (int) (getSommetB().getY()+Data.alphaY);
+		tmp[2] = (int) (getSommetC().getY()+Data.alphaY);
 		
 		for (int i = 0; i < tmp.length; i++)
-			tmp[i] += Constantes.COEFF2;
+			tmp[i] += Data.COEFF2;
 		
 		return tmp;
 	}

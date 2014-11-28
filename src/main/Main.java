@@ -1,9 +1,9 @@
 package main;
-import data.Constantes;
+import data.Data;
 import io.Fenetre;
 
 public class Main {
 	public static void main(String[] args) {
-		new Fenetre(Constantes.FIGURE_BASE);
+		new Fenetre(Data.FIGURE_BASE);
 	}
 }

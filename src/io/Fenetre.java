@@ -2,6 +2,7 @@ package io;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -24,7 +25,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +55,8 @@ import objects.Point;
 import transformations.Homothetie;
 import transformations.Rotation;
 import transformations.Translation;
-import data.Constantes;
+import data.Data;
+import database.GestionBDD;
 
 public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, MouseMotionListener, MouseListener {
 	private static final long serialVersionUID = 1L;
@@ -68,18 +69,19 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	private List<Point> listePoints;
 	private JPanel modeles;
 	private DefaultListModel<String> dl = new DefaultListModel<String>();
-	private JList<String> listeModeles = new JList<String>(dl);
-	private JScrollPane scrollPane = new JScrollPane(listeModeles);
-	private Map<String, String> files = getFiles();
+	private JList<String> listeModeles;
+	private JScrollPane scrollPane;
 	private JMenuBar menuBar = new JMenuBar();
 	private List<JMenu> jMenus;
 	private List<JMenuItem> jMenuItems;
 	private Color color = new Color(125, 125, 125);
 	private Map<Face, Color> alea;
 	private boolean export = false, fullScreen = false;
+	private GestionBDD g = new GestionBDD();
 	
 	public Fenetre(String modele) {
-		updateModel(modele);
+		initBDD();
+		updateModel(g.selectWhere("nom = " + Data.FIGURE_BASE));
 		initJMenuBar();
 		setLayout(new BorderLayout());
 		setVisible(true);
@@ -110,11 +112,13 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		addMouseListener(this);
 		addKeyListener(this);
 		
-		Iterator<String> it = files.keySet().iterator();
-		for(int i = 0; i < files.keySet().size(); i++)
-			dl.add(i, it.next());
+		List<String> tmp = g.select("nom");
+		for(int i = 0; i < g.getNbLignes(); i++)
+			dl.add(i, tmp.get(i));
 		
+		listeModeles = new JList<String>(dl);
 		listeModeles.setFocusable(false);
+		scrollPane = new JScrollPane(listeModeles);
 		
 		modeles = new JPanel();
 		modeles.setLayout(new BoxLayout(modeles, BoxLayout.Y_AXIS));
@@ -123,11 +127,11 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		modeles.add(scrollPane);
 		getContentPane().add(modeles, BorderLayout.WEST);
 		getContentPane().setBackground(Color.white);
-
+		
 		listeModeles.addListSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent lse) {
-				updateModel(files.get(listeModeles.getSelectedValue().toString()));
+				updateModel(g.selectWhere("nom = listeModeles.getSelectedValue().toString()"));
 			}
 		});
 		
@@ -144,6 +148,21 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e1) { 
 			e1.printStackTrace(); 
 		} 
+	}
+
+	private void initBDD() {
+		File[] f = new File("ressources/gts").listFiles();
+		List<File> files = new LinkedList<File>();
+		int lengthFile;
+		
+		for(int i = 0; i < f.length; i++){
+			lengthFile = f[i].getAbsolutePath().length();
+			if(f[i].getAbsolutePath().substring(lengthFile-4, lengthFile).equalsIgnoreCase(".gts"))
+				files.add(f[i]);
+		}
+		
+		for(int i = 0; i < files.size(); i++)
+			g.insert(files.get(i).getName().toLowerCase(), files.get(i).getAbsolutePath());
 	}
 
 	private void initJMenuBar() {
@@ -184,7 +203,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		jMenuItems.get(0).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				new Fenetre(Constantes.FIGURE_BASE);
+				new Fenetre(Data.FIGURE_BASE);
 			}
 		});
 		
@@ -296,7 +315,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		Collections.sort(tmp);
 		dl.clear();
 		
-		for(int i = 0; i < files.size(); i++)
+		for(int i = 0; i < g.getNbLignes(); i++)
 			dl.add(i, tmp.get(i));
 	}
 	
@@ -306,23 +325,6 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		return new Color(r.nextInt(256), r.nextInt(256), r.nextInt(256));
 	}
 
-	private Map<String, String> getFiles(){
-		File[] f = new File("ressources/gts").listFiles();
-		List<File> files = new LinkedList<File>();
-		int lengthFile;
-		
-		for(int i = 0; i < f.length; i++){
-			lengthFile = f[i].getAbsolutePath().length();
-			if(f[i].getAbsolutePath().substring(lengthFile-4, lengthFile).equalsIgnoreCase(".gts"))
-				files.add(f[i]);
-		}
-		
-		Map<String, String> tmp = new HashMap<String, String>();
-		
-		for(int i = 0; i < files.size(); i++)
-			tmp.put(files.get(i).getName().toLowerCase(), files.get(i).getAbsolutePath());
-		return tmp;
-	}
 	private void updateModel(String modele){
 		double x=0,y=0,z=0;
 		
@@ -357,9 +359,9 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 			// Dessin des faces
 			double scal = 0.0; // Produit scalaire pour la lumiere
 			
-			offgc.drawImage(Constantes.wallpaper, 0, 0, this);
+			offgc.drawImage(Data.wallpaper, 0, 0, this);
 			for (int i = 0; i < listeFaces.size(); i++) {
-				scal = Constantes.lumiere.prodScalaire(listeFaces.get(i).getNormal());
+				scal = Data.lumiere.prodScalaire(listeFaces.get(i).getNormal());
 				scal = Math.abs(scal);
 				
 				if(alea == null)

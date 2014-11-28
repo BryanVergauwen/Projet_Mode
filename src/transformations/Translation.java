@@ -2,7 +2,7 @@ package transformations;
 
 import java.util.List;
 
-import data.Constantes;
+import data.Data;
 
 import objects.Point;
 
@@ -12,8 +12,8 @@ public class Translation {
 
 	public Translation(List<Point> points, double coeff, String axe) {
 		if (axe.equalsIgnoreCase(Y))
-			Constantes.alphaY += coeff*1.1;
+			Data.alphaY += coeff*1.1;
 		if (axe.equalsIgnoreCase(X))
-			Constantes.alphaX += coeff*1.1;
+			Data.alphaX += coeff*1.1;
 	}
 }
