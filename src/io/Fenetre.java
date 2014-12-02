@@ -2,9 +2,11 @@ package io;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
@@ -35,6 +37,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.JColorChooser;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -77,13 +80,21 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	private Map<Face, Color> alea;
 	private boolean export = false, fullScreen = false;
 	private GestionBDD g = new GestionBDD();
+	private String modele = null;
 	
-	public Fenetre(String modele) {
+	public Fenetre() {
+		JFrame chargement = new JFrame();
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		chargement.setLocation(dim.width/2 - chargement.getSize().width/2 - (Data.CHARGEMENT.getIconWidth()/2), dim.height/2 - chargement.getSize().height/2 - (Data.CHARGEMENT.getIconHeight()/2));
+		chargement.getContentPane().add(new JLabel(Data.CHARGEMENT));
+		chargement.setUndecorated(true);
+		chargement.pack();
+		chargement.setVisible(true);
+		
 		initBDD();
-		updateModel(g.selectWhere("nom = " + Data.FIGURE_BASE));
 		initJMenuBar();
+		setContentPane(new JLabel(Data.WALLP_TMP));
 		setLayout(new BorderLayout());
-		setVisible(true);
 		setSize(1000, 700);
 		setDropTarget(new DropTarget(this, new DropTargetAdapter() {
 			@SuppressWarnings("unchecked")
@@ -95,8 +106,9 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 						List<File> files = (List<File>) e.getTransferable().getTransferData(flavor);
 						File f = files.get(0);
 						if(f.getAbsolutePath().substring(f.getAbsolutePath().length() - 4, f.getAbsolutePath().length()).equalsIgnoreCase(".gts")){
-							g.insert(f.getName(), f.getAbsolutePath());
-							updateModel(g.selectWhere("nom = '" + f.getName() + "'"));
+							g.insert(f.getName().toLowerCase(), f.getAbsolutePath());
+							modele = g.selectWhere("nom = '" + f.getName().toLowerCase() + "'");
+							updateModel();
 						}
 					} 
 					catch (Exception ex) {
@@ -135,21 +147,20 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		listeModeles.addListSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent lse) {
-				updateModel(g.selectWhere("nom = '" + listeModeles.getSelectedValue().toString() + "'"));
+				modele = g.selectWhere("nom = '" + listeModeles.getSelectedValue().toString() + "'");
+				updateModel();
 			}
 		});
 
-		// Temporaire !
-		new Homothetie(listePoints, 0.05);
-		paintComponent(getGraphics());
-		paintComponent(getGraphics());
-		
 		try { 
 			UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel"); 
 		}
 		catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e1) { 
 			e1.printStackTrace(); 
 		}
+		paintComponent(getGraphics());
+		chargement.dispose();
+		setVisible(true);
 		validate();
 	}
 
@@ -216,7 +227,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		jMenuItems.get(0).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				new Fenetre(Data.FIGURE_BASE);
+				new Fenetre();
 			}
 		});
 		
@@ -233,8 +244,9 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 
 				int ret = fileopen.showDialog(null, "Open file");
 				if (ret == JFileChooser.APPROVE_OPTION){
-					g.insert(fileopen.getSelectedFile().getName(), fileopen.getSelectedFile().getAbsolutePath());
-					updateModel(g.selectWhere("nom = '" + fileopen.getSelectedFile().getName() + "'"));
+					g.insert(fileopen.getSelectedFile().getName().toLowerCase(), fileopen.getSelectedFile().getAbsolutePath());
+					modele = g.selectWhere("nom = '" + fileopen.getSelectedFile().getName().toLowerCase() + "'");
+					updateModel();
 				}
 			}
 		});
@@ -340,9 +352,11 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		return new Color(r.nextInt(256), r.nextInt(256), r.nextInt(256));
 	}
 
-	private void updateModel(String modele){
+	private void updateModel(){
 		double x=0,y=0,z=0;
 		
+		String[] tmp = modele.split("\\\\");
+		setTitle("GaýTS Reader - " + tmp[tmp.length-1]);
 		reader = new GtsReader(100, modele);
 		listeFaces = reader.getListFaces();
 		listePoints = reader.getListPoint();
@@ -374,18 +388,20 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 			// Dessin des faces
 			double scal = 0.0; // Produit scalaire pour la lumiere
 			
-			offgc.drawImage(Data.wallpaper, 0, 0, this);
-			for (int i = 0; i < listeFaces.size(); i++) {
-				scal = Data.lumiere.prodScalaire(listeFaces.get(i).getNormal());
-				scal = Math.abs(scal);
-				
-				if(alea == null)
-					offgc.setColor((new Color((int)(color.getRed() * scal), (int)(color.getGreen() * scal), (int)(color.getBlue() * scal))));
-				else{
-					Color tmp = alea.get(listeFaces.get(i));
-					offgc.setColor(new Color((int)(tmp.getRed() * scal), (int)(tmp.getGreen() * scal), (int)(tmp.getBlue() * scal)));
+			offgc.drawImage(Data.WALLPAPER, 0, 0, this);
+			if(modele != null){
+				for (int i = 0; i < listeFaces.size(); i++) {
+					scal = Data.LUMIERE.prodScalaire(listeFaces.get(i).getNormal());
+					scal = Math.abs(scal);
+					
+					if(alea == null)
+						offgc.setColor((new Color((int)(color.getRed() * scal), (int)(color.getGreen() * scal), (int)(color.getBlue() * scal))));
+					else{
+						Color tmp = alea.get(listeFaces.get(i));
+						offgc.setColor(new Color((int)(tmp.getRed() * scal), (int)(tmp.getGreen() * scal), (int)(tmp.getBlue() * scal)));
+					}
+					offgc.fillPolygon(listeFaces.get(i).getTriangleX(), listeFaces.get(i).getTriangleY(), 3);
 				}
-				offgc.fillPolygon(listeFaces.get(i).getTriangleX(), listeFaces.get(i).getTriangleY(), 3);
 			}
 			g2.drawImage(offscreen, decalX, decalY, this);
 		}
@@ -393,47 +409,51 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
-		if (e.getWheelRotation() < 0)
-			zoom = 1.1;
-		else
-			zoom = 0.9;
-		new Homothetie(listePoints, zoom);
-		paintComponent(getGraphics());
+		if(modele != null){
+			if (e.getWheelRotation() < 0)
+				zoom = 1.1;
+			else
+				zoom = 0.9;
+			new Homothetie(listePoints, zoom);
+			paintComponent(getGraphics());
+		}
 	}
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		if (SwingUtilities.isLeftMouseButton(e)) {
-			Point p = new Point(e.getX(), e.getY(), 0);
-
-			cptMouse++;
-			if (cptMouse == 4) {
+		if(modele != null){
+			if (SwingUtilities.isLeftMouseButton(e)) {
+				Point p = new Point(e.getX(), e.getY(), 0);
+	
+				cptMouse++;
+				if (cptMouse == 4) {
+					if (p.getY() < current.getY())
+						new Rotation(listePoints, listeFaces, Math.toRadians(10), "X");
+					if (p.getX() < current.getX())
+						new Rotation(listePoints, listeFaces, Math.toRadians(10), "Y");
+					if (p.getY() > current.getY())
+						new Rotation(listePoints, listeFaces, Math.toRadians(-10), "X");
+					if (p.getX() > current.getX())
+						new Rotation(listePoints, listeFaces, Math.toRadians(-10), "Y");
+					current = p;
+					cptMouse = 0;
+					paintComponent(getGraphics());
+				}
+			} 
+			else if (SwingUtilities.isRightMouseButton(e)) {
+				Point p = new Point(e.getX(), e.getY(), 0);
+	
 				if (p.getY() < current.getY())
-					new Rotation(listePoints, listeFaces, Math.toRadians(10), "X");
-				if (p.getX() < current.getX())
-					new Rotation(listePoints, listeFaces, Math.toRadians(10), "Y");
+					new Translation(listePoints, -5, "Y");
 				if (p.getY() > current.getY())
-					new Rotation(listePoints, listeFaces, Math.toRadians(-10), "X");
+					new Translation(listePoints, 5, "Y");
 				if (p.getX() > current.getX())
-					new Rotation(listePoints, listeFaces, Math.toRadians(-10), "Y");
+					new Translation(listePoints, 5, "X");
+				if (p.getX() < current.getX())
+					new Translation(listePoints, -5, "X");
 				current = p;
-				cptMouse = 0;
 				paintComponent(getGraphics());
 			}
-		} 
-		else if (SwingUtilities.isRightMouseButton(e)) {
-			Point p = new Point(e.getX(), e.getY(), 0);
-
-			if (p.getY() < current.getY())
-				new Translation(listePoints, -5, "Y");
-			if (p.getY() > current.getY())
-				new Translation(listePoints, 5, "Y");
-			if (p.getX() > current.getX())
-				new Translation(listePoints, 5, "X");
-			if (p.getX() < current.getX())
-				new Translation(listePoints, -5, "X");
-			current = p;
-			paintComponent(getGraphics());
 		}
 	}
 
@@ -455,11 +475,13 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		if (current == null)
-			current = new Point(e.getX(), e.getY(), 0);
-		else {
-			current.setX(e.getX());
-			current.setY(e.getY());
+		if(modele != null){
+			if (current == null)
+				current = new Point(e.getX(), e.getY(), 0);
+			else {
+				current.setX(e.getX());
+				current.setY(e.getY());
+			}
 		}
 	}
 
@@ -468,15 +490,17 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	}
 	@Override
 	public void keyPressed(KeyEvent e) {
-		if (e.getKeyCode() == KeyEvent.VK_Z)
-			new Rotation(listePoints, listeFaces, Math.toRadians(10), "X");
-		if (e.getKeyCode() == KeyEvent.VK_Q)
-			new Rotation(listePoints, listeFaces, Math.toRadians(10), "Y");
-		if (e.getKeyCode() == KeyEvent.VK_S)
-			new Rotation(listePoints, listeFaces, Math.toRadians(-10), "X");
-		if (e.getKeyCode() == KeyEvent.VK_D)
-			new Rotation(listePoints, listeFaces, Math.toRadians(-10), "Y");
-		paintComponent(getGraphics());
+		if(modele != null){
+			if (e.getKeyCode() == KeyEvent.VK_Z)
+				new Rotation(listePoints, listeFaces, Math.toRadians(10), "X");
+			if (e.getKeyCode() == KeyEvent.VK_Q)
+				new Rotation(listePoints, listeFaces, Math.toRadians(10), "Y");
+			if (e.getKeyCode() == KeyEvent.VK_S)
+				new Rotation(listePoints, listeFaces, Math.toRadians(-10), "X");
+			if (e.getKeyCode() == KeyEvent.VK_D)
+				new Rotation(listePoints, listeFaces, Math.toRadians(-10), "Y");
+			paintComponent(getGraphics());
+		}
 	}
 
 	@Override
@@ -485,14 +509,16 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 
 	@Override
 	public void keyTyped(KeyEvent e) {
-		if (e.getKeyCode() == KeyEvent.VK_Z)
-			new Rotation(listePoints, listeFaces, Math.toRadians(10), "X");
-		if (e.getKeyCode() == KeyEvent.VK_Q)
-			new Rotation(listePoints, listeFaces, Math.toRadians(10), "Y");
-		if (e.getKeyCode() == KeyEvent.VK_S)
-			new Rotation(listePoints, listeFaces, Math.toRadians(-10), "X");
-		if (e.getKeyCode() == KeyEvent.VK_D)
-			new Rotation(listePoints, listeFaces, Math.toRadians(-10), "Y");
-		paintComponent(getGraphics());	
+		if(modele != null){
+			if (e.getKeyCode() == KeyEvent.VK_Z)
+				new Rotation(listePoints, listeFaces, Math.toRadians(10), "X");
+			if (e.getKeyCode() == KeyEvent.VK_Q)
+				new Rotation(listePoints, listeFaces, Math.toRadians(10), "Y");
+			if (e.getKeyCode() == KeyEvent.VK_S)
+				new Rotation(listePoints, listeFaces, Math.toRadians(-10), "X");
+			if (e.getKeyCode() == KeyEvent.VK_D)
+				new Rotation(listePoints, listeFaces, Math.toRadians(-10), "Y");
+			paintComponent(getGraphics());
+		}
 	}
 }
