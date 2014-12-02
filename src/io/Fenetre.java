@@ -64,7 +64,7 @@ import database.GestionBDD;
 public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, MouseMotionListener, MouseListener {
 	private static final long serialVersionUID = 1L;
 	private Point current;
-	private int cptMouse = 0, decalX = 185, decalY = 45;
+	private int cptMouse = 0, decalX, decalY;
 	private Graphics2D g2;
 	private GtsReader reader;
 	private List<Face> listeFaces;
@@ -294,7 +294,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		jMenuItems.get(4).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				dispose(); // Dans le cas ou plusieurs fenetres sont ouvertes, une seule est ferm�e
+				dispose(); // Dans le cas ou plusieurs fenetres sont ouvertes, une seule est fermee
 			}
 		});
 		
@@ -347,7 +347,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		});
 	}
 
-	protected void exportImage() {
+	private void exportImage() {
 		JFileChooser save = null;
 		try {
 			export = true;
@@ -362,7 +362,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 				export = false;
 			}
 		}
-		catch (Exception e) {}	
+		catch (Exception e) {}
 	}
 
 	private void triListe() {
@@ -401,6 +401,10 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		
 		if(export)
 			decalX = decalY = 0;
+		else {
+			decalX = 185;
+			decalY = 45;
+		}
 		
 		offscreen = createImage(this.getWidth() - decalX, this.getHeight() - decalY);
 		if(offscreen != null){
