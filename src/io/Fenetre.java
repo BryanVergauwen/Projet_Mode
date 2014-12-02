@@ -63,7 +63,6 @@ import database.GestionBDD;
 
 public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, MouseMotionListener, MouseListener {
 	private static final long serialVersionUID = 1L;
-	private double zoom;
 	private Point current;
 	private int cptMouse = 0, decalX = 185, decalY = 45;
 	private Graphics2D g2;
@@ -71,6 +70,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	private List<Face> listeFaces;
 	private List<Point> listePoints;
 	private JPanel modeles;
+	private JFrame chargement;
 	private DefaultListModel<String> dl;
 	private JList<String> listeModeles;
 	private JMenuBar menuBar = new JMenuBar();
@@ -81,21 +81,90 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	private boolean export = false, fullScreen = false;
 	private GestionBDD g = new GestionBDD();
 	private String modele = null;
+	private Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 	
 	public Fenetre() {
-		JFrame chargement = new JFrame();
-		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		long debut = System.currentTimeMillis();
+		
+		initFrameChargement();
+		initBDD();
+		initJMenuBar();
+		initFrame();
+		paramListeModeles();
+		modifFrame();
+		addListeners();
+		setUI();
+		validate();
+		paintComponent(getGraphics());
+		long fin = System.currentTimeMillis();
+		if(fin - debut < 5000){
+			try {
+				Thread.sleep(5000 - (fin - debut));
+			} 
+			catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
+		}
+		chargement.dispose();
+		setVisible(true);
+	}
+
+	private void setUI() {
+		try { 
+			UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel"); 
+		}
+		catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e1) { 
+			e1.printStackTrace(); 
+		}		
+	}
+
+	private void initFrameChargement() {
+		chargement = new JFrame();
 		chargement.setLocation(dim.width/2 - chargement.getSize().width/2 - (Data.CHARGEMENT.getIconWidth()/2), dim.height/2 - chargement.getSize().height/2 - (Data.CHARGEMENT.getIconHeight()/2));
 		chargement.getContentPane().add(new JLabel(Data.CHARGEMENT));
 		chargement.setUndecorated(true);
 		chargement.pack();
-		chargement.setVisible(true);
+		chargement.setVisible(true);		
+	}
+
+	private void modifFrame() {
+		modeles = new JPanel();
+		modeles.setLayout(new BoxLayout(modeles, BoxLayout.Y_AXIS));
+		modeles.setBackground(Color.white);
 		
-		initBDD();
-		initJMenuBar();
+		modeles.add(new JScrollPane(listeModeles));
+		getContentPane().add(modeles, BorderLayout.WEST);
+		getContentPane().setBackground(Color.white);		
+	}
+
+	private void paramListeModeles() {
+		List<String> tmp = g.select("nom");
+		dl = new DefaultListModel<String>();
+		for(int i = 0; i < g.getNbLignes(); i++)
+			dl.add(i, tmp.get(i));
+		
+		listeModeles = new JList<String>(dl);
+		
+		listeModeles.setFocusable(false);
+		listeModeles.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		triListe();		
+	}
+
+	private void initFrame() {
 		setContentPane(new JLabel(Data.WALLP_TMP));
 		setLayout(new BorderLayout());
-		setSize(1000, 700);
+		setSize(dim.width, dim.height - 50);
+		setResizable(false);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setLocationRelativeTo(null);
+		setIconImage(Data.ICON3D);
+	}
+
+	private void addListeners() {
+		addMouseWheelListener(this);
+		addMouseMotionListener(this);
+		addMouseListener(this);
+		addKeyListener(this);
 		setDropTarget(new DropTarget(this, new DropTargetAdapter() {
 			@SuppressWarnings("unchecked")
 			@Override
@@ -117,33 +186,6 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 				}
 			}
 		}));
-		setResizable(false);
-		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setLocationRelativeTo(null);
-		addMouseWheelListener(this);
-		addMouseMotionListener(this);
-		addMouseListener(this);
-		addKeyListener(this);
-		
-		List<String> tmp = g.select("nom");
-		dl = new DefaultListModel<String>();
-		for(int i = 0; i < g.getNbLignes(); i++)
-			dl.add(i, tmp.get(i));
-		
-		listeModeles = new JList<String>(dl);
-		
-		listeModeles.setFocusable(false);
-		listeModeles.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		triListe();
-
-		modeles = new JPanel();
-		modeles.setLayout(new BoxLayout(modeles, BoxLayout.Y_AXIS));
-		modeles.setBackground(Color.white);
-		
-		modeles.add(new JScrollPane(listeModeles));
-		getContentPane().add(modeles, BorderLayout.WEST);
-		getContentPane().setBackground(Color.white);
-		
 		listeModeles.addListSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent lse) {
@@ -151,17 +193,6 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 				updateModel();
 			}
 		});
-
-		try { 
-			UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel"); 
-		}
-		catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e1) { 
-			e1.printStackTrace(); 
-		}
-		paintComponent(getGraphics());
-		chargement.dispose();
-		setVisible(true);
-		validate();
 	}
 
 	private void initBDD() {
@@ -323,9 +354,9 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 			save = new JFileChooser(new File(".").getCanonicalPath());
 			if(save.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
 				BufferedImage bi = new BufferedImage(this.getWidth() - decalX, this.getHeight(), BufferedImage.TYPE_INT_RGB); 
-				Graphics g = bi.createGraphics();
-				paintComponent(g);
-				g.dispose();
+				Graphics tmp = bi.createGraphics();
+				paintComponent(tmp);
+				tmp.dispose();
 
 				ImageIO.write(bi, "png", new File(save.getSelectedFile().getAbsolutePath() + ".png"));
 				export = false;
@@ -353,21 +384,11 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	}
 
 	private void updateModel(){
-		double x=0,y=0,z=0;
-		
 		String[] tmp = modele.split("\\\\");
-		setTitle("GaýTS Reader - " + tmp[tmp.length-1]);
+		setTitle("GaýTS Reader - " + tmp[tmp.length-1].toLowerCase());
 		reader = new GtsReader(100, modele);
 		listeFaces = reader.getListFaces();
 		listePoints = reader.getListPoint();
-		for(int i=0 ; listePoints.size()>i ; i++){
-			x=+listePoints.get(i).getX();
-			y=+listePoints.get(i).getY();
-			z=+listePoints.get(i).getZ();
-		}
-		x=x/listePoints.size();
-		y=y/listePoints.size();
-		z=z/listePoints.size();
 		alea = null;
 		color = new Color(125, 125, 125);
 		paintComponent(getGraphics());
@@ -409,6 +430,8 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
+		double zoom;
+		
 		if(modele != null){
 			if (e.getWheelRotation() < 0)
 				zoom = 1.1;
