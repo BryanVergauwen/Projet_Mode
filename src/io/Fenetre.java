@@ -44,8 +44,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileFilter;
@@ -56,6 +54,7 @@ import objects.Point;
 import transformations.Homothetie;
 import transformations.Rotation;
 import transformations.Translation;
+import appearance.MyUI;
 import data.Data;
 import database.GestionBDD;
 import database.Requests;
@@ -88,7 +87,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		paramListeModeles();
 		modifFrame();
 		addListeners();
-		setUI();
+		new MyUI();
 		validate();
 		paintComponent(getGraphics());
 		long fin = System.currentTimeMillis();
@@ -104,24 +103,6 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		setVisible(true);
 	}
 
-	private void setUI() {
-		try {
-			UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-		} 
-		catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} 
-		catch (InstantiationException e) {
-			e.printStackTrace();
-		} 
-		catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} 
-		catch (UnsupportedLookAndFeelException e) {
-			e.printStackTrace();
-		}
-	}
-
 	private void initFrameChargement() {
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 
@@ -130,7 +111,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		chargement.getContentPane().add(new JLabel(Data.CHARGEMENT));
 		chargement.setUndecorated(true);
 		chargement.pack();
-		chargement.setVisible(true);		
+		chargement.setVisible(true);
 	}
 
 	private void modifFrame() {
@@ -227,12 +208,15 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		jMenuItems.add(new JMenuItem("Couleur aleatoire (uniforme)"));
 		jMenuItems.add(new JMenuItem("Toutes couleurs aleatoires"));
 		
+		// Fichier
 		jMenus.get(0).add(jMenuItems.get(0));
 		jMenus.get(0).add(jMenuItems.get(1));
 		jMenus.get(0).add(jMenuItems.get(2));
 		jMenus.get(0).add(jMenuItems.get(3));
 		jMenus.get(0).add(jMenuItems.get(4));
+		// Affichage
 		jMenus.get(2).add(jMenuItems.get(5));
+		// Outils
 		jMenus.get(3).add(jMenuItems.get(6));
 		jMenus.get(3).add(jMenuItems.get(7));
 		jMenus.get(3).add(jMenuItems.get(8));
@@ -343,7 +327,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 
 	private Color randomColor(){
 		Random r = new Random();
-		
+
 		return new Color(r.nextInt(256), r.nextInt(256), r.nextInt(256));
 	}
 
