@@ -280,7 +280,8 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 				fileopen.addChoosableFileFilter(filter);
 
 				int ret = fileopen.showDialog(null, "Open file");
-				if (ret == JFileChooser.APPROVE_OPTION){
+				File f = fileopen.getSelectedFile();
+				if (ret == JFileChooser.APPROVE_OPTION && f.getAbsolutePath().substring(f.getAbsolutePath().length() - 4, f.getAbsolutePath().length()).equalsIgnoreCase(".gts")){
 					g.insert(fileopen.getSelectedFile().getName().toLowerCase(), fileopen.getSelectedFile().getAbsolutePath());
 					modele = g.selectWhere("nom = '" + fileopen.getSelectedFile().getName().toLowerCase() + "'");
 					updateModel();
