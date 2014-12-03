@@ -3,6 +3,7 @@ package io;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -144,7 +145,10 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 			dl.add(i, tmp.get(i));
 		
 		listeModeles = new JList<String>(dl);
-		
+	    listeModeles.setBackground(Color.WHITE);
+	    listeModeles.setSelectionForeground(Color.RED);
+	    listeModeles.setSelectionBackground(Color.LIGHT_GRAY);
+	    listeModeles.setFont(new Font("Serif", Font.BOLD, 15));
 		listeModeles.setFocusable(false);
 		listeModeles.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		triListe();		
@@ -373,7 +377,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		Collections.sort(tmp);
 		dl.clear();
 		
-		for(int i = 0; i < g.getNbLignes(); i++)
+		for(int i = 0; i < tmp.size(); i++)
 			dl.add(i, tmp.get(i));
 	}
 	
@@ -402,8 +406,8 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		if(export)
 			decalX = decalY = 0;
 		else {
-			decalX = 185;
-			decalY = 45;
+			decalX = 213;
+			decalY = 47;
 		}
 		
 		offscreen = createImage(this.getWidth() - decalX, this.getHeight() - decalY);
