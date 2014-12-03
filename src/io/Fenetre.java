@@ -66,7 +66,6 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	private static final long serialVersionUID = 1L;
 	private Point current;
 	private int cptMouse = 0, decalX, decalY;
-	private Graphics2D g2;
 	private GtsReader reader;
 	private List<Face> listeFaces;
 	private List<Point> listePoints;
@@ -74,15 +73,11 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	private JFrame chargement;
 	private DefaultListModel<String> dl;
 	private JList<String> listeModeles;
-	private JMenuBar menuBar = new JMenuBar();
-	private List<JMenu> jMenus;
-	private List<JMenuItem> jMenuItems;
 	private Color color = new Color(125, 125, 125);
 	private Map<Face, Color> alea;
 	private boolean export = false, fullScreen = false;
 	private GestionBDD g = new GestionBDD();
 	private String modele = null;
-	private Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 	
 	public Fenetre() {
 		long debut = System.currentTimeMillis();
@@ -120,6 +115,8 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	}
 
 	private void initFrameChargement() {
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+
 		chargement = new JFrame();
 		chargement.setLocation(dim.width/2 - chargement.getSize().width/2 - (Data.CHARGEMENT.getIconWidth()/2), dim.height/2 - chargement.getSize().height/2 - (Data.CHARGEMENT.getIconHeight()/2));
 		chargement.getContentPane().add(new JLabel(Data.CHARGEMENT));
@@ -132,10 +129,9 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		modeles = new JPanel();
 		modeles.setLayout(new BoxLayout(modeles, BoxLayout.Y_AXIS));
 		modeles.setBackground(Color.white);
-		
 		modeles.add(new JScrollPane(listeModeles));
+		
 		getContentPane().add(modeles, BorderLayout.WEST);
-		getContentPane().setBackground(Color.white);		
 	}
 
 	private void paramListeModeles() {
@@ -155,6 +151,8 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	}
 
 	private void initFrame() {
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+
 		setContentPane(new JLabel(Data.WALLP_TMP));
 		setLayout(new BorderLayout());
 		setSize(dim.width, dim.height - 50);
@@ -225,6 +223,10 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	}
 
 	private void initJMenuBar() {
+		JMenuBar menuBar = new JMenuBar();
+		List<JMenu> jMenus;
+		List<JMenuItem> jMenuItems;
+		
 		jMenuItems = new LinkedList<JMenuItem>();
 		jMenus = new LinkedList<JMenu>();
 
@@ -399,7 +401,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	}
 
 	public void paintComponent(Graphics g) {
-		g2 = (Graphics2D) g;
+		Graphics2D g2 = (Graphics2D) g;
 		Graphics offgc;
 		Image offscreen = null;
 		
