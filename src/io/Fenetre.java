@@ -22,7 +22,6 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -31,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JColorChooser;
@@ -60,6 +58,7 @@ import transformations.Rotation;
 import transformations.Translation;
 import data.Data;
 import database.GestionBDD;
+import database.Requests;
 
 public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, MouseMotionListener, MouseListener {
 	private static final long serialVersionUID = 1L;
@@ -75,7 +74,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	private Color color = new Color(125, 125, 125);
 	private Map<Face, Color> alea;
 	private boolean export = false, fullScreen = false;
-	private GestionBDD g = new GestionBDD();
+	private Requests r = new Requests();
 	private String modele = null;
 	
 	public Fenetre() {
@@ -83,7 +82,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		long debut = System.currentTimeMillis();
 		
 		initFrameChargement();
-		initBDD();
+		new GestionBDD(r);
 		initJMenuBar();
 		initFrame();
 		paramListeModeles();
@@ -93,9 +92,9 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		validate();
 		paintComponent(getGraphics());
 		long fin = System.currentTimeMillis();
-		if(fin - debut < 5000){
+		if(fin - debut < 4000){
 			try {
-				Thread.sleep(5000 - (fin - debut));
+				Thread.sleep(4000 - (fin - debut));
 			} 
 			catch (InterruptedException e1) {
 				e1.printStackTrace();
@@ -144,9 +143,9 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	}
 
 	private void paramListeModeles() {
-		List<String> tmp = g.select("nom");
+		List<String> tmp = r.select("nom");
 		dl = new DefaultListModel<String>();
-		for(int i = 0; i < g.getNbLignes(); i++)
+		for(int i = 0; i < r.getNbLignes(); i++)
 			dl.add(i, tmp.get(i));
 		
 		listeModeles = new JList<String>(dl);
@@ -184,8 +183,8 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 						List<File> files = (List<File>) e.getTransferable().getTransferData(flavor);
 						File f = files.get(0);
 						if(f.getAbsolutePath().substring(f.getAbsolutePath().length() - 4, f.getAbsolutePath().length()).equalsIgnoreCase(".gts")){
-							g.insert(f.getName().toLowerCase(), f.getAbsolutePath());
-							modele = g.selectWhere("nom = '" + f.getName().toLowerCase() + "'");
+							r.insert(f.getName().toLowerCase(), f.getAbsolutePath());
+							modele = r.selectWhere("nom = '" + f.getName().toLowerCase() + "'");
 							updateModel();
 						}
 					} 
@@ -198,35 +197,10 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		listeModeles.addListSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent lse) {
-				modele = g.selectWhere("nom = '" + listeModeles.getSelectedValue().toString() + "'");
+				modele = r.selectWhere("nom = '" + listeModeles.getSelectedValue().toString() + "'");
 				updateModel();
 			}
 		});
-	}
-
-	private void initBDD() {
-		File[] f = new File("ressources/gts").listFiles();
-		List<File> files = new LinkedList<File>();
-		int lengthFile;
-		
-		for(int i = 0; i < f.length; i++){
-			lengthFile = f[i].getAbsolutePath().length();
-			if(f[i].getAbsolutePath().substring(lengthFile-4, lengthFile).equalsIgnoreCase(".gts"))
-				files.add(f[i]);
-		}
-		
-		// Mise a jour des fichiers dans le dossier .gts
-		for(int i = 0; i < files.size(); i++)
-			g.insert(files.get(i).getName().toLowerCase(), files.get(i).getAbsolutePath());
-		
-		// Suppression dans la base des fichiers supprimes de l'ordinateur
-		List<String> tmp = g.select("path");
-		File file;
-		for(String path : tmp){
-			file = new File(path);
-			if(!file.exists())
-				g.delete("path = '" + path + "'");
-		}
 	}
 
 	private void initJMenuBar() {
@@ -289,8 +263,8 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 				int ret = fileopen.showDialog(null, "Open file");
 				File f = fileopen.getSelectedFile();
 				if (ret == JFileChooser.APPROVE_OPTION && f.getAbsolutePath().substring(f.getAbsolutePath().length() - 4, f.getAbsolutePath().length()).equalsIgnoreCase(".gts")){
-					g.insert(fileopen.getSelectedFile().getName().toLowerCase(), fileopen.getSelectedFile().getAbsolutePath());
-					modele = g.selectWhere("nom = '" + fileopen.getSelectedFile().getName().toLowerCase() + "'");
+					r.insert(fileopen.getSelectedFile().getName().toLowerCase(), fileopen.getSelectedFile().getAbsolutePath());
+					modele = r.selectWhere("nom = '" + fileopen.getSelectedFile().getName().toLowerCase() + "'");
 					updateModel();
 				}
 			}
@@ -361,22 +335,10 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		});
 	}
 
-	private void exportImage() {
-		JFileChooser save = null;
-		try {
-			export = true;
-			save = new JFileChooser(new File(".").getCanonicalPath());
-			if(save.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-				BufferedImage bi = new BufferedImage(this.getWidth() - decalX, this.getHeight(), BufferedImage.TYPE_INT_RGB); 
-				Graphics tmp = bi.createGraphics();
-				paintComponent(tmp);
-				tmp.dispose();
-
-				ImageIO.write(bi, "png", new File(save.getSelectedFile().getAbsolutePath() + ".png"));
-			}
-			export = false;
-		}
-		catch (Exception e) {}
+	protected void exportImage() {
+		export = true;
+		new ExportFile(this, decalX, decalY);
+		export = false;		
 	}
 
 	private Color randomColor(){
