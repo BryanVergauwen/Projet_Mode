@@ -6,6 +6,8 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
@@ -142,9 +144,12 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	}
 
 	private void initFrame() {
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+
+		setSize(dim.width, dim.height);
+		setExtendedState(JFrame.MAXIMIZED_BOTH);
 		setContentPane(new JLabel(Data.WALLP_TMP));
 		setLayout(new BorderLayout());
-		setExtendedState(JFrame.MAXIMIZED_BOTH);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setLocationRelativeTo(null);
 		setIconImage(Data.ICON3D);
@@ -275,14 +280,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		jMenuItems.get(5).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				if(!fullScreen){
-					setExtendedState(JFrame.MAXIMIZED_BOTH);
-					fullScreen = true;
-				}
-				else{
-					setExtendedState(JFrame.NORMAL);
-					fullScreen = false;
-				}
+				setFullScreen();
 			}
 		});
 		
@@ -318,6 +316,20 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 				paintComponent(getGraphics());
 			}
 		});
+	}
+
+	protected void setFullScreen() {
+		GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[0];
+
+		if(fullScreen){
+			device.setFullScreenWindow(null);
+			setExtendedState(JFrame.MAXIMIZED_BOTH);
+			fullScreen = false;
+		}
+		else{
+			device.setFullScreenWindow(this);
+			fullScreen = true;
+		}		
 	}
 
 	protected void exportImage() {
