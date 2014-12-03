@@ -349,7 +349,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		Graphics offgc;
 		Image offscreen = null;
 		
-		decalX = listeModeles.getFixedCellWidth() + 30;
+		decalX = listeModeles.getFixedCellWidth() + 27;
 		decalY = 52;
 		if(export)
 			decalX = decalY = 0;
