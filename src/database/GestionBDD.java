@@ -46,7 +46,10 @@ public class GestionBDD {
 			Class.forName("org.sqlite.JDBC");
 			c = DriverManager.getConnection("jdbc:sqlite:bdd/ressources.db");
 			stmt = c.createStatement();
-			rs = stmt.executeQuery("SELECT " + champ + " FROM GTSFILES");
+			if(!champ.equals("*"))
+				rs = stmt.executeQuery("SELECT " + champ + " FROM GTSFILES ORDER BY " + champ);
+			else
+				rs = stmt.executeQuery("SELECT " + champ + " FROM GTSFILES");
 			while (rs.next()) {
 				if(!champ.equals("*"))
 					champTmp = rs.getString(champ);

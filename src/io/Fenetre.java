@@ -25,7 +25,6 @@ import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -80,6 +79,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	private String modele = null;
 	
 	public Fenetre() {
+		super(Data.TITLE);
 		long debut = System.currentTimeMillis();
 		
 		initFrameChargement();
@@ -106,12 +106,21 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	}
 
 	private void setUI() {
-		try { 
-			UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel"); 
+		try {
+			UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+		} 
+		catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} 
+		catch (InstantiationException e) {
+			e.printStackTrace();
+		} 
+		catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} 
+		catch (UnsupportedLookAndFeelException e) {
+			e.printStackTrace();
 		}
-		catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e1) { 
-			e1.printStackTrace(); 
-		}		
 	}
 
 	private void initFrameChargement() {
@@ -147,7 +156,6 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	    listeModeles.setFont(new Font("Serif", Font.BOLD, 15));
 		listeModeles.setFocusable(false);
 		listeModeles.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		triListe();		
 	}
 
 	private void initFrame() {
@@ -156,7 +164,6 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		setContentPane(new JLabel(Data.WALLP_TMP));
 		setLayout(new BorderLayout());
 		setSize(dim.width, dim.height - 50);
-		setResizable(false);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setLocationRelativeTo(null);
 		setIconImage(Data.ICON3D);
@@ -208,7 +215,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 				files.add(f[i]);
 		}
 		
-		// Mise à jour des fichiers dans le dossier .gts
+		// Mise a jour des fichiers dans le dossier .gts
 		for(int i = 0; i < files.size(); i++)
 			g.insert(files.get(i).getName().toLowerCase(), files.get(i).getAbsolutePath());
 		
@@ -366,24 +373,12 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 				tmp.dispose();
 
 				ImageIO.write(bi, "png", new File(save.getSelectedFile().getAbsolutePath() + ".png"));
-				export = false;
 			}
+			export = false;
 		}
 		catch (Exception e) {}
 	}
 
-	private void triListe() {
-		List<String> tmp = new LinkedList<String>();
-		
-		for(int i = 0; i < dl.size(); i++)
-			tmp.add(dl.get(i).toString());
-		Collections.sort(tmp);
-		dl.clear();
-		
-		for(int i = 0; i < tmp.size(); i++)
-			dl.add(i, tmp.get(i));
-	}
-	
 	private Color randomColor(){
 		Random r = new Random();
 		
@@ -392,12 +387,13 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 
 	private void updateModel(){
 		String[] tmp = modele.split("\\\\");
-		setTitle("GaýTS Reader - " + tmp[tmp.length-1].toLowerCase());
+		setTitle(Data.TITLE + " - " + tmp[tmp.length-1].toLowerCase());
 		reader = new GtsReader(100, modele);
 		listeFaces = reader.getListFaces();
 		listePoints = reader.getListPoint();
 		alea = null;
 		color = new Color(125, 125, 125);
+		Data.alphaX = Data.alphaY = 0; // recentrage de la figure
 		paintComponent(getGraphics());
 	}
 
@@ -406,12 +402,10 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		Graphics offgc;
 		Image offscreen = null;
 		
+		decalX = 197;
+		decalY = 52;
 		if(export)
 			decalX = decalY = 0;
-		else {
-			decalX = 213;
-			decalY = 47;
-		}
 		
 		offscreen = createImage(this.getWidth() - decalX, this.getHeight() - decalY);
 		if(offscreen != null){
