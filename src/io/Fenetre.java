@@ -110,6 +110,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		chargement.setLocation(dim.width/2 - chargement.getSize().width/2 - (Data.CHARGEMENT.getIconWidth()/2), dim.height/2 - chargement.getSize().height/2 - (Data.CHARGEMENT.getIconHeight()/2));
 		chargement.getContentPane().add(new JLabel(Data.CHARGEMENT));
 		chargement.setUndecorated(true);
+		chargement.setIconImage(Data.ICON3D);
 		chargement.pack();
 		chargement.setVisible(true);
 	}
@@ -130,20 +131,20 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 			dl.add(i, tmp.get(i));
 		
 		listeModeles = new JList<String>(dl);
-	    listeModeles.setBackground(Color.WHITE);
+	    listeModeles.setBackground(new Color(228, 228, 255));
 	    listeModeles.setSelectionForeground(Color.RED);
 	    listeModeles.setSelectionBackground(Color.LIGHT_GRAY);
+	    listeModeles.setFixedCellHeight(30);
+	    listeModeles.setFixedCellWidth(200);
 	    listeModeles.setFont(new Font("Serif", Font.BOLD, 15));
 		listeModeles.setFocusable(false);
 		listeModeles.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 	}
 
 	private void initFrame() {
-		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-
 		setContentPane(new JLabel(Data.WALLP_TMP));
 		setLayout(new BorderLayout());
-		setSize(dim.width, dim.height - 50);
+		setExtendedState(JFrame.MAXIMIZED_BOTH);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setLocationRelativeTo(null);
 		setIconImage(Data.ICON3D);
@@ -338,7 +339,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		listeFaces = reader.getListFaces();
 		listePoints = reader.getListPoint();
 		alea = null;
-		color = new Color(125, 125, 125);
+		color = new Color(160, 160, 160);
 		Data.alphaX = Data.alphaY = 0; // recentrage de la figure
 		paintComponent(getGraphics());
 	}
@@ -348,7 +349,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		Graphics offgc;
 		Image offscreen = null;
 		
-		decalX = 197;
+		decalX = listeModeles.getFixedCellWidth() + 30;
 		decalY = 52;
 		if(export)
 			decalX = decalY = 0;
