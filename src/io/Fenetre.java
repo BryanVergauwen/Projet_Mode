@@ -72,7 +72,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	private JFrame chargement;
 	private DefaultListModel<String> dl;
 	private JList<String> listeModeles;
-	private Color color = new Color(125, 125, 125);
+	private Color color;
 	private Map<Face, Color> alea;
 	private boolean export = false, fullScreen = false;
 	private Requests r = new Requests();
@@ -329,7 +329,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		else{
 			device.setFullScreenWindow(this);
 			fullScreen = true;
-		}		
+		}
 	}
 
 	protected void exportImage() {
@@ -351,7 +351,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		listeFaces = reader.getListFaces();
 		listePoints = reader.getListPoint();
 		alea = null;
-		color = new Color(160, 160, 160);
+		color = new Color(100, 100, 100);
 		Data.alphaX = Data.alphaY = 0; // recentrage de la figure
 		paintComponent(getGraphics());
 	}

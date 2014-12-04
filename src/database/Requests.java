@@ -16,7 +16,7 @@ public class Requests {
 		
 		try {
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:bdd/ressources.db");
+			c = DriverManager.getConnection("jdbc:sqlite:src/database/ressources.db");
 			stmt = c.createStatement();
 			String sql = "INSERT OR IGNORE INTO GTSFILES VALUES('" + s1 + "', '" + s2 + "')";
 			stmt.executeUpdate(sql);
@@ -44,7 +44,7 @@ public class Requests {
 
 		try {
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:bdd/ressources.db");
+			c = DriverManager.getConnection("jdbc:sqlite:src/database/ressources.db");
 			stmt = c.createStatement();
 			if(!champ.equals("*"))
 				rs = stmt.executeQuery("SELECT " + champ + " FROM GTSFILES ORDER BY " + champ);
@@ -81,7 +81,7 @@ public class Requests {
 		
 		try {
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:bdd/ressources.db");
+			c = DriverManager.getConnection("jdbc:sqlite:src/database/ressources.db");
 			stmt = c.createStatement();
 			rs = stmt.executeQuery("SELECT path FROM GTSFILES WHERE " + condition);
 			return rs.getString(1);
@@ -108,7 +108,7 @@ public class Requests {
 		
 		try {
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:bdd/ressources.db");
+			c = DriverManager.getConnection("jdbc:sqlite:src/database/ressources.db");
 			stmt = c.createStatement();
 			String sql = "DELETE from GTSFILES where " + condition;
 			stmt.executeUpdate(sql);
@@ -131,7 +131,7 @@ public class Requests {
 		
 		try {
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:bdd/ressources.db");
+			c = DriverManager.getConnection("jdbc:sqlite:src/database/ressources.db");
 			stmt = c.createStatement();
 			String sql = "delete from gtsfiles";
 			stmt.executeUpdate(sql);
@@ -155,7 +155,7 @@ public class Requests {
 		
 		try {
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:bdd/ressources.db");
+			c = DriverManager.getConnection("jdbc:sqlite:src/database/ressources.db");
 			stmt = c.createStatement();
 			rs = stmt.executeQuery("SELECT count(*) FROM GTSFILES");
 			return rs.getInt(1);
