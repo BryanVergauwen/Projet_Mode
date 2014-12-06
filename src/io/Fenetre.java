@@ -360,6 +360,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		Graphics2D g2 = (Graphics2D) g;
 		Graphics offgc;
 		Image offscreen = null;
+		Color tmp;
 		
 		decalX = listeModeles.getFixedCellWidth() + 27;
 		decalY = 52;
@@ -375,17 +376,16 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 			
 			offgc.drawImage(Data.WALLPAPER, 0, 0, this);
 			if(modele != null){
-				for (int i = 0; i < listeFaces.size(); i++) {
-					scal = Data.LUMIERE.prodScalaire(listeFaces.get(i).getNormal());
-					scal = Math.abs(scal);
-					
+				for (Face f : listeFaces) {
+					scal = Math.abs(Data.LUMIERE.prodScalaire(f.getNormal()));
+
 					if(alea == null)
 						offgc.setColor((new Color((int)(color.getRed() * scal), (int)(color.getGreen() * scal), (int)(color.getBlue() * scal))));
 					else{
-						Color tmp = alea.get(listeFaces.get(i));
+						tmp = alea.get(f);
 						offgc.setColor(new Color((int)(tmp.getRed() * scal), (int)(tmp.getGreen() * scal), (int)(tmp.getBlue() * scal)));
 					}
-					offgc.fillPolygon(listeFaces.get(i).getTriangleX(), listeFaces.get(i).getTriangleY(), 3);
+					offgc.fillPolygon(f.getTriangleX(), f.getTriangleY(), 3);
 				}
 			}
 			g2.drawImage(offscreen, decalX, decalY, this);
