@@ -2,6 +2,7 @@ package io;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -34,6 +35,7 @@ import java.util.Random;
 
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JColorChooser;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -44,6 +46,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
@@ -77,6 +80,10 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	private boolean export = false, fullScreen = false;
 	private Requests r = new Requests();
 	private String modele = null;
+	private JMenuBar menuBar = new JMenuBar();
+	private List<JMenu> jMenus = new LinkedList<JMenu>();
+	private List<JMenuItem> jMenuItems = new LinkedList<JMenuItem>();
+	private JFrame editSize = new JFrame();
 	
 	public Fenetre() {
 		super(Data.TITLE);
@@ -191,13 +198,6 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	}
 
 	private void initJMenuBar() {
-		JMenuBar menuBar = new JMenuBar();
-		List<JMenu> jMenus;
-		List<JMenuItem> jMenuItems;
-		
-		jMenuItems = new LinkedList<JMenuItem>();
-		jMenus = new LinkedList<JMenu>();
-
 		jMenus.add(new JMenu("Fichier"));
 		jMenus.add(new JMenu("Edition"));
 		jMenus.add(new JMenu("Affichage"));
@@ -209,7 +209,8 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		jMenuItems.add(new JMenuItem("Enregistrer"));
 		jMenuItems.add(new JMenuItem("Exporter"));
 		jMenuItems.add(new JMenuItem("Quitter"));
-		jMenuItems.add(new JMenuItem("Plein ecran"));
+		jMenuItems.add(new JMenuItem("Saisir taille"));
+		jMenuItems.add(new JCheckBoxMenuItem("Plein ecran"));
 		jMenuItems.add(new JMenuItem("Modifier la couleur"));
 		jMenuItems.add(new JMenuItem("Couleur aleatoire (uniforme)"));
 		jMenuItems.add(new JMenuItem("Toutes couleurs aleatoires"));
@@ -220,12 +221,14 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		jMenus.get(0).add(jMenuItems.get(2));
 		jMenus.get(0).add(jMenuItems.get(3));
 		jMenus.get(0).add(jMenuItems.get(4));
+		// Edition
+		jMenus.get(1).add(jMenuItems.get(5));
 		// Affichage
-		jMenus.get(2).add(jMenuItems.get(5));
+		jMenus.get(2).add(jMenuItems.get(6));
 		// Outils
-		jMenus.get(3).add(jMenuItems.get(6));
 		jMenus.get(3).add(jMenuItems.get(7));
 		jMenus.get(3).add(jMenuItems.get(8));
+		jMenus.get(3).add(jMenuItems.get(9));
 		
 		for(JMenu j : jMenus)
 			menuBar.add(j);
@@ -276,8 +279,16 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 			}
 		});
 		
-		// Bouton full Screen
+		// Bouton editer taille
 		jMenuItems.get(5).addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				editSize();
+			}
+		});
+		
+		// Bouton full Screen
+		jMenuItems.get(6).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				setFullScreen();
@@ -286,7 +297,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		
 		
 		// Bouton modif couleur
-		jMenuItems.get(6).addActionListener(new ActionListener() {
+		jMenuItems.get(7).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				alea = null;
@@ -296,7 +307,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		});
 		
 		// Bouton couleur aleatoire
-		jMenuItems.get(7).addActionListener(new ActionListener() {
+		jMenuItems.get(8).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				alea = null;
@@ -306,7 +317,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		});
 		
 		// Bouton couleurs aleatoires
-		jMenuItems.get(8).addActionListener(new ActionListener() {
+		jMenuItems.get(9).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				alea = new HashMap<Face, Color>();
@@ -316,6 +327,21 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 				paintComponent(getGraphics());
 			}
 		});
+	}
+
+	protected void editSize() {
+		JTextField jtf = new JTextField();
+		JLabel taille = new JLabel("Entrez une taille : ");
+		
+		taille.setPreferredSize(new Dimension(200, 40));
+		
+		editSize.setLayout(new BoxLayout(editSize.getContentPane(), BoxLayout.Y_AXIS));
+		editSize.add(taille);
+		editSize.add(jtf);
+		editSize.setLocationRelativeTo(null);
+		editSize.setSize(400, 80);
+		editSize.setUndecorated(true);
+		editSize.setVisible(true);
 	}
 
 	protected void setFullScreen() {
@@ -340,7 +366,6 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 
 	private Color randomColor(){
 		Random r = new Random();
-
 		return new Color(r.nextInt(256), r.nextInt(256), r.nextInt(256));
 	}
 
@@ -406,12 +431,14 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void mouseDragged(MouseEvent e) {
 		if(modele != null){
 			if (SwingUtilities.isLeftMouseButton(e)) {
+				setCursor(Cursor.HAND_CURSOR);
 				Point p = new Point(e.getX(), e.getY(), 0);
-	
+				
 				cptMouse++;
 				if (cptMouse == 4) {
 					if (p.getY() < current.getY())
@@ -428,6 +455,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 				}
 			} 
 			else if (SwingUtilities.isRightMouseButton(e)) {
+				setCursor(Cursor.MOVE_CURSOR);
 				Point p = new Point(e.getX(), e.getY(), 0);
 	
 				if (p.getY() < current.getY())
@@ -472,8 +500,10 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void mouseReleased(MouseEvent arg0) {
+		setCursor(Cursor.DEFAULT_CURSOR);
 	}
 	@Override
 	public void keyPressed(KeyEvent e) {
