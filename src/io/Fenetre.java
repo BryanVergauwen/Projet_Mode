@@ -35,6 +35,7 @@ import java.util.Random;
 
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
+import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JColorChooser;
 import javax.swing.JFileChooser;
@@ -67,7 +68,7 @@ import database.Requests;
 public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, MouseMotionListener, MouseListener {
 	private static final long serialVersionUID = 1L;
 	private Point current;
-	private int cptMouse = 0, decalX, decalY;
+	private int cptMouse = 0, decalX, decalY, tailleSegment = 0;
 	private GtsReader reader;
 	private List<Face> listeFaces;
 	private List<Point> listePoints;
@@ -83,7 +84,6 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	private JMenuBar menuBar = new JMenuBar();
 	private List<JMenu> jMenus = new LinkedList<JMenu>();
 	private List<JMenuItem> jMenuItems = new LinkedList<JMenuItem>();
-	private JFrame editSize = new JFrame();
 	
 	public Fenetre() {
 		super(Data.TITLE);
@@ -157,7 +157,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
 		setContentPane(new JLabel(Data.WALLP_TMP));
 		setLayout(new BorderLayout());
-		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLocationRelativeTo(null);
 		setIconImage(Data.ICON3D);
 	}
@@ -204,7 +204,6 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		jMenus.add(new JMenu("Outils"));
 		jMenus.add(new JMenu("Aide"));
 		
-		jMenuItems.add(new JMenuItem("Nouvelle fenetre"));
 		jMenuItems.add(new JMenuItem("Ouvrir"));
 		jMenuItems.add(new JMenuItem("Enregistrer"));
 		jMenuItems.add(new JMenuItem("Exporter"));
@@ -220,30 +219,21 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		jMenus.get(0).add(jMenuItems.get(1));
 		jMenus.get(0).add(jMenuItems.get(2));
 		jMenus.get(0).add(jMenuItems.get(3));
-		jMenus.get(0).add(jMenuItems.get(4));
 		// Edition
-		jMenus.get(1).add(jMenuItems.get(5));
+		jMenus.get(1).add(jMenuItems.get(4));
 		// Affichage
-		jMenus.get(2).add(jMenuItems.get(6));
+		jMenus.get(2).add(jMenuItems.get(5));
 		// Outils
+		jMenus.get(3).add(jMenuItems.get(6));
 		jMenus.get(3).add(jMenuItems.get(7));
 		jMenus.get(3).add(jMenuItems.get(8));
-		jMenus.get(3).add(jMenuItems.get(9));
 		
 		for(JMenu j : jMenus)
 			menuBar.add(j);
 		setJMenuBar(menuBar);
 		
-		// Bouton nouvelle fenetre
-		jMenuItems.get(0).addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				new Fenetre();
-			}
-		});
-		
 		// Bouton ouvrir
-		jMenuItems.get(1).addActionListener(new ActionListener() {
+		jMenuItems.get(0).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				JFileChooser fileopen = null;
@@ -264,7 +254,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		});
 		
 		// boutton exporter
-		jMenuItems.get(3).addActionListener(new ActionListener() {
+		jMenuItems.get(2).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				exportImage();
@@ -272,7 +262,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		});
 		
 		// Bouton quitter
-		jMenuItems.get(4).addActionListener(new ActionListener() {
+		jMenuItems.get(3).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				dispose(); // Dans le cas ou plusieurs fenetres sont ouvertes, une seule est fermee
@@ -280,7 +270,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		});
 		
 		// Bouton editer taille
-		jMenuItems.get(5).addActionListener(new ActionListener() {
+		jMenuItems.get(4).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				editSize();
@@ -288,7 +278,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		});
 		
 		// Bouton full Screen
-		jMenuItems.get(6).addActionListener(new ActionListener() {
+		jMenuItems.get(5).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				setFullScreen();
@@ -297,7 +287,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		
 		
 		// Bouton modif couleur
-		jMenuItems.get(7).addActionListener(new ActionListener() {
+		jMenuItems.get(6).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				alea = null;
@@ -307,7 +297,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		});
 		
 		// Bouton couleur aleatoire
-		jMenuItems.get(8).addActionListener(new ActionListener() {
+		jMenuItems.get(7).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				alea = null;
@@ -317,7 +307,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		});
 		
 		// Bouton couleurs aleatoires
-		jMenuItems.get(9).addActionListener(new ActionListener() {
+		jMenuItems.get(8).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				alea = new HashMap<Face, Color>();
@@ -330,18 +320,36 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	}
 
 	protected void editSize() {
-		JTextField jtf = new JTextField();
 		JLabel taille = new JLabel("Entrez une taille : ");
+		JButton ok = new JButton("Valider");
+		final JFrame editSize = new JFrame();
+		Font f = new Font("Arial", Font.PLAIN, 16);
+		final JTextField jtf = new JTextField();
 		
 		taille.setPreferredSize(new Dimension(200, 40));
-		
+		ok.setPreferredSize(new Dimension(200, 40));
+		jtf.setPreferredSize(new Dimension(200, 40));
+		taille.setFont(f);
+		ok.setFont(f);
 		editSize.setLayout(new BoxLayout(editSize.getContentPane(), BoxLayout.Y_AXIS));
 		editSize.add(taille);
 		editSize.add(jtf);
+		editSize.add(ok);
 		editSize.setLocationRelativeTo(null);
-		editSize.setSize(400, 80);
-		editSize.setUndecorated(true);
+		editSize.setSize(400, 120);
 		editSize.setVisible(true);
+		jtf.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try{
+					tailleSegment = Integer.parseInt(jtf.getText());
+				}
+				catch (Exception ex){
+					tailleSegment = -1;
+				}
+				editSize.dispose();
+			}
+		});
 	}
 
 	protected void setFullScreen() {
