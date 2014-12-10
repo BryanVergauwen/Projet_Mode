@@ -70,7 +70,9 @@ import database.Requests;
 public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, MouseMotionListener, MouseListener {
 	private static final long serialVersionUID = 1L;
 	private Point current;
+	private Random rd = new Random();
 	private int cptMouse = 0, decalX, decalY, tailleSegment = 0;
+	private int red = rd.nextInt(256), green = 0, blue = 0;
 	private GtsReader reader;
 	private List<Face> listeFaces;
 	private List<Point> listePoints;
@@ -271,6 +273,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		jMenuItems.add(new JMenuItem("Saisir taille"));
 		jMenuItems.add(new JCheckBoxMenuItem("Plein ecran"));
 		jMenuItems.add(new JMenuItem("Modifier la couleur"));
+		jMenuItems.add(new JMenuItem("Degrade de couleurs"));
 		jMenuItems.add(new JMenuItem("Couleur aleatoire (uniforme)"));
 		jMenuItems.add(new JMenuItem("Toutes couleurs aleatoires"));
 		
@@ -287,6 +290,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		jMenus.get(3).add(jMenuItems.get(6));
 		jMenus.get(3).add(jMenuItems.get(7));
 		jMenus.get(3).add(jMenuItems.get(8));
+		jMenus.get(3).add(jMenuItems.get(9));
 		
 		for(JMenu j : jMenus)
 			menuBar.add(j);
@@ -356,8 +360,27 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 			}
 		});
 		
-		// Bouton couleur aleatoire
+		// Bouton degrade couleur
 		jMenuItems.get(7).addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				alea = new HashMap<Face, Color>();
+				int etape = listeFaces.size() / 255;
+				Color tmp = degradeColor();
+
+				for(int i = 0; i < listeFaces.size(); i++){
+					if(i % etape == 0 && green < 255 && red < 255)
+						tmp = degradeColor();
+					alea.put(listeFaces.get(i), tmp);
+				}
+				green = blue = 0;
+				red = rd.nextInt(256);
+				paintComponent(getGraphics());
+			}
+		});
+		
+		// Bouton couleur aleatoire
+		jMenuItems.get(8).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				alea = null;
@@ -366,8 +389,8 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 			}
 		});
 		
-		// Bouton couleurs aleatoires
-		jMenuItems.get(8).addActionListener(new ActionListener() {
+		// Bouton toutes couleurs aleatoires
+		jMenuItems.get(9).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				alea = new HashMap<Face, Color>();
@@ -377,6 +400,10 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 				paintComponent(getGraphics());
 			}
 		});
+	}
+
+	protected Color degradeColor() {
+		return new Color(red, green++, blue++);
 	}
 
 	protected void editSize() {
@@ -445,8 +472,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	}
 
 	private Color randomColor(){
-		Random r = new Random();
-		return new Color(r.nextInt(256), r.nextInt(256), r.nextInt(256));
+		return new Color(rd.nextInt(256), rd.nextInt(256), rd.nextInt(256));
 	}
 
 	private void updateModel(){
