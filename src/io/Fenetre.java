@@ -21,6 +21,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -137,6 +138,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 
 		panelTextField = new JPanel();
 		filtre.setPreferredSize(new Dimension(listeModeles.getFixedCellWidth(), 30));
+		filtre.setFocusable(false);
 		panelTextField.add(filtre);
 		panelTextField.setMaximumSize(new Dimension(listeModeles.getFixedCellWidth(), 50));
 
@@ -205,10 +207,16 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 						else
 							filtreTexte = filtreTexte.substring(0, filtreTexte.length() - 1);
 					}
-					else
-						filtreTexte = filtreTexte + e.getKeyChar();
+					if(Character.isLetterOrDigit(e.getKeyChar()))
+						filtreTexte = filtreTexte + Character.toLowerCase(e.getKeyChar());
 					paramListeModelesCustom();
 				} catch (Exception ex){}
+			}
+		});
+		filtre.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				setFocusable(false);
+				filtre.setFocusable(true);
 			}
 		});
 		addMouseWheelListener(this);
@@ -550,6 +558,8 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
+		setFocusable(true);
+		filtre.setFocusable(false);
 	}
 
 	@Override
