@@ -27,7 +27,9 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -47,8 +49,10 @@ import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
@@ -276,6 +280,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		jMenuItems.add(new JMenuItem("Degrade de couleurs"));
 		jMenuItems.add(new JMenuItem("Couleur aleatoire (uniforme)"));
 		jMenuItems.add(new JMenuItem("Toutes couleurs aleatoires"));
+		jMenuItems.add(new JMenuItem("Qu'est ce que c'est ?"));
 		
 		// Fichier
 		jMenus.get(0).add(jMenuItems.get(0));
@@ -291,6 +296,8 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		jMenus.get(3).add(jMenuItems.get(7));
 		jMenus.get(3).add(jMenuItems.get(8));
 		jMenus.get(3).add(jMenuItems.get(9));
+		// Aide
+		jMenus.get(4).add(jMenuItems.get(10));
 		
 		for(JMenu j : jMenus)
 			menuBar.add(j);
@@ -398,6 +405,40 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 				for(int i = 0; i < listeFaces.size(); i++)
 					map.put(listeFaces.get(i), randomColor());
 				paintComponent(getGraphics());
+			}
+		});
+		
+		// Bouton qu'est ce que c'est ?
+		jMenuItems.get(10).addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				JFrame jf = new JFrame("Qu'est ce que c'est ?");
+				jf.setSize(890, 500);
+				jf.setLocationRelativeTo(null);
+				jf.setDefaultCloseOperation(EXIT_ON_CLOSE);
+				jf.setIconImage(Data.ICON3D);
+				JTextArea jta = new JTextArea();
+				FileReader flux= null;
+				BufferedReader input= null;
+				String str;
+				try{ 
+					flux= new FileReader ("ressources\\text\\qqc.txt");
+					input= new BufferedReader(flux);
+					while((str=input.readLine())!=null) {
+						jta.append(str+"\n");
+					}
+				} catch (IOException e) {
+					JOptionPane.showMessageDialog(null, "erreur fichier manquant", "erreur", JOptionPane.ERROR_MESSAGE);
+				}
+				finally{
+					try {
+						flux.close();
+					} catch (IOException ex) {
+						JOptionPane.showMessageDialog(null, "fichier ne peut être fermé", "erreur", JOptionPane.ERROR_MESSAGE);
+					}
+				}
+				jf.setContentPane(jta);
+				jf.setVisible(true);
 			}
 		});
 	}
