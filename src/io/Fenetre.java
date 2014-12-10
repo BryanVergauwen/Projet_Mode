@@ -18,6 +18,7 @@ import java.awt.dnd.DropTargetAdapter;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -72,18 +73,20 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	private GtsReader reader;
 	private List<Face> listeFaces;
 	private List<Point> listePoints;
-	private JPanel modeles;
+	private JPanel modeles, panelTextField, panelGauche;
 	private JFrame chargement;
 	private DefaultListModel<String> dl;
 	private JList<String> listeModeles;
 	private Color color;
 	private Map<Face, Color> alea;
-	private boolean export = false, fullScreen = false;
+	private boolean export = false, fullScreen = false, ctrlA = false;
 	private Requests r = new Requests();
-	private String modele = null;
+	private String modele = null, filtreTexte = "";
 	private JMenuBar menuBar = new JMenuBar();
 	private List<JMenu> jMenus = new LinkedList<JMenu>();
 	private List<JMenuItem> jMenuItems = new LinkedList<JMenuItem>();
+	private JTextField filtre = new JTextField();
+	private JScrollPane scrollPane;
 	
 	public Fenetre() {
 		super(Data.TITLE);
@@ -100,9 +103,9 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		validate();
 		paintComponent(getGraphics());
 		long fin = System.currentTimeMillis();
-		if(fin - debut < 4000){
+		if(fin - debut < 2000){ // Toujours au moins avoir un temps de chargement de demarrage d'au moins 2 secondes
 			try {
-				Thread.sleep(4000 - (fin - debut));
+				Thread.sleep(2000 - (fin - debut));
 			} 
 			catch (InterruptedException e1) {
 				e1.printStackTrace();
@@ -125,18 +128,46 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	}
 
 	private void modifFrame() {
+		scrollPane = new JScrollPane(listeModeles);
+		
 		modeles = new JPanel();
 		modeles.setLayout(new BoxLayout(modeles, BoxLayout.Y_AXIS));
 		modeles.setBackground(Color.white);
-		modeles.add(new JScrollPane(listeModeles));
+		modeles.add(scrollPane);
+
+		panelTextField = new JPanel();
+		filtre.setPreferredSize(new Dimension(listeModeles.getFixedCellWidth(), 30));
+		panelTextField.add(filtre);
+		panelTextField.setMaximumSize(new Dimension(listeModeles.getFixedCellWidth(), 50));
+
+		panelGauche = new JPanel();
+		panelGauche.setLayout(new BoxLayout(panelGauche, BoxLayout.Y_AXIS));
+		panelGauche.add(panelTextField);
+		panelGauche.add(modeles);
 		
-		getContentPane().add(modeles, BorderLayout.WEST);
+		getContentPane().add(panelGauche, BorderLayout.WEST);
 	}
 
 	private void paramListeModeles() {
 		List<String> tmp = r.select("nom");
+		initListeModeles(tmp);
+	}
+	
+	private void paramListeModelesCustom() {
+		List<String> tmp = r.selectLike(filtreTexte);
+		initListeModeles(tmp);
+		listeModeles.setModel(dl);
+		modeles.remove(scrollPane);
+		scrollPane = new JScrollPane(listeModeles);
+		initListenerJList();
+		modeles.add(scrollPane);
+		modeles.validate();
+		modeles.repaint();
+	}
+
+	private void initListeModeles(List<String> tmp) {
 		dl = new DefaultListModel<String>();
-		for(int i = 0; i < r.getNbLignes(); i++)
+		for(int i = 0; i < tmp.size(); i++)
 			dl.add(i, tmp.get(i));
 		
 		listeModeles = new JList<String>(dl);
@@ -163,6 +194,23 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	}
 
 	private void addListeners() {
+		filtre.addKeyListener(new KeyAdapter() {
+			public void keyPressed(KeyEvent e) {
+				try{
+					if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_A)
+						ctrlA = true;
+					if(e.getKeyCode() == KeyEvent.VK_BACK_SPACE){
+						if(ctrlA)
+							filtreTexte = "";
+						else
+							filtreTexte = filtreTexte.substring(0, filtreTexte.length() - 1);
+					}
+					else
+						filtreTexte = filtreTexte + e.getKeyChar();
+					paramListeModelesCustom();
+				} catch (Exception ex){}
+			}
+		});
 		addMouseWheelListener(this);
 		addMouseMotionListener(this);
 		addMouseListener(this);
@@ -188,13 +236,17 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 				}
 			}
 		}));
+		initListenerJList();
+	}
+
+	private void initListenerJList() {
 		listeModeles.addListSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent lse) {
 				modele = r.selectWhere("nom = '" + listeModeles.getSelectedValue().toString() + "'");
 				updateModel();
 			}
-		});
+		});		
 	}
 
 	private void initJMenuBar() {
@@ -339,6 +391,18 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		editSize.setSize(400, 120);
 		editSize.setVisible(true);
 		jtf.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try{
+					tailleSegment = Integer.parseInt(jtf.getText());
+				}
+				catch (Exception ex){
+					tailleSegment = -1;
+				}
+				editSize.dispose();
+			}
+		});
+		ok.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try{

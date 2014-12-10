@@ -176,4 +176,37 @@ public class Requests {
 		}
 		return -1;
 	}
+
+	public List<String> selectLike(String filtre) {
+		List<String> tmp = new LinkedList<String>();
+		String champTmp = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+
+		try {
+			Class.forName("org.sqlite.JDBC");
+			c = DriverManager.getConnection("jdbc:sqlite:src/database/ressources.db");
+			stmt = c.createStatement();
+			rs = stmt.executeQuery("SELECT * FROM GTSFILES where nom LIKE '" + filtre + "%' ORDER BY nom");
+			while (rs.next()) {
+				champTmp = rs.getString("nom");
+				tmp.add(champTmp);
+			}
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+			System.exit(0);
+		} 
+		finally {
+			try {
+				rs.close();
+				stmt.close();
+				c.close();
+			} 
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return tmp;
+	}
 }
