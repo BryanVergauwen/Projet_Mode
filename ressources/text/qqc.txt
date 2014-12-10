@@ -3,6 +3,7 @@ Qu'est ce que c'est ?
 GTSReader est un logiciel permettant de visualiser vos modèles 3D (GTS : GNU Triangulated Surface)
 et de naviguer dans ces modèles de manière intuitive.
 
+
 Comment ça marche ?
 
 Le clic gauche de la souris sert à faire pivoter votre modèle.

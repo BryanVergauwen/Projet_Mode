@@ -415,7 +415,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 				JFrame jf = new JFrame("Qu'est ce que c'est ?");
 				jf.setSize(890, 500);
 				jf.setLocationRelativeTo(null);
-				jf.setDefaultCloseOperation(EXIT_ON_CLOSE);
+				jf.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 				jf.setIconImage(Data.ICON3D);
 				JTextArea jta = new JTextArea();
 				FileReader flux= null;
