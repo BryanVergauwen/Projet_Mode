@@ -81,7 +81,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	private DefaultListModel<String> dl;
 	private JList<String> listeModeles;
 	private Color color;
-	private Map<Face, Color> alea;
+	private Map<Face, Color> map;
 	private boolean export = false, fullScreen = false, ctrlA = false;
 	private Requests r = new Requests();
 	private String modele = null, filtreTexte = "";
@@ -354,7 +354,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		jMenuItems.get(6).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				alea = null;
+				map = null;
 				color = JColorChooser.showDialog(null, "Palette de couleur", null);
 				paintComponent(getGraphics());
 			}
@@ -364,14 +364,14 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		jMenuItems.get(7).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				alea = new HashMap<Face, Color>();
+				map = new HashMap<Face, Color>();
 				int etape = listeFaces.size() / 255;
 				Color tmp = degradeColor();
 
 				for(int i = 0; i < listeFaces.size(); i++){
 					if(i % etape == 0 && green < 255 && red < 255)
 						tmp = degradeColor();
-					alea.put(listeFaces.get(i), tmp);
+					map.put(listeFaces.get(i), tmp);
 				}
 				green = blue = 0;
 				red = rd.nextInt(256);
@@ -383,7 +383,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		jMenuItems.get(8).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				alea = null;
+				map = null;
 				color = randomColor();
 				paintComponent(getGraphics());
 			}
@@ -393,10 +393,10 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		jMenuItems.get(9).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				alea = new HashMap<Face, Color>();
+				map = new HashMap<Face, Color>();
 				
 				for(int i = 0; i < listeFaces.size(); i++)
-					alea.put(listeFaces.get(i), randomColor());
+					map.put(listeFaces.get(i), randomColor());
 				paintComponent(getGraphics());
 			}
 		});
@@ -481,7 +481,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		reader = new GtsReader(100, modele);
 		listeFaces = reader.getListFaces();
 		listePoints = reader.getListPoint();
-		alea = null;
+		map = null;
 		color = new Color(100, 100, 100);
 		Data.alphaX = Data.alphaY = 0; // recentrage de la figure
 		paintComponent(getGraphics());
@@ -510,10 +510,10 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 				for (Face f : listeFaces) {
 					scal = Math.abs(Data.LUMIERE.prodScalaire(f.getNormal()));
 
-					if(alea == null)
+					if(map == null)
 						offgc.setColor((new Color((int)(color.getRed() * scal), (int)(color.getGreen() * scal), (int)(color.getBlue() * scal))));
 					else{
-						tmp = alea.get(f);
+						tmp = map.get(f);
 						offgc.setColor(new Color((int)(tmp.getRed() * scal), (int)(tmp.getGreen() * scal), (int)(tmp.getBlue() * scal)));
 					}
 					offgc.fillPolygon(f.getTriangleX(), f.getTriangleY(), 3);
