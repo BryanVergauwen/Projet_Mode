@@ -284,7 +284,14 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		jMenuItems.add(new JMenuItem("Couleur aleatoire (uniforme)"));
 		jMenuItems.add(new JMenuItem("Toutes couleurs aleatoires"));
 		jMenuItems.add(new JMenuItem("Changer image de fond..."));
+		jMenuItems.add(new JMenuItem("You spin my head right round, right round..."));
 		jMenuItems.add(new JMenuItem("A propos"));
+		
+		jMenuItems.get(0).setIcon(Data.OPEN);
+		jMenuItems.get(1).setIcon(Data.SAVE);
+		jMenuItems.get(2).setIcon(Data.EXPORT);
+		jMenuItems.get(3).setIcon(Data.QUIT);
+		jMenuItems.get(12).setIcon(Data.HELP);
 		
 		// Fichier
 		jMenus.get(0).add(jMenuItems.get(0));
@@ -301,8 +308,9 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		jMenus.get(3).add(jMenuItems.get(8));
 		jMenus.get(3).add(jMenuItems.get(9));
 		jMenus.get(3).add(jMenuItems.get(10));
+		jMenus.get(3).add(jMenuItems.get(11));
 		// Aide
-		jMenus.get(4).add(jMenuItems.get(11));
+		jMenus.get(4).add(jMenuItems.get(12));
 		
 		for(JMenu j : jMenus)
 			menuBar.add(j);
@@ -438,8 +446,20 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 			}
 		});
 		
-		// Bouton qu'est ce que c'est ?
+		// Bouton spin
 		jMenuItems.get(11).addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				for(int i = 0; i < 51; i++){
+					new Rotation(listePoints, listeFaces, Math.toRadians(10), "X");
+					new Rotation(listePoints, listeFaces, Math.toRadians(10), "Y");
+					paintComponent(getGraphics());
+				}
+			}
+		});
+		
+		// Bouton qu'est ce que c'est ?
+		jMenuItems.get(12).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				JFrame jf = new JFrame("A propos");
