@@ -17,4 +17,5 @@ public class Data {
 	public static final Image ICON3D = Toolkit.getDefaultToolkit().getImage("ressources/images/ICON3D.png");
 	public static double alphaX = 0.0, alphaY = 0.0;
 	public static final String TITLE = "GTSReader";
+	public static final String FICHIER_AIDE = "ressources/text/qqc.txt";
 }

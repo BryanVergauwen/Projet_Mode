@@ -31,6 +31,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -76,7 +78,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	private Point current;
 	private Random rd = new Random();
 	private int cptMouse = 0, decalX, decalY, tailleSegment = 0;
-	private int red = rd.nextInt(256), green = 0, blue = 0;
+	private int red = rd.nextInt(256), green, blue;
 	private GtsReader reader;
 	private List<Face> listeFaces;
 	private List<Point> listePoints;
@@ -89,9 +91,6 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	private boolean export = false, fullScreen = false, ctrlA = false;
 	private Requests r = new Requests();
 	private String modele = null, filtreTexte = "";
-	private JMenuBar menuBar = new JMenuBar();
-	private List<JMenu> jMenus = new LinkedList<JMenu>();
-	private List<JMenuItem> jMenuItems = new LinkedList<JMenuItem>();
 	private JTextField filtre = new JTextField();
 	private JScrollPane scrollPane;
 	
@@ -264,6 +263,10 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	}
 
 	private void initJMenuBar() {
+		JMenuBar menuBar = new JMenuBar();
+		List<JMenu> jMenus = new LinkedList<JMenu>();
+		List<JMenuItem> jMenuItems = new LinkedList<JMenuItem>();
+		
 		jMenus.add(new JMenu("Fichier"));
 		jMenus.add(new JMenu("Edition"));
 		jMenus.add(new JMenu("Affichage"));
@@ -281,7 +284,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		jMenuItems.add(new JMenuItem("Couleur aleatoire (uniforme)"));
 		jMenuItems.add(new JMenuItem("Toutes couleurs aleatoires"));
 		jMenuItems.add(new JMenuItem("Changer image de fond..."));
-		jMenuItems.add(new JMenuItem("Qu'est ce que c'est ?"));
+		jMenuItems.add(new JMenuItem("A propos"));
 		
 		// Fichier
 		jMenus.get(0).add(jMenuItems.get(0));
@@ -377,6 +380,12 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 				int etape = listeFaces.size() / 255;
 				Color tmp = degradeColor();
 
+				Collections.sort(listeFaces, new Comparator<Face>() {
+					@Override
+					public int compare(Face o1, Face o2) {
+						return o1.compareTo2(o2);
+					}
+				});
 				for(int i = 0; i < listeFaces.size(); i++){
 					if(i % etape == 0 && green < 255 && red < 255)
 						tmp = degradeColor();
@@ -433,7 +442,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		jMenuItems.get(11).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				JFrame jf = new JFrame("Qu'est ce que c'est ?");
+				JFrame jf = new JFrame("A propos");
 				jf.setSize(890, 500);
 				jf.setLocationRelativeTo(null);
 				jf.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -443,8 +452,9 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 				BufferedReader input= null;
 				String str;
 				try{ 
-					flux= new FileReader ("ressources\\text\\qqc.txt");
-					input= new BufferedReader(flux);
+					jta.setEditable(false);
+					flux = new FileReader(Data.FICHIER_AIDE);
+					input = new BufferedReader(flux);
 					while((str=input.readLine())!=null)
 						jta.append(str+"\n");
 				} 
@@ -455,7 +465,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 					try {
 						flux.close();
 					} catch (IOException ex) {
-						JOptionPane.showMessageDialog(null, "fichier ne peut être fermé", "erreur", JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(null, "fichier ne peut etre ferme", "erreur", JOptionPane.ERROR_MESSAGE);
 					}
 				}
 				jf.setContentPane(jta);
@@ -467,7 +477,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	protected Color degradeColor() {
 		return new Color(red, green++, blue++);
 	}
-
+	
 	protected void editSize() {
 		JLabel taille = new JLabel("Entrez une taille : ");
 		JButton ok = new JButton("Valider");

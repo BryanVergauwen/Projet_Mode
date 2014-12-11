@@ -53,9 +53,15 @@ public class Face implements Comparable<Face>{
 	}
 
 	@Override
-	public int compareTo(Face arg0) {
-		// TODO Auto-generated method stub
-		return this.barycentre - arg0.barycentre;
+	public int compareTo(Face f) {
+		return this.barycentre - f.barycentre;
+	}
+	public int compareTo2(Face f) {
+		if(getSommetA().getX() < f.getSommetA().getX())
+			return -1;
+		else if(getSommetA().getX() == f.getSommetA().getX())
+			return 0;
+		return 1;
 	}
 	public int[] getTriangleX(){
 		int[] tmp = new int[3];
