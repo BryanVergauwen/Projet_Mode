@@ -271,7 +271,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		jMenus.add(new JMenu("Aide"));
 		
 		jMenuItems.add(new JMenuItem("Ouvrir"));
-		jMenuItems.add(new JMenuItem("Enregistrer"));
+		jMenuItems.add(new JMenuItem("Enregistrer sous"));
 		jMenuItems.add(new JMenuItem("Exporter"));
 		jMenuItems.add(new JMenuItem("Quitter"));
 		jMenuItems.add(new JMenuItem("Saisir taille"));
@@ -280,6 +280,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		jMenuItems.add(new JMenuItem("Degrade de couleurs"));
 		jMenuItems.add(new JMenuItem("Couleur aleatoire (uniforme)"));
 		jMenuItems.add(new JMenuItem("Toutes couleurs aleatoires"));
+		jMenuItems.add(new JMenuItem("Changer image de fond..."));
 		jMenuItems.add(new JMenuItem("Qu'est ce que c'est ?"));
 		
 		// Fichier
@@ -296,8 +297,9 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		jMenus.get(3).add(jMenuItems.get(7));
 		jMenus.get(3).add(jMenuItems.get(8));
 		jMenus.get(3).add(jMenuItems.get(9));
+		jMenus.get(3).add(jMenuItems.get(10));
 		// Aide
-		jMenus.get(4).add(jMenuItems.get(10));
+		jMenus.get(4).add(jMenuItems.get(11));
 		
 		for(JMenu j : jMenus)
 			menuBar.add(j);
@@ -408,8 +410,27 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 			}
 		});
 		
-		// Bouton qu'est ce que c'est ?
+		// Bouton changer wallpaper
 		jMenuItems.get(10).addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				JFileChooser fileopen = null;
+				try {
+					fileopen = new JFileChooser(new File( "." ).getCanonicalPath());
+				} catch (IOException e) {}
+				FileFilter filter = new FileNameExtensionFilter(".bmp", "bmp");
+				fileopen.addChoosableFileFilter(filter);
+				filter = new FileNameExtensionFilter(".jpg", "jpg");
+				fileopen.addChoosableFileFilter(filter);
+
+				int ret = fileopen.showDialog(null, "Open file");
+				if (ret == JFileChooser.APPROVE_OPTION)
+					Data.WALLPAPER = Toolkit.getDefaultToolkit().getImage(fileopen.getSelectedFile().getAbsolutePath());
+			}
+		});
+		
+		// Bouton qu'est ce que c'est ?
+		jMenuItems.get(11).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				JFrame jf = new JFrame("Qu'est ce que c'est ?");
@@ -424,10 +445,10 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 				try{ 
 					flux= new FileReader ("ressources\\text\\qqc.txt");
 					input= new BufferedReader(flux);
-					while((str=input.readLine())!=null) {
+					while((str=input.readLine())!=null)
 						jta.append(str+"\n");
-					}
-				} catch (IOException e) {
+				} 
+				catch (IOException e) {
 					JOptionPane.showMessageDialog(null, "erreur fichier manquant", "erreur", JOptionPane.ERROR_MESSAGE);
 				}
 				finally{
