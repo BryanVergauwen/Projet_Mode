@@ -65,6 +65,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import objects.Face;
 import objects.Point;
+import objects.Segment;
 import transformations.Homothetie;
 import transformations.Rotation;
 import transformations.Translation;
@@ -81,6 +82,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	private int red = rd.nextInt(256), green, blue;
 	private GtsReader reader;
 	private List<Face> listeFaces;
+	private List<Segment> listeSegments;
 	private List<Point> listePoints;
 	private JPanel modeles, panelTextField, panelGauche;
 	private JFrame chargement;
@@ -88,7 +90,8 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	private JList<String> listeModeles;
 	private Color color;
 	private Map<Face, Color> map;
-	private boolean export = false, fullScreen = false, ctrlA = false;
+	private boolean export = false, fullScreen = false;
+	private boolean ctrlA = false, moving = false;
 	private Requests r = new Requests();
 	private String modele = null, filtreTexte = "";
 	private JTextField filtre = new JTextField();
@@ -228,6 +231,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		addMouseMotionListener(this);
 		addMouseListener(this);
 		addKeyListener(this);
+		
 		setDropTarget(new DropTarget(this, new DropTargetAdapter() {
 			@SuppressWarnings("unchecked")
 			@Override
@@ -453,6 +457,11 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 				for(int i = 0; i < 51; i++){
 					new Rotation(listePoints, listeFaces, Math.toRadians(10), "X");
 					new Rotation(listePoints, listeFaces, Math.toRadians(10), "Y");
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 					paintComponent(getGraphics());
 				}
 			}
@@ -573,6 +582,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		reader = new GtsReader(100, modele);
 		listeFaces = reader.getListFaces();
 		listePoints = reader.getListPoint();
+		listeSegments = reader.getListSegments();
 		map = null;
 		color = new Color(100, 100, 100);
 		Data.alphaX = Data.alphaY = 0; // recentrage de la figure
@@ -599,16 +609,23 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 			
 			offgc.drawImage(Data.WALLPAPER, 0, 0, this);
 			if(modele != null){
-				for (Face f : listeFaces) {
-					scal = Math.abs(Data.LUMIERE.prodScalaire(f.getNormal()));
+				if(moving){
+					offgc.setColor(Color.BLACK);
+					for (Segment s : listeSegments)
+						offgc.drawLine(s.getSegment1(), s.getSegment2(), s.getSegment3(), s.getSegment4());
+				}
+				else {
+					for (Face f : listeFaces) {
+						scal = Math.abs(Data.LUMIERE.prodScalaire(f.getNormal()));
 
-					if(map == null)
-						offgc.setColor((new Color((int)(color.getRed() * scal), (int)(color.getGreen() * scal), (int)(color.getBlue() * scal))));
-					else{
-						tmp = map.get(f);
-						offgc.setColor(new Color((int)(tmp.getRed() * scal), (int)(tmp.getGreen() * scal), (int)(tmp.getBlue() * scal)));
+						if(map == null)
+							offgc.setColor((new Color((int)(color.getRed() * scal), (int)(color.getGreen() * scal), (int)(color.getBlue() * scal))));
+						else{
+							tmp = map.get(f);
+							offgc.setColor(new Color((int)(tmp.getRed() * scal), (int)(tmp.getGreen() * scal), (int)(tmp.getBlue() * scal)));
+						}
+						offgc.fillPolygon(f.getTriangleX(), f.getTriangleY(), 3);
 					}
-					offgc.fillPolygon(f.getTriangleX(), f.getTriangleY(), 3);
 				}
 			}
 			g2.drawImage(offscreen, decalX, decalY, this);
@@ -620,7 +637,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		double zoom;
 		
 		if(modele != null){
-			if (e.getWheelRotation() < 0)
+ 			if (e.getWheelRotation() < 0)
 				zoom = 1.1;
 			else
 				zoom = 0.9;
@@ -635,6 +652,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		if(modele != null){
 			if (SwingUtilities.isLeftMouseButton(e)) {
 				setCursor(Cursor.HAND_CURSOR);
+				moving = true;
 				Point p = new Point(e.getX(), e.getY(), 0);
 				
 				cptMouse++;
@@ -654,6 +672,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 			} 
 			else if (SwingUtilities.isRightMouseButton(e)) {
 				setCursor(Cursor.MOVE_CURSOR);
+				moving = true;
 				Point p = new Point(e.getX(), e.getY(), 0);
 	
 				if (p.getY() < current.getY())
@@ -704,6 +723,8 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	@Override
 	public void mouseReleased(MouseEvent arg0) {
 		setCursor(Cursor.DEFAULT_CURSOR);
+		moving = false;
+		paintComponent(getGraphics());
 	}
 	@Override
 	public void keyPressed(KeyEvent e) {
@@ -719,23 +740,11 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 			paintComponent(getGraphics());
 		}
 	}
-
 	@Override
 	public void keyReleased(KeyEvent arg0) {
 	}
 
 	@Override
 	public void keyTyped(KeyEvent e) {
-		if(modele != null){
-			if (e.getKeyCode() == KeyEvent.VK_Z)
-				new Rotation(listePoints, listeFaces, Math.toRadians(10), "X");
-			if (e.getKeyCode() == KeyEvent.VK_Q)
-				new Rotation(listePoints, listeFaces, Math.toRadians(10), "Y");
-			if (e.getKeyCode() == KeyEvent.VK_S)
-				new Rotation(listePoints, listeFaces, Math.toRadians(-10), "X");
-			if (e.getKeyCode() == KeyEvent.VK_D)
-				new Rotation(listePoints, listeFaces, Math.toRadians(-10), "Y");
-			paintComponent(getGraphics());
-		}
 	}
 }
