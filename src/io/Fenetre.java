@@ -196,7 +196,6 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 
 		setSize(dim.width, dim.height);
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
-		setContentPane(new JLabel(Data.WALLP_TMP));
 		setLayout(new BorderLayout());
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLocationRelativeTo(null);
