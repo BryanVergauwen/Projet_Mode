@@ -324,9 +324,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				JFileChooser fileopen = null;
-				try {
-					fileopen = new JFileChooser(new File( "." ).getCanonicalPath());
-				} catch (IOException e) {}
+				fileopen = new JFileChooser(new File( ".").getAbsolutePath());
 				FileFilter filter = new FileNameExtensionFilter(".gts", "gts");
 				fileopen.addChoosableFileFilter(filter);
 
@@ -435,9 +433,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				JFileChooser fileopen = null;
-				try {
-					fileopen = new JFileChooser(new File( "." ).getCanonicalPath());
-				} catch (IOException e) {}
+				fileopen = new JFileChooser(new File( ".").getAbsolutePath());
 				FileFilter filter = new FileNameExtensionFilter(".bmp", "bmp");
 				fileopen.addChoosableFileFilter(filter);
 				filter = new FileNameExtensionFilter(".jpg", "jpg");
