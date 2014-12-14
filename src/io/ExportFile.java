@@ -13,7 +13,7 @@ public class ExportFile {
 		try {
 			save = new JFileChooser(new File(".").getCanonicalPath());
 			if(save.showSaveDialog(f) == JFileChooser.APPROVE_OPTION) {
-				BufferedImage bi = new BufferedImage(f.getWidth() - decalX, f.getHeight(), BufferedImage.TYPE_INT_RGB); 
+				BufferedImage bi = new BufferedImage(f.getWidth() - decalX, f.getHeight(), BufferedImage.TYPE_INT_ARGB); 
 				Graphics tmp = bi.createGraphics();
 				f.paintComponent(tmp);
 				tmp.dispose();
