@@ -12,8 +12,8 @@ public class Translation {
 
 	public Translation(List<Point> points, double coeff, String axe) {
 		if (axe.equalsIgnoreCase(Y))
-			Data.alphaY += coeff*2;
+			Data.alphaY += coeff*1.1;
 		if (axe.equalsIgnoreCase(X))
-			Data.alphaX += coeff*2;
+			Data.alphaX += coeff*1.1;
 	}
 }

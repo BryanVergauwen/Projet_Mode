@@ -6,7 +6,7 @@ import exceptions.MalFormedFaceException;
 public class Face implements Comparable<Face>{
 	private Point a, b, c;
 	private Vecteur normal;
-	private int barycentre;
+	private double barycentre;
 
 	public Face(Segment a, Segment b, Segment c) {
 		this.a = a.getOrigine();
@@ -23,7 +23,7 @@ public class Face implements Comparable<Face>{
 	}
 	
 	public void barycentre(){
-		barycentre=(int)(a.getZ()+b.getZ()+c.getZ())/3;
+		barycentre = (a.getZ()+b.getZ()+c.getZ())/3;
 	}
 	
 	public Vecteur getNormal(){
@@ -54,7 +54,13 @@ public class Face implements Comparable<Face>{
 
 	@Override
 	public int compareTo(Face f) {
-		return this.barycentre - f.barycentre;
+		double tmp = this.barycentre - f.barycentre;
+		
+		if(tmp < 0)
+			return -1;
+		else if(tmp == 0)
+			return 0;
+		return 1;
 	}
 	public int compareTo2(Face f) {
 		if(getSommetA().getX() < f.getSommetA().getX())

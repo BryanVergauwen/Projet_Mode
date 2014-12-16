@@ -35,6 +35,65 @@ public class Requests {
 			}
 		}
 	}
+	
+	public void addTag(String nomFigure, String tag){
+		Statement stmt = null;
+		ResultSet rs = null;
+		String s="";
+		try {
+			Class.forName("org.sqlite.JDBC");
+			c = DriverManager.getConnection("jdbc:sqlite:src/database/ressources.db");
+			stmt = c.createStatement();
+			rs = stmt.executeQuery("SELECT TAG FROM GTSFILES WHERE NOM = "+nomFigure);
+			if(rs.next())
+				s=rs.getString(1);
+			rs = stmt.executeQuery("UPDATE GTSFILES SET TAG = "+s+tag+" WHERE NOM = "+nomFigure);
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+			System.exit(0);
+		} 
+		finally {
+			try {
+				rs.close();
+				stmt.close();
+				c.close();
+			} 
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public List<String> selectTag(String champ){
+		List<String> tmp = new LinkedList<String>();
+		Statement stmt = null;
+		ResultSet rs = null;
+		try {
+			Class.forName("org.sqlite.JDBC");
+			c = DriverManager.getConnection("jdbc:sqlite:src/database/ressources.db");
+			stmt = c.createStatement();
+			rs = stmt.executeQuery("SELECT NOM FROM GTSFILES WHERE TAG LIKE %"+champ+"%");
+			while (rs.next()) {
+				tmp.add(rs.getString(1));
+			}
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+			System.exit(0);
+		} 
+		finally {
+			try {
+				rs.close();
+				stmt.close();
+				c.close();
+			} 
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return tmp;
+	}
 
 	public List<String> select(String champ) {
 		List<String> tmp = new LinkedList<String>();
@@ -169,7 +228,7 @@ public class Requests {
 				rs.close();
 				stmt.close();
 				c.close();
-			} 
+			}
 			catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -179,7 +238,6 @@ public class Requests {
 
 	public List<String> selectLike(String filtre) {
 		List<String> tmp = new LinkedList<String>();
-		String champTmp = null;
 		Statement stmt = null;
 		ResultSet rs = null;
 
@@ -188,10 +246,8 @@ public class Requests {
 			c = DriverManager.getConnection("jdbc:sqlite:src/database/ressources.db");
 			stmt = c.createStatement();
 			rs = stmt.executeQuery("SELECT * FROM GTSFILES where nom LIKE '" + filtre + "%' ORDER BY nom");
-			while (rs.next()) {
-				champTmp = rs.getString("nom");
-				tmp.add(champTmp);
-			}
+			while (rs.next())
+				tmp.add(rs.getString("nom"));
 		} 
 		catch (Exception e) {
 			e.printStackTrace();

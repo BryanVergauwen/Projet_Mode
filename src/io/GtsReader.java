@@ -38,7 +38,7 @@ public class GtsReader{
 					double b = Double.parseDouble(result[1]) * coef;
 					double c = Double.parseDouble(result[2]) * coef;
 
-					points.add(new Point(a, b, c));
+					points.add(new Point(a, -b, c));
 					limite++;
 				}
 				ligne = br.readLine();

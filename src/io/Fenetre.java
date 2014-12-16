@@ -91,7 +91,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	private Color color;
 	private Map<Face, Color> map;
 	private boolean export = false, fullScreen = false;
-	private boolean ctrlA = false, moving = false;
+	private boolean ctrlA = false, f1 = false, f2 = false, f3 = true;
 	private Requests r = new Requests();
 	private String modele = null, filtreTexte = "";
 	private JTextField filtre = new JTextField();
@@ -604,12 +604,17 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 			
 			offgc.drawImage(Data.WALLPAPER, 0, 0, this);
 			if(modele != null){
-				if(moving){
-					offgc.setColor(Color.BLACK);
+				if(f1){
+					offgc.setColor(Color.WHITE);
+					for(Point p : listePoints) 
+						offgc.fillOval((int)(p.getX() + Data.COEFF1 + Data.alphaX), (int)(p.getY() + Data.COEFF2 + Data.alphaY), 2, 2);
+				}
+				else if(f2){
+					offgc.setColor(Color.WHITE);
 					for (Segment s : listeSegments)
 						offgc.drawLine(s.getSegment1(), s.getSegment2(), s.getSegment3(), s.getSegment4());
 				}
-				else {
+				else if(f3){
 					for (Face f : listeFaces) {
 						scal = Math.abs(Data.LUMIERE.prodScalaire(f.getNormal()));
 
@@ -647,7 +652,6 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		if(modele != null){
 			if (SwingUtilities.isLeftMouseButton(e)) {
 				setCursor(Cursor.HAND_CURSOR);
-				moving = true;
 				Point p = new Point(e.getX(), e.getY(), 0);
 				
 				cptMouse++;
@@ -667,7 +671,6 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 			} 
 			else if (SwingUtilities.isRightMouseButton(e)) {
 				setCursor(Cursor.MOVE_CURSOR);
-				moving = true;
 				Point p = new Point(e.getX(), e.getY(), 0);
 	
 				if (p.getY() < current.getY())
@@ -713,17 +716,34 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 			}
 		}
 	}
-
+	
 	@SuppressWarnings("deprecation")
 	@Override
 	public void mouseReleased(MouseEvent arg0) {
 		setCursor(Cursor.DEFAULT_CURSOR);
-		moving = false;
 		paintComponent(getGraphics());
 	}
 	@Override
 	public void keyPressed(KeyEvent e) {
 		if(modele != null){
+			if (e.getKeyCode() == KeyEvent.VK_F1){
+				f1 = true;
+				f2 = false;
+				f3 = false;
+				paintComponent(getGraphics());
+			}
+			else if (e.getKeyCode() == KeyEvent.VK_F2){
+				f1 = false;
+				f2 = true;
+				f3 = false;
+				paintComponent(getGraphics());
+			}
+			else if (e.getKeyCode() == KeyEvent.VK_F3){
+				f1 = false;
+				f2 = false;
+				f3 = true;
+				paintComponent(getGraphics());
+			}
 			if (e.getKeyCode() == KeyEvent.VK_Z)
 				new Rotation(listePoints, listeFaces, Math.toRadians(10), "X");
 			if (e.getKeyCode() == KeyEvent.VK_Q)
