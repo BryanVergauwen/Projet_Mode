@@ -604,23 +604,22 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 			
 			offgc.drawImage(Data.WALLPAPER, 0, 0, this);
 			if(modele != null){
+				offgc.setColor(color);
 				if(f1){
-					offgc.setColor(Color.WHITE);
 					for(Point p : listePoints) 
-						offgc.fillOval((int)(p.getX() + Data.COEFF1 + Data.alphaX), (int)(p.getY() + Data.COEFF2 + Data.alphaY), 2, 2);
+						offgc.fillOval((int)(p.getX() + Data.COEFF1 + Data.alphaX), (int)(p.getY() + Data.COEFF2 + Data.alphaY), 3, 3);
 				}
 				else if(f2){
-					offgc.setColor(Color.WHITE);
 					for (Segment s : listeSegments)
 						offgc.drawLine(s.getSegment1(), s.getSegment2(), s.getSegment3(), s.getSegment4());
 				}
 				else if(f3){
 					for (Face f : listeFaces) {
 						scal = Math.abs(Data.LUMIERE.prodScalaire(f.getNormal()));
+						offgc.setColor((new Color((int)(color.getRed() * scal), (int)(color.getGreen() * scal), (int)(color.getBlue() * scal))));
 
-						if(map == null)
-							offgc.setColor((new Color((int)(color.getRed() * scal), (int)(color.getGreen() * scal), (int)(color.getBlue() * scal))));
-						else{
+						if(map != null){
+							color = new Color(255, 255, 255);
 							tmp = map.get(f);
 							offgc.setColor(new Color((int)(tmp.getRed() * scal), (int)(tmp.getGreen() * scal), (int)(tmp.getBlue() * scal)));
 						}

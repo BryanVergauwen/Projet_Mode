@@ -17,8 +17,6 @@ public class MyUI {
 		catch (IllegalAccessException e) {
 			e.printStackTrace();
 		} 
-		catch (UnsupportedLookAndFeelException e) {
-			e.printStackTrace();
-		}
+		catch (UnsupportedLookAndFeelException e) {}
 	}
 }

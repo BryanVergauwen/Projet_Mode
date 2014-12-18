@@ -20,7 +20,6 @@ public class Rotation {
 				z = p.getZ();
 
 				p.setX(x * Math.cos(angle) - z * Math.sin(angle));
-				p.setY(y);
 				p.setZ(x * Math.sin(angle) + z * Math.cos(angle));
 			}
 		}
@@ -31,7 +30,6 @@ public class Rotation {
 				z = p.getZ();
 
 				p.setY(y * Math.cos(angle) - z * Math.sin(angle));
-				p.setX(x);
 				p.setZ(y * Math.sin(angle) + z * Math.cos(angle));
 			}
 		}
