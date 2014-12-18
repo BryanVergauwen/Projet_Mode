@@ -41,9 +41,9 @@ import java.util.Random;
 
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
-import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JColorChooser;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -78,7 +78,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	private static final long serialVersionUID = 1L;
 	private Point current;
 	private Random rd = new Random();
-	private int cptMouse = 0, decalX, decalY, tailleSegment = 0;
+	private int cptMouse = 0, decalX, decalY, tailleSegment = 0, function = 3;
 	private int red = rd.nextInt(256), green, blue;
 	private GtsReader reader;
 	private List<Face> listeFaces;
@@ -91,7 +91,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	private Color color;
 	private Map<Face, Color> map;
 	private boolean export = false, fullScreen = false;
-	private boolean ctrlA = false, f1 = false, f2 = false, f3 = true;
+	private boolean ctrlA = false;
 	private Requests r = new Requests();
 	private String modele = null, filtreTexte = "";
 	private JTextField filtre = new JTextField();
@@ -109,8 +109,6 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		modifFrame();
 		addListeners();
 		new MyUI();
-		validate();
-		paintComponent(getGraphics());
 		long fin = System.currentTimeMillis();
 		if(fin - debut < 2000){ // Toujours au moins avoir un temps de chargement de demarrage d'au moins 2 secondes
 			try {
@@ -122,6 +120,9 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		}
 		chargement.dispose();
 		setVisible(true);
+		validate();
+		revalidate();
+		paintComponent(getGraphics());
 	}
 
 	private void initFrameChargement() {
@@ -503,48 +504,12 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	}
 	
 	protected void editSize() {
-		JLabel taille = new JLabel("Entrez une taille : ");
-		JButton ok = new JButton("Valider");
-		final JFrame editSize = new JFrame();
-		Font f = new Font("Arial", Font.PLAIN, 16);
-		final JTextField jtf = new JTextField();
-		
-		taille.setPreferredSize(new Dimension(200, 40));
-		ok.setPreferredSize(new Dimension(200, 40));
-		jtf.setPreferredSize(new Dimension(200, 40));
-		taille.setFont(f);
-		ok.setFont(f);
-		editSize.setLayout(new BoxLayout(editSize.getContentPane(), BoxLayout.Y_AXIS));
-		editSize.add(taille);
-		editSize.add(jtf);
-		editSize.add(ok);
-		editSize.setLocationRelativeTo(null);
-		editSize.setSize(400, 120);
-		editSize.setVisible(true);
-		jtf.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				try{
-					tailleSegment = Integer.parseInt(jtf.getText());
-				}
-				catch (Exception ex){
-					tailleSegment = -1;
-				}
-				editSize.dispose();
-			}
-		});
-		ok.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				try{
-					tailleSegment = Integer.parseInt(jtf.getText());
-				}
-				catch (Exception ex){
-					tailleSegment = -1;
-				}
-				editSize.dispose();
-			}
-		});
+		try{
+			tailleSegment = Integer.parseInt(JOptionPane.showInputDialog("Entrez une taille: "));
+		}
+		catch (Exception ex){
+			tailleSegment = -1;
+		}
 	}
 
 	protected void setFullScreen() {
@@ -605,15 +570,15 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 			offgc.drawImage(Data.WALLPAPER, 0, 0, this);
 			if(modele != null){
 				offgc.setColor(color);
-				if(f1){
+				if(function == 1){
 					for(Point p : listePoints) 
 						offgc.fillOval((int)(p.getX() + Data.COEFF1 + Data.alphaX), (int)(p.getY() + Data.COEFF2 + Data.alphaY), 3, 3);
 				}
-				else if(f2){
+				else if(function == 2){
 					for (Segment s : listeSegments)
 						offgc.drawLine(s.getSegment1(), s.getSegment2(), s.getSegment3(), s.getSegment4());
 				}
-				else if(f3){
+				else if(function == 3){
 					for (Face f : listeFaces) {
 						scal = Math.abs(Data.LUMIERE.prodScalaire(f.getNormal()));
 						offgc.setColor((new Color((int)(color.getRed() * scal), (int)(color.getGreen() * scal), (int)(color.getBlue() * scal))));
@@ -726,21 +691,15 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	public void keyPressed(KeyEvent e) {
 		if(modele != null){
 			if (e.getKeyCode() == KeyEvent.VK_F1){
-				f1 = true;
-				f2 = false;
-				f3 = false;
+				function = 1;
 				paintComponent(getGraphics());
 			}
 			else if (e.getKeyCode() == KeyEvent.VK_F2){
-				f1 = false;
-				f2 = true;
-				f3 = false;
+				function = 2;
 				paintComponent(getGraphics());
 			}
 			else if (e.getKeyCode() == KeyEvent.VK_F3){
-				f1 = false;
-				f2 = false;
-				f3 = true;
+				function = 3;
 				paintComponent(getGraphics());
 			}
 			if (e.getKeyCode() == KeyEvent.VK_Z)
