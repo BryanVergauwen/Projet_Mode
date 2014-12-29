@@ -43,7 +43,6 @@ import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JColorChooser;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -90,8 +89,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	private JList<String> listeModeles;
 	private Color color;
 	private Map<Face, Color> map;
-	private boolean export = false, fullScreen = false;
-	private boolean ctrlA = false;
+	private boolean export = false, fullScreen = false, ctrlA = false;
 	private Requests r = new Requests();
 	private String modele = null, filtreTexte = "";
 	private JTextField filtre = new JTextField();
@@ -165,7 +163,12 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	}
 	
 	private void paramListeModelesCustom() {
-		List<String> tmp = r.selectLike(filtreTexte);
+		List<String> tmp;
+		
+		if(filtreTexte.length() > 0 && filtreTexte.charAt(0) == '#')
+			tmp = r.getModeles(filtreTexte.substring(1, filtreTexte.length()));
+		else
+			tmp = r.selectLike(filtreTexte);
 		initListeModeles(tmp);
 		listeModeles.setModel(dl);
 		modeles.remove(scrollPane);
@@ -214,8 +217,9 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 							filtreTexte = "";
 						else
 							filtreTexte = filtreTexte.substring(0, filtreTexte.length() - 1);
+						ctrlA = false;
 					}
-					if(Character.isLetterOrDigit(e.getKeyChar()))
+					if(Character.isLetterOrDigit(e.getKeyChar()) || e.getExtendedKeyCode() == 152) // pression du # pour les tags
 						filtreTexte = filtreTexte + Character.toLowerCase(e.getKeyChar());
 					paramListeModelesCustom();
 				} catch (Exception ex){}
@@ -243,7 +247,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 						File f = files.get(0);
 						if(f.getAbsolutePath().substring(f.getAbsolutePath().length() - 4, f.getAbsolutePath().length()).equalsIgnoreCase(".gts")){
 							r.insert(f.getName().toLowerCase(), f.getAbsolutePath());
-							modele = r.selectWhere("nom = '" + f.getName().toLowerCase() + "'");
+							modele = r.selectWhere("path", "nom = '" + f.getName().toLowerCase() + "'");
 							updateModel();
 						}
 					} 
@@ -260,7 +264,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		listeModeles.addListSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent lse) {
-				modele = r.selectWhere("nom = '" + listeModeles.getSelectedValue().toString() + "'");
+				modele = r.selectWhere("path", "nom = '" + listeModeles.getSelectedValue().toString() + "'");
 				updateModel();
 			}
 		});		
@@ -289,13 +293,15 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		jMenuItems.add(new JMenuItem("Toutes couleurs aleatoires"));
 		jMenuItems.add(new JMenuItem("Changer image de fond..."));
 		jMenuItems.add(new JMenuItem("You spin my head right round, right round..."));
+		jMenuItems.add(new JMenuItem("Ajouter un tag au modele courant"));
+		jMenuItems.add(new JMenuItem("Retirer un tag au modele courant"));
 		jMenuItems.add(new JMenuItem("A propos"));
 		
 		jMenuItems.get(0).setIcon(Data.OPEN);
 		jMenuItems.get(1).setIcon(Data.SAVE);
 		jMenuItems.get(2).setIcon(Data.EXPORT);
 		jMenuItems.get(3).setIcon(Data.QUIT);
-		jMenuItems.get(12).setIcon(Data.HELP);
+		jMenuItems.get(14).setIcon(Data.HELP);
 		
 		// Fichier
 		jMenus.get(0).add(jMenuItems.get(0));
@@ -313,8 +319,10 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		jMenus.get(3).add(jMenuItems.get(9));
 		jMenus.get(3).add(jMenuItems.get(10));
 		jMenus.get(3).add(jMenuItems.get(11));
+		jMenus.get(3).add(jMenuItems.get(12));
+		jMenus.get(3).add(jMenuItems.get(13));
 		// Aide
-		jMenus.get(4).add(jMenuItems.get(12));
+		jMenus.get(4).add(jMenuItems.get(14));
 		
 		for(JMenu j : jMenus)
 			menuBar.add(j);
@@ -333,7 +341,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 				File f = fileopen.getSelectedFile();
 				if (ret == JFileChooser.APPROVE_OPTION && f.getAbsolutePath().substring(f.getAbsolutePath().length() - 4, f.getAbsolutePath().length()).equalsIgnoreCase(".gts")){
 					r.insert(fileopen.getSelectedFile().getName().toLowerCase(), fileopen.getSelectedFile().getAbsolutePath());
-					modele = r.selectWhere("nom = '" + fileopen.getSelectedFile().getName().toLowerCase() + "'");
+					modele = r.selectWhere("path", "nom = '" + fileopen.getSelectedFile().getName().toLowerCase() + "'");
 					updateModel();
 				}
 			}
@@ -463,8 +471,41 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 			}
 		});
 		
-		// Bouton qu'est ce que c'est ?
+		// Bouton ajouter tag
 		jMenuItems.get(12).addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				if(modele != null){
+					String[] tmp = modele.split("\\\\");
+					String nomModele = tmp[tmp.length-1].toLowerCase();
+					String oldTags = r.getTags(nomModele).toString();
+				
+					r.addTag(nomModele, JOptionPane.showInputDialog("Tags existants : " + oldTags + "\nAjouter un tag au modele courant: "));
+				}
+			}
+		});
+		
+		// Bouton retirer tag
+		jMenuItems.get(13).addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(modele != null){
+					String[] tmp = modele.split("\\\\");
+					String  nomModele = tmp[tmp.length-1].toLowerCase();
+					List<String> old = r.getTags(nomModele);
+					String[] oldTags = new String[old.size()];
+					
+					for(int i = 0; i < old.size(); i++)
+						oldTags[i] = old.get(i);
+				    String input = (String) JOptionPane.showInputDialog(null, "", "Retirer un tag au modele courant:", JOptionPane.QUESTION_MESSAGE, null, oldTags, oldTags[0]);
+				    
+					r.deleteTag(nomModele, input);
+				}
+			}
+		});
+		
+		// Bouton A propos
+		jMenuItems.get(14).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				JFrame jf = new JFrame("A propos");

@@ -18,7 +18,7 @@ public class Requests {
 			Class.forName("org.sqlite.JDBC");
 			c = DriverManager.getConnection("jdbc:sqlite:ressources/bdd/ressources.db");
 			stmt = c.createStatement();
-			String sql = "INSERT OR IGNORE INTO GTSFILES VALUES('" + s1 + "', '" + s2 + "')";
+			String sql = "INSERT OR IGNORE INTO GTSFILES VALUES('" + s1 + "', '" + s2 + "', 'tagTest')";
 			stmt.executeUpdate(sql);
 		}
 		catch (Exception e) {
@@ -38,16 +38,50 @@ public class Requests {
 	
 	public void addTag(String nomFigure, String tag){
 		Statement stmt = null;
-		ResultSet rs = null;
-		String s="";
 		try {
 			Class.forName("org.sqlite.JDBC");
 			c = DriverManager.getConnection("jdbc:sqlite:ressources/bdd/ressources.db");
 			stmt = c.createStatement();
-			rs = stmt.executeQuery("SELECT TAG FROM GTSFILES WHERE NOM = "+nomFigure);
-			if(rs.next())
-				s=rs.getString(1);
-			rs = stmt.executeQuery("UPDATE GTSFILES SET TAG = "+s+tag+" WHERE NOM = "+nomFigure);
+			String old = "";
+			
+			if(tag != null && tag.length() > 0){
+				List<String> s = getTags(nomFigure);
+				
+				for(String tmp : s){
+					if(tmp.length() > 0)
+						old += tmp + "/";
+				}
+				stmt.executeUpdate("UPDATE GTSFILES SET TAGS = '" + old + tag + "' WHERE NOM = '" + nomFigure + "'");
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			System.exit(0);
+		} 
+		finally {
+			try {
+				stmt.close();
+				c.close();
+			} 
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public List<String> getTags(String nomFigure) {
+		List<String> tmp = new LinkedList<String>();
+		Statement stmt = null;
+		ResultSet rs = null;
+		try {
+			Class.forName("org.sqlite.JDBC");
+			c = DriverManager.getConnection("jdbc:sqlite:ressources/bdd/ressources.db");
+			stmt = c.createStatement();
+			rs = stmt.executeQuery("SELECT tags FROM GTSFILES WHERE nom = '" + nomFigure + "'");
+				
+			String current[] = rs.getString("tags").split("/");
+			for(String s : current)
+				tmp.add(s);
 		} 
 		catch (Exception e) {
 			e.printStackTrace();
@@ -63,9 +97,10 @@ public class Requests {
 				e.printStackTrace();
 			}
 		}
+		return tmp;
 	}
 	
-	public List<String> selectTag(String champ){
+	public List<String> getModeles(String tag){
 		List<String> tmp = new LinkedList<String>();
 		Statement stmt = null;
 		ResultSet rs = null;
@@ -73,10 +108,9 @@ public class Requests {
 			Class.forName("org.sqlite.JDBC");
 			c = DriverManager.getConnection("jdbc:sqlite:ressources/bdd/ressources.db");
 			stmt = c.createStatement();
-			rs = stmt.executeQuery("SELECT NOM FROM GTSFILES WHERE TAG LIKE %"+champ+"%");
-			while (rs.next()) {
-				tmp.add(rs.getString(1));
-			}
+			rs = stmt.executeQuery("SELECT NOM FROM GTSFILES WHERE LENGTH('" + tag + "') > 0 AND TAGS LIKE '%" + tag + "/%'");
+			while (rs.next())
+				tmp.add(rs.getString("nom"));
 		} 
 		catch (Exception e) {
 			e.printStackTrace();
@@ -134,7 +168,7 @@ public class Requests {
 		return tmp;
 	}
 	
-	public String selectWhere(String condition) {
+	public String selectWhere(String champ, String condition) {
 		Statement stmt = null;
 		ResultSet rs = null;
 		
@@ -142,8 +176,8 @@ public class Requests {
 			Class.forName("org.sqlite.JDBC");
 			c = DriverManager.getConnection("jdbc:sqlite:ressources/bdd/ressources.db");
 			stmt = c.createStatement();
-			rs = stmt.executeQuery("SELECT path FROM GTSFILES WHERE " + condition);
-			return rs.getString(1);
+			rs = stmt.executeQuery("SELECT " + champ + " FROM GTSFILES WHERE " + condition);
+			return rs.getString(champ);
 		} 
 		catch (Exception e) {
 			e.printStackTrace();
@@ -264,5 +298,36 @@ public class Requests {
 			}
 		}
 		return tmp;
+	}
+
+	public void deleteTag(String modele, String tag) {
+		Statement stmt = null;
+		try {
+			Class.forName("org.sqlite.JDBC");
+			c = DriverManager.getConnection("jdbc:sqlite:ressources/bdd/ressources.db");
+			stmt = c.createStatement();
+			List<String> old = getTags(modele);
+			String tags = "";
+			
+			for(String s : old){
+				if(!s.equals(tag))
+					tags += s + "/";
+			}
+			
+			stmt.executeUpdate("UPDATE GTSFILES SET TAGS = '" + tags + "' WHERE NOM = '" + modele + "'");
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			System.exit(0);
+		} 
+		finally {
+			try {
+				stmt.close();
+				c.close();
+			} 
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }
