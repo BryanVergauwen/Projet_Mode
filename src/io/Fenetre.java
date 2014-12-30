@@ -531,8 +531,8 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 						JOptionPane.showMessageDialog(null, "fichier ne peut etre ferme", "erreur", JOptionPane.ERROR_MESSAGE);
 					}
 				}
-				jf.setContentPane(jta);
 				jf.setVisible(true);
+				jf.add(new JScrollPane(jta));
 			}
 		});
 	}
@@ -576,7 +576,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 
 	private void updateModel(){
 		String[] tmp = modele.split("\\\\");
-		setTitle(Data.TITLE + " - " + tmp[tmp.length-1].toLowerCase());
+		setTitle(Data.TITLE + " - " + tmp[tmp.length-1].toLowerCase() + " - Tags: " + r.getTags(tmp[tmp.length-1].toLowerCase()));
 		reader = new GtsReader(100, modele);
 		listeFaces = reader.getListFaces();
 		listePoints = reader.getListPoint();
