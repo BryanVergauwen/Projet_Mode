@@ -830,18 +830,12 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	@Override
 	public void keyPressed(KeyEvent e) {
 		if(modele != null){
-			if (e.getKeyCode() == KeyEvent.VK_F1){
+			if (e.getKeyCode() == KeyEvent.VK_F1)
 				function = 1;
-				paintComponent(getGraphics());
-			}
-			else if (e.getKeyCode() == KeyEvent.VK_F2){
+			else if (e.getKeyCode() == KeyEvent.VK_F2)
 				function = 2;
-				paintComponent(getGraphics());
-			}
-			else if (e.getKeyCode() == KeyEvent.VK_F3){
+			else if (e.getKeyCode() == KeyEvent.VK_F3)
 				function = 3;
-				paintComponent(getGraphics());
-			}
 			if (e.getKeyCode() == KeyEvent.VK_Z)
 				new Rotation(listePoints, listeFaces, Math.toRadians(10), "X");
 			if (e.getKeyCode() == KeyEvent.VK_Q)
@@ -851,9 +845,9 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 			if (e.getKeyCode() == KeyEvent.VK_D)
 				new Rotation(listePoints, listeFaces, Math.toRadians(-10), "Y");
 			if (e.getKeyCode() == KeyEvent.VK_A)
-				new Rotation(listePoints, listeFaces, Math.toRadians(10), "Z");
-			if (e.getKeyCode() == KeyEvent.VK_E)
 				new Rotation(listePoints, listeFaces, Math.toRadians(-10), "Z");
+			if (e.getKeyCode() == KeyEvent.VK_E)
+				new Rotation(listePoints, listeFaces, Math.toRadians(10), "Z");
 			if (e.getKeyCode() == KeyEvent.VK_O)
 				new Translation(listePoints, -10, "Y");
 			if (e.getKeyCode() == KeyEvent.VK_L)

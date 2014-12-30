@@ -16,6 +16,8 @@ o : Translation haut
 l : Translation bas
 k : Translation gauche
 m : Translation droite
+a : Barrel roll gauche
+e : Barrel roll droit
 F1 : Affichage du modèle en points
 F2 : Affichage du modèle en segments
 F3 : Affichage du modèle en faces
@@ -43,6 +45,9 @@ de rentrer votre tag dans la barre de recherche en le précédant par le caractère
 Exemple : #pokemon
 
 Pour voir l'intégralité des tags sur chaque modèle: Outils > Modeles > Lister les tags
+
+CALCULS :
+En mode segments (F2), un calcul du volume est fait, ainsi que de l'échelle du modèle.
 
 EXPORT
 Il est possible de prendre des screenshots du modèle courant en allant dans Fichier > Exporter.
