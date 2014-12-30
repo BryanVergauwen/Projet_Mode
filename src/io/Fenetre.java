@@ -78,7 +78,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	private static final long serialVersionUID = 1L;
 	private Point current;
 	private Random rd = new Random();
-	private int cptMouse = 0, decalX, decalY, tailleSegment = 0, function = 3;
+	private int cptMouse = 0, decalX, decalY, tailleSegment = -1, function = 3;
 	private int red = rd.nextInt(256), green, blue;
 	private GtsReader reader;
 	private List<Face> listeFaces;
@@ -95,6 +95,8 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	private String modele = null, filtreTexte = "";
 	private JTextField filtre = new JTextField();
 	private JScrollPane scrollPane;
+	private double Lx, Ly, Lz;
+	private double rapportTaille;
 	
 	public Fenetre() {
 		super(Data.TITLE);
@@ -587,7 +589,8 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	
 	protected void editSize() {
 		try{
-			tailleSegment = Integer.parseInt(JOptionPane.showInputDialog("Entrez une taille: "));
+			tailleSegment = Integer.parseInt(JOptionPane.showInputDialog("Entrez la taille du segment rouge: "));
+			rapportTaille = tailleSegment/Lx;
 		}
 		catch (Exception ex){
 			tailleSegment = -1;
@@ -622,6 +625,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		String[] tmp = modele.split("\\\\");
 		setTitle(Data.TITLE + " - " + tmp[tmp.length-1].toLowerCase() + " - Tags: " + r.getTags(tmp[tmp.length-1].toLowerCase()));
 		reader = new GtsReader(100, modele);
+		tailleSegment=-1;
 		listeFaces = reader.getListFaces();
 		listePoints = reader.getListPoint();
 		listeSegments = reader.getListSegments();
@@ -673,10 +677,65 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 						offgc.fillPolygon(f.getTriangleX(), f.getTriangleY(), 3);
 					}
 				}
+				if(function == 2){
+				int xMax, xMin, yMax, yMin, zMax, zMin;
+				xMax=(int)listePoints.get(1).getX();
+				xMin=(int)listePoints.get(1).getX();
+				yMax=(int)listePoints.get(1).getY();
+				yMin=(int)listePoints.get(1).getY();
+				zMax=(int)listePoints.get(1).getZ();
+				zMin=(int)listePoints.get(1).getZ();
+				for( Point p : listePoints){
+					int altx=(int)p.getX();
+					int alty=(int)p.getY();
+					int altz=(int)p.getZ();
+					if(altx>xMax)
+						xMax=altx;
+					if(altx<xMin)
+						xMin=altx;
+					if(alty>yMax)
+						yMax=alty;
+					if(alty<yMin)
+						yMin=alty;
+					if(altz>zMax)
+						zMax=altz;
+					if(altz<zMin)
+						zMin=altz;
+				}
+				
+				offgc.setColor(new Color(255, 0, 0));
+				offgc.drawLine((int)(xMax+Data.alphaX+Data.COEFF1), (int)(0+Data.alphaY+Data.COEFF2), (int)(xMin+Data.alphaX+Data.COEFF1), (int)(0+Data.alphaY+Data.COEFF2));
+				offgc.setColor(new Color(0, 0, 255));
+				offgc.drawLine((int)(0+Data.alphaX+Data.COEFF1), (int)(yMax+Data.alphaY+Data.COEFF2), (int)(0+Data.alphaX+Data.COEFF1), (int)(yMin+Data.alphaY+Data.COEFF2));
+
+				//Volume
+				
+				Lx=Math.sqrt((xMax-xMin)*(xMax-xMin));
+				Ly=Math.sqrt((yMax-yMin)*(yMax-yMin));
+				Lz=Math.sqrt((zMax-zMin)*(zMax-zMin));
+				if(tailleSegment<0){
+					double volume = Lx*Ly*Lz;
+					offgc.setColor(new Color(0, 0, 0));
+					offgc.drawString((int)volume+" UA cube", 20, 20);
+				}else{
+					Lx=Lx*rapportTaille;
+					Ly=Ly*rapportTaille;
+					Lz=Lz*rapportTaille;
+					double volume = Lx*Ly*Lz;
+					offgc.setColor(new Color(0, 0, 0));
+					offgc.drawString((int)volume+" cm cube", 20, 20);
+				}
+				offgc.setColor(new Color(255, 0, 0));
+				offgc.drawString(Lx+" largeur", 20, 40);
+				offgc.setColor(new Color(0, 0, 255));
+				offgc.drawString(Ly+" hauteur", 20, 60);
+				offgc.setColor(new Color(0, 255, 0));
+				offgc.drawString(Lz+" profondeur", 20, 80);
 			}
-			g2.drawImage(offscreen, decalX, decalY, this);
 		}
+		g2.drawImage(offscreen, decalX, decalY, this);
 	}
+}
 
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
@@ -792,6 +851,10 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 				new Rotation(listePoints, listeFaces, Math.toRadians(-10), "X");
 			if (e.getKeyCode() == KeyEvent.VK_D)
 				new Rotation(listePoints, listeFaces, Math.toRadians(-10), "Y");
+			if (e.getKeyCode() == KeyEvent.VK_A)
+				new Rotation(listePoints, listeFaces, Math.toRadians(10), "Z");
+			if (e.getKeyCode() == KeyEvent.VK_E)
+				new Rotation(listePoints, listeFaces, Math.toRadians(-10), "Z");
 			if (e.getKeyCode() == KeyEvent.VK_O)
 				new Translation(listePoints, -10, "Y");
 			if (e.getKeyCode() == KeyEvent.VK_L)
