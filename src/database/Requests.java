@@ -18,7 +18,7 @@ public class Requests {
 			Class.forName("org.sqlite.JDBC");
 			c = DriverManager.getConnection("jdbc:sqlite:ressources/bdd/ressources.db");
 			stmt = c.createStatement();
-			String sql = "INSERT OR IGNORE INTO GTSFILES VALUES('" + s1 + "', '" + s2 + "', 'tagTest')";
+			String sql = "INSERT OR IGNORE INTO GTSFILES VALUES('" + s1 + "', '" + s2 + "', '')";
 			stmt.executeUpdate(sql);
 		}
 		catch (Exception e) {
@@ -47,11 +47,9 @@ public class Requests {
 			if(tag != null && tag.length() > 0){
 				List<String> s = getTags(nomFigure);
 				
-				for(String tmp : s){
-					if(tmp.length() > 0)
-						old += tmp + "/";
-				}
-				stmt.executeUpdate("UPDATE GTSFILES SET TAGS = '" + old + tag + "' WHERE NOM = '" + nomFigure + "'");
+				for(String tmp : s)
+					old += tmp + "/";
+				stmt.executeUpdate("UPDATE GTSFILES SET TAGS = '" + old + tag + "/' WHERE NOM = '" + nomFigure + "'");
 			}
 		}
 		catch (Exception e) {
@@ -108,7 +106,7 @@ public class Requests {
 			Class.forName("org.sqlite.JDBC");
 			c = DriverManager.getConnection("jdbc:sqlite:ressources/bdd/ressources.db");
 			stmt = c.createStatement();
-			rs = stmt.executeQuery("SELECT NOM FROM GTSFILES WHERE LENGTH('" + tag + "') > 0 AND TAGS LIKE '%" + tag + "/%'");
+			rs = stmt.executeQuery("SELECT NOM FROM GTSFILES WHERE TAGS LIKE '%" + tag + "/%'");
 			while (rs.next())
 				tmp.add(rs.getString("nom"));
 		} 

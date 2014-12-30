@@ -16,7 +16,7 @@ public class Data {
 	public static final Image ICON3D = Toolkit.getDefaultToolkit().getImage("ressources/images/ICON3D.png");
 	public static double alphaX = 0.0, alphaY = 0.0;
 	public static final String TITLE = "GTSReader";
-	public static final String FICHIER_AIDE = "ressources/text/qqc.txt";
+	public static final String FICHIER_AIDE = "ressources/text/a_propos.txt";
 	public static final Icon OPEN = new ImageIcon("ressources/icons/OPEN.png");
 	public static final Icon SAVE = new ImageIcon("ressources/icons/SAVE.png");
 	public static final Icon EXPORT = new ImageIcon("ressources/icons/EXPORT.png");

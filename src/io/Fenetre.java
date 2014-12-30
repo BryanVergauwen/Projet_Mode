@@ -165,7 +165,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	private void paramListeModelesCustom() {
 		List<String> tmp;
 		
-		if(filtreTexte.length() > 0 && filtreTexte.charAt(0) == '#')
+		if(filtreTexte.length() > 1 && filtreTexte.charAt(0) == '#')
 			tmp = r.getModeles(filtreTexte.substring(1, filtreTexte.length()));
 		else
 			tmp = r.selectLike(filtreTexte);
@@ -378,7 +378,6 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 				setFullScreen();
 			}
 		});
-		
 		
 		// Bouton modif couleur
 		jMenuItems.get(6).addActionListener(new ActionListener() {
