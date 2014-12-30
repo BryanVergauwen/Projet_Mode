@@ -118,9 +118,6 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		}
 		chargement.dispose();
 		setVisible(true);
-		validate();
-		revalidate();
-		paintComponent(getGraphics());
 	}
 
 	private void initFrameChargement() {
@@ -204,6 +201,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLocationRelativeTo(null);
 		setIconImage(Data.ICON3D);
+		getContentPane().setBackground(new Color(102, 119, 175));
 	}
 
 	private void addListeners() {
