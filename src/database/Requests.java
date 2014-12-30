@@ -137,10 +137,8 @@ public class Requests {
 			Class.forName("org.sqlite.JDBC");
 			c = DriverManager.getConnection("jdbc:sqlite:ressources/bdd/ressources.db");
 			stmt = c.createStatement();
-			if(OrderBy){
-				if(!champ.equals("*"))
-					rs = stmt.executeQuery("SELECT " + champ + " FROM GTSFILES ORDER BY " + champ);
-			}
+			if(OrderBy && !champ.equals("*"))
+				rs = stmt.executeQuery("SELECT " + champ + " FROM GTSFILES ORDER BY " + champ);
 			else
 				rs = stmt.executeQuery("SELECT " + champ + " FROM GTSFILES");
 			while (rs.next()) {

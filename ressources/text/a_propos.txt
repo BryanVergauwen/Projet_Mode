@@ -9,8 +9,8 @@ Molette bas : zoom -
 
 CLAVIER
 z : Rotation haut
-q : Rotation bas
-s : Rotation gauche
+s : Rotation bas
+q : Rotation gauche
 d : Rotation droite
 o : Translation haut
 l : Translation bas
@@ -35,7 +35,8 @@ Vous pouvez importer vos propres modèles, soit par drag'n drop, soit via Fichier
 BARRE DE RECHERCHE ET DE FILTRAGE PAR TAG
 Une barre de recherche vous permettra de filtrer les modèles par nom.
 
-Il est possible, pour chaque modèle, d'ajouter/supprimer un ou plusieurs tags via le sous-menu Outils/Modeles/...
+Il est possible, pour chaque modèle, d'ajouter/supprimer 
+un ou plusieurs tags via le sous-menu Outils/Modeles/...
 Pour retrouver les modèles associés un à un tag, il vous suffira
 de rentrer votre tag dans la barre de recherche en le précédant par le caractère #
 
@@ -54,7 +55,7 @@ Le mode plein écran est disponible dans la rubrique Affichage du menu.
 
 Vous pouvez changer l'image de fond via Affichage > Changer image de fond. 
 Des images sont disponibles dans ressources/images, mais vous 
-pouvez également selectionner votre propre images.
+pouvez également selectionner vos propres images.
 
 Vous pouvez également changer la couleur des modèles grâce aux différentes rubriques du menu Outils : 
  - couleur aléatoire uniforme
