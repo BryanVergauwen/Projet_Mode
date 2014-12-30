@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -155,7 +156,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	}
 
 	private void paramListeModeles() {
-		List<String> tmp = r.select("nom");
+		List<String> tmp = r.select("nom", true);
 		initListeModeles(tmp);
 	}
 	
@@ -272,6 +273,8 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		JMenuBar menuBar = new JMenuBar();
 		List<JMenu> jMenus = new LinkedList<JMenu>();
 		List<JMenuItem> jMenuItems = new LinkedList<JMenuItem>();
+		JMenu couleurs = new JMenu("Couleurs...    ");
+		JMenu modeles = new JMenu("Modeles...    ");
 		
 		jMenus.add(new JMenu("Fichier"));
 		jMenus.add(new JMenu("Edition"));
@@ -279,27 +282,33 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		jMenus.add(new JMenu("Outils"));
 		jMenus.add(new JMenu("Aide"));
 		
+		// Fichier
 		jMenuItems.add(new JMenuItem("Ouvrir"));
 		jMenuItems.add(new JMenuItem("Enregistrer sous"));
 		jMenuItems.add(new JMenuItem("Exporter"));
 		jMenuItems.add(new JMenuItem("Quitter"));
+		// Edition
 		jMenuItems.add(new JMenuItem("Saisir taille"));
+		// Affichage
+		jMenuItems.add(new JMenuItem("Changer image de fond..."));
 		jMenuItems.add(new JCheckBoxMenuItem("Plein ecran"));
+		// Outils
 		jMenuItems.add(new JMenuItem("Modifier la couleur"));
 		jMenuItems.add(new JMenuItem("Degrade de couleurs"));
 		jMenuItems.add(new JMenuItem("Couleur aleatoire (uniforme)"));
 		jMenuItems.add(new JMenuItem("Toutes couleurs aleatoires"));
-		jMenuItems.add(new JMenuItem("Changer image de fond..."));
 		jMenuItems.add(new JMenuItem("You spin my head right round, right round..."));
 		jMenuItems.add(new JMenuItem("Ajouter un tag au modele courant"));
 		jMenuItems.add(new JMenuItem("Retirer un tag au modele courant"));
+		jMenuItems.add(new JMenuItem("Lister les tags"));
+		// Aide
 		jMenuItems.add(new JMenuItem("A propos"));
 		
 		jMenuItems.get(0).setIcon(Data.OPEN);
 		jMenuItems.get(1).setIcon(Data.SAVE);
 		jMenuItems.get(2).setIcon(Data.EXPORT);
 		jMenuItems.get(3).setIcon(Data.QUIT);
-		jMenuItems.get(14).setIcon(Data.HELP);
+		jMenuItems.get(15).setIcon(Data.HELP);
 		
 		// Fichier
 		jMenus.get(0).add(jMenuItems.get(0));
@@ -310,17 +319,21 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		jMenus.get(1).add(jMenuItems.get(4));
 		// Affichage
 		jMenus.get(2).add(jMenuItems.get(5));
+		jMenus.get(2).add(jMenuItems.get(6));
 		// Outils
-		jMenus.get(3).add(jMenuItems.get(6));
-		jMenus.get(3).add(jMenuItems.get(7));
-		jMenus.get(3).add(jMenuItems.get(8));
-		jMenus.get(3).add(jMenuItems.get(9));
-		jMenus.get(3).add(jMenuItems.get(10));
-		jMenus.get(3).add(jMenuItems.get(11));
-		jMenus.get(3).add(jMenuItems.get(12));
-		jMenus.get(3).add(jMenuItems.get(13));
+		couleurs.add(jMenuItems.get(7));
+		couleurs.add(jMenuItems.get(8));
+		couleurs.add(jMenuItems.get(9));
+		couleurs.add(jMenuItems.get(10));
+		couleurs.add(jMenuItems.get(11));
+		modeles.add(jMenuItems.get(12));
+		modeles.add(jMenuItems.get(13));
+		modeles.add(jMenuItems.get(14));
+
+		jMenus.get(3).add(couleurs);
+		jMenus.get(3).add(modeles);
 		// Aide
-		jMenus.get(4).add(jMenuItems.get(14));
+		jMenus.get(4).add(jMenuItems.get(15));
 		
 		for(JMenu j : jMenus)
 			menuBar.add(j);
@@ -345,7 +358,14 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 			}
 		});
 		
-		// boutton exporter
+		// bouton enregistrer sous
+		jMenuItems.get(1).addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+			}
+		});
+		
+		// bouton exporter
 		jMenuItems.get(2).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -369,8 +389,25 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 			}
 		});
 		
-		// Bouton full Screen
+		// Bouton changer wallpaper
 		jMenuItems.get(5).addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				JFileChooser fileopen = null;
+				fileopen = new JFileChooser(new File( ".").getAbsolutePath());
+				FileFilter filter = new FileNameExtensionFilter(".bmp", "bmp");
+				fileopen.addChoosableFileFilter(filter);
+				filter = new FileNameExtensionFilter(".jpg", "jpg");
+				fileopen.addChoosableFileFilter(filter);
+
+				int ret = fileopen.showDialog(null, "Open file");
+				if (ret == JFileChooser.APPROVE_OPTION)
+					Data.WALLPAPER = Toolkit.getDefaultToolkit().getImage(fileopen.getSelectedFile().getAbsolutePath());
+			}
+		});
+		
+		// Bouton full Screen
+		jMenuItems.get(6).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				setFullScreen();
@@ -378,7 +415,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		});
 		
 		// Bouton modif couleur
-		jMenuItems.get(6).addActionListener(new ActionListener() {
+		jMenuItems.get(7).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				map = null;
@@ -388,7 +425,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		});
 		
 		// Bouton degrade couleur
-		jMenuItems.get(7).addActionListener(new ActionListener() {
+		jMenuItems.get(8).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				map = new HashMap<Face, Color>();
@@ -413,7 +450,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		});
 		
 		// Bouton couleur aleatoire
-		jMenuItems.get(8).addActionListener(new ActionListener() {
+		jMenuItems.get(9).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				map = null;
@@ -423,7 +460,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		});
 		
 		// Bouton toutes couleurs aleatoires
-		jMenuItems.get(9).addActionListener(new ActionListener() {
+		jMenuItems.get(10).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				map = new HashMap<Face, Color>();
@@ -431,23 +468,6 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 				for(int i = 0; i < listeFaces.size(); i++)
 					map.put(listeFaces.get(i), randomColor());
 				paintComponent(getGraphics());
-			}
-		});
-		
-		// Bouton changer wallpaper
-		jMenuItems.get(10).addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				JFileChooser fileopen = null;
-				fileopen = new JFileChooser(new File( ".").getAbsolutePath());
-				FileFilter filter = new FileNameExtensionFilter(".bmp", "bmp");
-				fileopen.addChoosableFileFilter(filter);
-				filter = new FileNameExtensionFilter(".jpg", "jpg");
-				fileopen.addChoosableFileFilter(filter);
-
-				int ret = fileopen.showDialog(null, "Open file");
-				if (ret == JFileChooser.APPROVE_OPTION)
-					Data.WALLPAPER = Toolkit.getDefaultToolkit().getImage(fileopen.getSelectedFile().getAbsolutePath());
 			}
 		});
 		
@@ -501,8 +521,32 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 			}
 		});
 		
-		// Bouton A propos
+		// Bouton lister tag
 		jMenuItems.get(14).addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JFrame jf = new JFrame("Tags");
+				jf.setSize(890, 500);
+				jf.setLocationRelativeTo(null);
+				jf.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+				jf.setIconImage(Data.ICON3D);
+				JTextArea jta = new JTextArea();
+				List<String> noms = r.select("nom", true);
+				List<String> tags = r.select("tags", false);
+				
+				Iterator<String> it = noms.iterator();
+				Iterator<String> it2 = tags.iterator();
+				while(it.hasNext())
+					jta.append(it.next() + ": " + it2.next() + "\n");
+				
+				jta.setEditable(false);
+				jf.setVisible(true);
+				jf.add(new JScrollPane(jta));
+			}
+		});
+		
+		// Bouton A propos
+		jMenuItems.get(15).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				JFrame jf = new JFrame("A propos");
@@ -748,6 +792,18 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 				new Rotation(listePoints, listeFaces, Math.toRadians(-10), "X");
 			if (e.getKeyCode() == KeyEvent.VK_D)
 				new Rotation(listePoints, listeFaces, Math.toRadians(-10), "Y");
+			if (e.getKeyCode() == KeyEvent.VK_O)
+				new Translation(listePoints, -10, "Y");
+			if (e.getKeyCode() == KeyEvent.VK_L)
+				new Translation(listePoints, 10, "Y");
+			if (e.getKeyCode() == KeyEvent.VK_K)
+				new Translation(listePoints, -10, "X");
+			if (e.getKeyCode() == KeyEvent.VK_M)
+				new Translation(listePoints, 10, "X");
+			if (e.getKeyCode() == KeyEvent.VK_SUBTRACT)
+				new Homothetie(listePoints, 0.9);
+			if (e.getKeyCode() == KeyEvent.VK_ADD)
+				new Homothetie(listePoints, 1.1);
 			paintComponent(getGraphics());
 		}
 	}

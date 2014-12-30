@@ -7,16 +7,22 @@ SOURIS
 Bouton gauche : faire pivoter le modèle
 Bouton droit : déplacer le modèle
 Molette haut : zoom +
-Mollette bas : zoom -
+Molette bas : zoom -
 
 CLAVIER
 z : Rotation haut
 q : Rotation bas
 s : Rotation gauche
 d : Rotation droite
-f1 : Affichage du modèle en points
-f2 : Affichage du modèle en segments
-f3 : Affichage du modèle en faces
+o : Translation haut
+l : Translation bas
+k : Translation gauche
+m : Translation droite
+F1 : Affichage du modèle en points
+F2 : Affichage du modèle en segments
+F3 : Affichage du modèle en faces
+- : Zoom -
++ : Zoom +
 
 GESTION DES MODELES
 Il y a 2 façons de charger les modèles GTS dans le logiciel : 

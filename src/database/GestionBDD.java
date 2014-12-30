@@ -21,7 +21,7 @@ public class GestionBDD {
 			r.insert(files.get(i).getName().toLowerCase(), files.get(i).getAbsolutePath());
 		
 		// Suppression dans la base des fichiers supprimes de l'ordinateur
-		List<String> tmp = r.select("path");
+		List<String> tmp = r.select("path", true);
 		File file;
 		for(String path : tmp){
 			file = new File(path);
