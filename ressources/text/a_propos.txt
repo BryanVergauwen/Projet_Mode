@@ -1,7 +1,5 @@
-GTSReader est un logiciel permettant de visualiser vos modèles 3D (GTS : GNU Triangulated Surface)
+GTSReader est un logiciel permettant de visualiser des modèles 3D au format gts (GTS : GNU Triangulated Surface)
 et d'utiliser ces modèles de manière intuitive.
-
-Comment ça marche ?
 
 SOURIS
 Bouton gauche : faire pivoter le modèle
@@ -36,11 +34,14 @@ Vous pouvez importer vos propres modèles, soit par drag'n drop, soit via Fichier
 
 BARRE DE RECHERCHE ET DE FILTRAGE PAR TAG
 Une barre de recherche vous permettra de filtrer les modèles par nom.
-Il est possible, pour chaque modèle, d'ajouter/supprimer un ou plusieurs tags via le menu Outils
-Pour retrouver les modèles associés un à un tag, il vous suffira 
+
+Il est possible, pour chaque modèle, d'ajouter/supprimer un ou plusieurs tags via le sous-menu Outils/Modeles/...
+Pour retrouver les modèles associés un à un tag, il vous suffira
 de rentrer votre tag dans la barre de recherche en le précédant par le caractère #
 
 Exemple : #pokemon
+
+Pour voir l'intégralité des tags sur chaque modèle: Outils > Modeles > Lister les tags
 
 EXPORT
 Il est possible de prendre des screenshots du modèle courant en allant dans Fichier > Exporter.
@@ -51,7 +52,7 @@ de la source de lumière, pour un rendu très réaliste.
 
 Le mode plein écran est disponible dans la rubrique Affichage du menu.
 
-Vous pouvez changer l'image de fond via Outils > Changer image de fond. 
+Vous pouvez changer l'image de fond via Affichage > Changer image de fond. 
 Des images sont disponibles dans ressources/images, mais vous 
 pouvez également selectionner votre propre images.
 
@@ -59,4 +60,4 @@ Vous pouvez également changer la couleur des modèles grâce aux différentes rubri
  - couleur aléatoire uniforme
  - couleur aléatoire de votre choix
  - couleur aléatoire par face
- - dégradé de couleur
+ - dégradé de couleurs

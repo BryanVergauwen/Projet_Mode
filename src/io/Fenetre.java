@@ -325,13 +325,13 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		couleurs.add(jMenuItems.get(8));
 		couleurs.add(jMenuItems.get(9));
 		couleurs.add(jMenuItems.get(10));
-		couleurs.add(jMenuItems.get(11));
 		modeles.add(jMenuItems.get(12));
 		modeles.add(jMenuItems.get(13));
 		modeles.add(jMenuItems.get(14));
 
 		jMenus.get(3).add(couleurs);
 		jMenus.get(3).add(modeles);
+		jMenus.get(3).add(jMenuItems.get(11));
 		// Aide
 		jMenus.get(4).add(jMenuItems.get(15));
 		
