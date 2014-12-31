@@ -3,7 +3,7 @@ package objects;
 import java.io.Serializable;
 
 public class Vecteur implements Serializable{
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 6674538193995245301L;
 	private double x, y, z;
 
 	// un vecteur

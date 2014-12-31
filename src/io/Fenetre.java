@@ -37,7 +37,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -97,7 +96,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	private JList<String> listeModeles;
 	private Color color;
 	private Map<Face, Color> map;
-	private boolean export = false, fullScreen = false, ctrlA = false;
+	private boolean export = false, fullScreen = false, ctrlA = false, degrade = false;
 	private Requests r = new Requests();
 	private String modele = null, filtreTexte = "";
 	private JTextField filtre = new JTextField();
@@ -417,6 +416,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				map = null;
+				degrade = false;
 				color = JColorChooser.showDialog(null, "Palette de couleur", null);
 				paintComponent(getGraphics());
 			}
@@ -427,6 +427,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				map = new HashMap<Face, Color>();
+				degrade = true;
 				int etape = listeFaces.size() / 255;
 				Color tmp = degradeColor();
 
@@ -452,6 +453,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				map = null;
+				degrade = false;
 				color = randomColor();
 				paintComponent(getGraphics());
 			}
@@ -462,6 +464,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				map = new HashMap<Face, Color>();
+				degrade = false;
 				
 				for(int i = 0; i < listeFaces.size(); i++)
 					map.put(listeFaces.get(i), randomColor());
@@ -496,6 +499,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 					String oldTags = r.getTags(nomModele).toString();
 				
 					r.addTag(nomModele, JOptionPane.showInputDialog("Tags existants : " + oldTags + "\nAjouter un tag au modele courant: "));
+					setTitle(Data.TITLE + " - " + tmp[tmp.length-1].toLowerCase() + " - Tags: " + r.getTags(tmp[tmp.length-1].toLowerCase()));
 				}
 			}
 		});
@@ -515,6 +519,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 				    String input = (String) JOptionPane.showInputDialog(null, "", "Retirer un tag au modele courant:", JOptionPane.QUESTION_MESSAGE, null, oldTags, oldTags[0]);
 				    
 					r.deleteTag(nomModele, input);
+					setTitle(Data.TITLE + " - " + tmp[tmp.length-1].toLowerCase() + " - Tags: " + r.getTags(tmp[tmp.length-1].toLowerCase()));
 				}
 			}
 		});
@@ -626,6 +631,11 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 				// Ecriture fichier properties
 				output2.write("# Couleur\n");
 				output2.write(color.getRed() + " " + color.getGreen() + " " + color.getBlue() + "\n");
+				output2.write("# Degrade\n");
+				output2.write(degrade+"\n");
+				output2.write("# Tags\n");
+				String[] tmp = modele.split("\\\\");
+				output2.write(r.getTags(tmp[tmp.length-1].toLowerCase())+"");
 
 				if(map != null){
 					ObjectOutputStream oos = null;
@@ -706,16 +716,20 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		String[] tmp = modele.split("\\\\");
 		setTitle(Data.TITLE + " - " + tmp[tmp.length-1].toLowerCase() + " - Tags: " + r.getTags(tmp[tmp.length-1].toLowerCase()));
 		reader = new GtsReader(modele);
+		reset();
+		Data.alphaX = Data.alphaY = 0; // recentrage de la figure
+		if(new File(modele.substring(0, modele.length()-4) + "_properties").exists())
+			deserialization();
+		paintComponent(getGraphics());
+	}
+
+	private void reset() {
 		map = null;
 		listeFaces = reader.getListFaces();
 		listePoints = reader.getListPoint();
 		listeSegments = reader.getListSegments();
-		if(new File(modele.substring(0, modele.length()-4) + "_properties").exists())
-			deserialization();
 		tailleSegment = -1;
-		color = new Color(100, 100, 100);
-		Data.alphaX = Data.alphaY = 0; // recentrage de la figure
-		paintComponent(getGraphics());
+		color = new Color(100, 100, 100);		
 	}
 
 	@SuppressWarnings("unchecked")
@@ -733,6 +747,18 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 					String[] tmp = str.split(" ");
 					color = new Color(Integer.parseInt(tmp[0]), Integer.parseInt(tmp[1]), Integer.parseInt(tmp[2]));
 				}
+				else if(str.equals("# Degrade"))
+					degrade = Boolean.parseBoolean(str = file.readLine());
+				else if(str.equals("# Tags")){
+					String[] tmp = modele.split("\\\\");
+
+					r.deleteAllTag(tmp[tmp.length-1]);
+					str = file.readLine();
+					String tab[] = str.substring(1, str.length()-1).split(", ");
+					for(String s2 : tab)
+						r.addTag(tmp[tmp.length-1], s2);
+					setTitle(Data.TITLE + " - " + tmp[tmp.length-1].toLowerCase() + " - Tags: " + r.getTags(tmp[tmp.length-1].toLowerCase()));	
+				}
 				str = file.readLine();
 			}
 			File fichier = null;
@@ -740,12 +766,38 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 				fichier = new File(modele.substring(0, modele.length()-4) + "_map");
 				ois = new ObjectInputStream(new FileInputStream(fichier));
 				Map<Face, Color> mapTmp = (Map<Face, Color>) ois.readObject();
-				Collection<Color> color = mapTmp.values();
-				Iterator<Color> it = color.iterator();
+				List<Color> color = new LinkedList<Color>();
 				
+				for(Color c : mapTmp.values())
+					color.add(c);
+				if(degrade){
+					Collections.sort(color, new Comparator<Color>() {
+						@Override
+						public int compare(Color o1, Color o2) {
+							int o1V = o1.getGreen();
+							int o1B = o1.getBlue();
+							int o2V = o2.getGreen();
+							int o2B = o2.getBlue();
+							
+							if(o1V < o2V)
+								return -1;
+							else if(o1V > o2V)
+								return 1;
+							else{
+								if(o1B < o2B)
+									return -1;
+								else if(o1B > o2B)
+									return 1;
+								else
+									return 0;
+							}
+						}
+					});
+				}
+					
 				map = new HashMap<Face, Color>();
-				for(Face f : listeFaces)
-					map.put(f, it.next());
+				for(int i = 0; i < listeFaces.size(); i++)
+					map.put(listeFaces.get(i), color.get(i));
 			}
 		} 
 		catch (IOException | ClassNotFoundException e) {

@@ -3,7 +3,7 @@ package objects;
 import java.io.Serializable;
 
 public class Point implements Serializable{
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -2151217679332074510L;
 	private double x, y, z;
 	
 	public Point(double x, double y, double z){

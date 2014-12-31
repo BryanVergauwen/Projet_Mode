@@ -5,7 +5,7 @@ import java.io.Serializable;
 import data.Data;
 
 public class Face implements Comparable<Face>, Serializable{
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -5955616169417788970L;
 	private Point a, b, c;
 	private Vecteur normal;
 	private double barycentre;

@@ -328,4 +328,27 @@ public class Requests {
 			}
 		}
 	}
+
+	public void deleteAllTag(String modele) {
+		Statement stmt = null;
+		try {
+			Class.forName("org.sqlite.JDBC");
+			c = DriverManager.getConnection("jdbc:sqlite:ressources/bdd/ressources.db");
+			stmt = c.createStatement();
+			stmt.executeUpdate("UPDATE GTSFILES SET TAGS = '' WHERE NOM = '" + modele + "'");
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			System.exit(0);
+		} 
+		finally {
+			try {
+				stmt.close();
+				c.close();
+			} 
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}		
+	}
 }
