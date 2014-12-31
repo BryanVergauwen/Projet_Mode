@@ -17,8 +17,10 @@ public class GtsReader{
 	private List<Segment> segments = new ArrayList<Segment>();
 	private List<Face> faces = new ArrayList<Face>();
 	private int nbPoint, nbSegments, nbFaces;
+	private List<String> seg = new ArrayList<String>();
+	private List<String> fac = new ArrayList<String>();
 	
-	public GtsReader(int coef, String file) {
+	public GtsReader(String file) {
 		try {
 			InputStream ips = new FileInputStream(file);
 			BufferedReader br = new BufferedReader(new InputStreamReader(ips));
@@ -34,9 +36,9 @@ public class GtsReader{
 			while (ligne != null && limite < nbPoint) {
 				if (ligne.charAt(0) != '#') {
 					result = ligne.split(" ");
-					double a = Double.parseDouble(result[0]) * coef;
-					double b = Double.parseDouble(result[1]) * coef;
-					double c = Double.parseDouble(result[2]) * coef;
+					double a = Double.parseDouble(result[0]);
+					double b = Double.parseDouble(result[1]);
+					double c = Double.parseDouble(result[2]);
 
 					points.add(new Point(a, -b, c));
 					limite++;
@@ -51,7 +53,8 @@ public class GtsReader{
 					result = ligne.split(" ");
 					int d = Integer.parseInt(result[0]) - 1;
 					int e = Integer.parseInt(result[1]) - 1;
-
+					
+					seg.add((d+1) + " " + (e+1));
 					segments.add(new Segment(points.get(d), points.get(e)));
 					limite++;
 				}
@@ -67,6 +70,7 @@ public class GtsReader{
 					int g = Integer.parseInt(result[1]) - 1;
 					int h = Integer.parseInt(result[2]) - 1;
 
+					fac.add((f+1) + " " + (g+1) + " " + (h+1));
 					faces.add(new Face(segments.get(f), segments.get(g), segments.get(h)));
 					limite++;
 				}
@@ -93,5 +97,20 @@ public class GtsReader{
 
 	public List<Face> getListFaces() {
 		return faces;
+	}
+	public List<String> getSeg(){
+		return seg;
+	}
+	public List<String> getFac(){
+		return fac;
+	}
+	public int getNbPoints(){
+		return nbPoint;
+	}
+	public int getNbSegments(){
+		return nbSegments;
+	}
+	public int getNbFaces(){
+		return nbFaces;
 	}
 }

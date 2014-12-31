@@ -28,8 +28,10 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
@@ -38,6 +40,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Random;
 
 import javax.swing.BoxLayout;
@@ -363,6 +366,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		jMenuItems.get(1).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				saveAs();
 			}
 		});
 		
@@ -582,6 +586,60 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		});
 	}
 
+	protected void saveAs() {
+		JFileChooser save = null;
+		save = new JFileChooser(new File(".").getAbsolutePath());
+		if(save.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+			try{
+				FileWriter fw = new FileWriter(save.getSelectedFile().getAbsolutePath()+".gts");
+				FileWriter fw2 = new FileWriter(save.getSelectedFile().getAbsolutePath() + "_properties");
+				BufferedWriter output = new BufferedWriter(fw);
+				
+				// Ecriture fichier gts
+				output.write(reader.getNbPoints() + " "  + reader.getNbSegments() + " " + reader.getNbFaces() + "\n");
+				output.write("# points" + "\n");
+				for(Point p : listePoints){
+					String[] tmp = p.toString().split(";");
+					String tmp2 = "";
+					
+					for(String s : tmp)
+						tmp2 += s + " ";
+					output.write(tmp2 + "\n");
+				}
+				output.write("# segments" + "\n");
+				for(String s : reader.getSeg())
+					output.write(s + "\n");
+				output.write("# faces" + "\n");
+				for(String s : reader.getFac())
+					output.write(s + "\n");
+				
+
+				// Ecriture fichier properties
+				output = new BufferedWriter(fw2);
+				
+				output.write("# Couleur simple\n");
+				output.write(color.getRed() + " " + color.getGreen() + " " + color.getBlue() + "\n");
+				output.write("# Map\n");
+				if(map == null)
+					output.write("null\n");
+				else{
+					Properties p = new Properties();
+					
+					p.putAll(map);
+					p.store(fw2, null);
+				}
+				
+				
+				// Fermeture
+				output.flush();
+				output.close();
+			}
+			catch(IOException ioe){
+				ioe.printStackTrace();
+			}
+		}
+	}
+
 	protected Color degradeColor() {
 		return new Color(red, green++, blue++);
 	}
@@ -612,7 +670,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 
 	protected void exportImage() {
 		export = true;
-		new ExportFile(this, decalX, decalY);
+		new ExportImage(this, decalX, decalY);
 		export = false;		
 	}
 
@@ -623,7 +681,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	private void updateModel(){
 		String[] tmp = modele.split("\\\\");
 		setTitle(Data.TITLE + " - " + tmp[tmp.length-1].toLowerCase() + " - Tags: " + r.getTags(tmp[tmp.length-1].toLowerCase()));
-		reader = new GtsReader(100, modele);
+		reader = new GtsReader(modele);
 		tailleSegment = -1;
 		listeFaces = reader.getListFaces();
 		listePoints = reader.getListPoint();

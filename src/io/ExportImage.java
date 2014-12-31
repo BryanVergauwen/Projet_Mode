@@ -8,8 +8,8 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 
-public class ExportFile {
-	public ExportFile(Fenetre f, int decalX, int decalY) {
+public class ExportImage {
+	public ExportImage(Fenetre f, int decalX, int decalY) {
 		JFileChooser save = null;
 		save = new JFileChooser(new File(".").getAbsolutePath());
 		if(save.showSaveDialog(f) == JFileChooser.APPROVE_OPTION) {
