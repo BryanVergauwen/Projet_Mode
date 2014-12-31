@@ -23,6 +23,8 @@ F2 : Affichage du modèle en segments
 F3 : Affichage du modèle en faces
 - : Zoom -
 + : Zoom +
+ctrl+O : Ouvrir
+ctrl+S : Enregistrer sous
 
 GESTION DES MODELES
 Il y a 2 façons de charger les modèles GTS dans le logiciel : 
@@ -48,6 +50,9 @@ Pour voir l'intégralité des tags sur chaque modèle: Outils > Modeles > Lister le
 
 CALCULS :
 En mode segments (F2), un calcul du volume est fait, ainsi que de l'échelle du modèle.
+
+ENREGISTREMENT/CHARGEMENT (TODO: à modifier car non fini)
+Il est possible d'enregistrer le modèle courant dans son état actuel (couleurs, taille).
 
 EXPORT
 Il est possible de prendre des screenshots du modèle courant en allant dans Fichier > Exporter.

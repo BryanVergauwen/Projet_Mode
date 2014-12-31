@@ -350,18 +350,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		jMenuItems.get(0).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				JFileChooser fileopen = null;
-				fileopen = new JFileChooser(new File( ".").getAbsolutePath());
-				FileFilter filter = new FileNameExtensionFilter(".gts", "gts");
-				fileopen.addChoosableFileFilter(filter);
-
-				int ret = fileopen.showDialog(null, "Open file");
-				File f = fileopen.getSelectedFile();
-				if (ret == JFileChooser.APPROVE_OPTION && f.getAbsolutePath().substring(f.getAbsolutePath().length() - 4, f.getAbsolutePath().length()).equalsIgnoreCase(".gts")){
-					r.insert(fileopen.getSelectedFile().getName().toLowerCase(), fileopen.getSelectedFile().getAbsolutePath());
-					modele = r.selectWhere("path", "nom = '" + fileopen.getSelectedFile().getName().toLowerCase() + "'");
-					updateModel();
-				}
+				openFile();
 			}
 		});
 		
@@ -587,6 +576,21 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 				jf.add(new JScrollPane(jta));
 			}
 		});
+	}
+
+	protected void openFile() {
+		JFileChooser fileopen = null;
+		fileopen = new JFileChooser(new File( ".").getAbsolutePath());
+		FileFilter filter = new FileNameExtensionFilter(".gts", "gts");
+		fileopen.addChoosableFileFilter(filter);
+
+		int ret = fileopen.showDialog(null, "Open file");
+		File f = fileopen.getSelectedFile();
+		if (ret == JFileChooser.APPROVE_OPTION && f.getAbsolutePath().substring(f.getAbsolutePath().length() - 4, f.getAbsolutePath().length()).equalsIgnoreCase(".gts")){
+			r.insert(fileopen.getSelectedFile().getName().toLowerCase(), fileopen.getSelectedFile().getAbsolutePath());
+			modele = r.selectWhere("path", "nom = '" + fileopen.getSelectedFile().getName().toLowerCase() + "'");
+			updateModel();
+		}		
 	}
 
 	protected void saveAs() {
@@ -954,7 +958,11 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	}
 	@Override
 	public void keyPressed(KeyEvent e) {
+		if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_O)
+			openFile();
 		if(modele != null){
+			if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_S)
+				saveAs();
 			if (e.getKeyCode() == KeyEvent.VK_F1)
 				function = 1;
 			else if (e.getKeyCode() == KeyEvent.VK_F2)
