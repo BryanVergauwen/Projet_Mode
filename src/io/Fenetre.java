@@ -37,6 +37,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -625,7 +626,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 				// Ecriture fichier properties
 				output2.write("# Couleur\n");
 				output2.write(color.getRed() + " " + color.getGreen() + " " + color.getBlue() + "\n");
-				
+
 				if(map != null){
 					ObjectOutputStream oos = null;
 
@@ -706,12 +707,12 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		setTitle(Data.TITLE + " - " + tmp[tmp.length-1].toLowerCase() + " - Tags: " + r.getTags(tmp[tmp.length-1].toLowerCase()));
 		reader = new GtsReader(modele);
 		map = null;
-		if(new File(modele.substring(0, modele.length()-4) + "_properties").exists())
-			deserialization();
-		tailleSegment = -1;
 		listeFaces = reader.getListFaces();
 		listePoints = reader.getListPoint();
 		listeSegments = reader.getListSegments();
+		if(new File(modele.substring(0, modele.length()-4) + "_properties").exists())
+			deserialization();
+		tailleSegment = -1;
 		color = new Color(100, 100, 100);
 		Data.alphaX = Data.alphaY = 0; // recentrage de la figure
 		paintComponent(getGraphics());
@@ -738,7 +739,13 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 			if(new File(modele.substring(0, modele.length()-4) + "_map").exists()){
 				fichier = new File(modele.substring(0, modele.length()-4) + "_map");
 				ois = new ObjectInputStream(new FileInputStream(fichier));
-				map = (Map<Face, Color>) ois.readObject();
+				Map<Face, Color> mapTmp = (Map<Face, Color>) ois.readObject();
+				Collection<Color> color = mapTmp.values();
+				Iterator<Color> it = color.iterator();
+				
+				map = new HashMap<Face, Color>();
+				for(Face f : listeFaces)
+					map.put(f, it.next());
 			}
 		} 
 		catch (IOException | ClassNotFoundException e) {

@@ -1,6 +1,7 @@
 package io;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -40,7 +41,9 @@ public class GtsReader{
 					double b = Double.parseDouble(result[1]);
 					double c = Double.parseDouble(result[2]);
 
-					points.add(new Point(a, -b, c));
+					if(!new File(file.substring(0, file.length()-4) + "_properties").exists())
+						b = -b;
+					points.add(new Point(a, b, c));
 					limite++;
 				}
 				ligne = br.readLine();
