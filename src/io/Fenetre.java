@@ -98,7 +98,11 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	private Map<Face, Color> map;
 	private boolean export = false, fullScreen = false, ctrlA = false, degrade = false;
 	private Requests r = new Requests();
-	private String modele = null, filtreTexte = "";
+	// Toujours de la forme "C/Users/.../.../toto.gts"
+	private String cheminModele = null;
+	private String filtreTexte = "";
+	// Toujours de la forme "toto" (rajouter l'extension .gts dans le code)
+	private String nomModele;
 	private JTextField filtre = new JTextField();
 	private JScrollPane scrollPane;
 	private double Lx, Ly, Lz, rapportTaille;
@@ -253,7 +257,9 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 						File f = files.get(0);
 						if(f.getAbsolutePath().substring(f.getAbsolutePath().length() - 4, f.getAbsolutePath().length()).equalsIgnoreCase(".gts")){
 							r.insert(f.getName().toLowerCase(), f.getAbsolutePath());
-							modele = r.selectWhere("path", "nom = '" + f.getName().toLowerCase() + "'");
+							cheminModele = r.selectWhere("path", "nom = '" + f.getName().toLowerCase() + "'");
+							String[] tmp = cheminModele.split("\\\\");
+							nomModele = tmp[tmp.length-1].substring(0, tmp[tmp.length-1].length()-4);
 							updateModel();
 						}
 					} 
@@ -270,7 +276,9 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		listeModeles.addListSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent lse) {
-				modele = r.selectWhere("path", "nom = '" + listeModeles.getSelectedValue().toString() + "'");
+				cheminModele = r.selectWhere("path", "nom = '" + listeModeles.getSelectedValue().toString() + "'");
+				String[] tmp = cheminModele.split("\\\\");
+				nomModele = tmp[tmp.length-1].substring(0, tmp[tmp.length-1].length()-4);
 				updateModel();
 			}
 		});		
@@ -493,13 +501,11 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		jMenuItems.get(12).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				if(modele != null){
-					String[] tmp = modele.split("\\\\");
-					String nomModele = tmp[tmp.length-1].toLowerCase();
-					String oldTags = r.getTags(nomModele).toString();
+				if(cheminModele != null){
+					String oldTags = r.getTags(nomModele.toLowerCase()+".gts").toString();
 				
-					r.addTag(nomModele, JOptionPane.showInputDialog("Tags existants : " + oldTags + "\nAjouter un tag au modele courant: "));
-					setTitle(Data.TITLE + " - " + tmp[tmp.length-1].toLowerCase() + " - Tags: " + r.getTags(tmp[tmp.length-1].toLowerCase()));
+					r.addTag(nomModele.toLowerCase()+".gts", JOptionPane.showInputDialog("Tags existants : " + oldTags + "\nAjouter un tag au modele courant: "));
+					setTitle(Data.TITLE + " - " + nomModele.toLowerCase() + ".gts - Tags: " + r.getTags(nomModele.toLowerCase()+".gts"));
 				}
 			}
 		});
@@ -508,18 +514,16 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		jMenuItems.get(13).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if(modele != null){
-					String[] tmp = modele.split("\\\\");
-					String  nomModele = tmp[tmp.length-1].toLowerCase();
-					List<String> old = r.getTags(nomModele);
+				if(cheminModele != null){
+					List<String> old = r.getTags(nomModele.toLowerCase()+".gts");
 					String[] oldTags = new String[old.size()];
 					
 					for(int i = 0; i < old.size(); i++)
 						oldTags[i] = old.get(i);
 				    String input = (String) JOptionPane.showInputDialog(null, "", "Retirer un tag au modele courant:", JOptionPane.QUESTION_MESSAGE, null, oldTags, oldTags[0]);
 				    
-					r.deleteTag(nomModele, input);
-					setTitle(Data.TITLE + " - " + tmp[tmp.length-1].toLowerCase() + " - Tags: " + r.getTags(tmp[tmp.length-1].toLowerCase()));
+					r.deleteTag(nomModele.toLowerCase()+".gts", input);
+					setTitle(Data.TITLE + " - " + nomModele.toLowerCase() + ".gts - Tags: " + r.getTags(nomModele.toLowerCase()+".gts"));
 				}
 			}
 		});
@@ -594,7 +598,9 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		File f = fileopen.getSelectedFile();
 		if (ret == JFileChooser.APPROVE_OPTION && f.getAbsolutePath().substring(f.getAbsolutePath().length() - 4, f.getAbsolutePath().length()).equalsIgnoreCase(".gts")){
 			r.insert(fileopen.getSelectedFile().getName().toLowerCase(), fileopen.getSelectedFile().getAbsolutePath());
-			modele = r.selectWhere("path", "nom = '" + fileopen.getSelectedFile().getName().toLowerCase() + "'");
+			cheminModele = r.selectWhere("path", "nom = '" + fileopen.getSelectedFile().getName().toLowerCase() + "'");
+			String[] tmp = cheminModele.split("\\\\");
+			nomModele = tmp[tmp.length-1].substring(0, tmp[tmp.length-1].length()-4);
 			updateModel();
 		}		
 	}
@@ -604,8 +610,11 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		save = new JFileChooser(new File(".").getAbsolutePath());
 		if(save.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
 			try{
-				FileWriter fw = new FileWriter(save.getSelectedFile().getAbsolutePath()+".gts");
-				FileWriter fw2 = new FileWriter(save.getSelectedFile().getAbsolutePath() + "_properties");
+				String current = save.getSelectedFile().getAbsolutePath();
+				FileWriter fw = new FileWriter(current+".gts");
+				if(!new File(current+"_data").exists())
+					new File(current+"_data").mkdir();
+				FileWriter fw2 = new FileWriter(current + "_data/" + save.getSelectedFile().getName() + "_properties");
 				BufferedWriter output = new BufferedWriter(fw);
 				BufferedWriter output2 = new BufferedWriter(fw2);
 				
@@ -634,14 +643,15 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 				output2.write("# Degrade\n");
 				output2.write(degrade+"\n");
 				output2.write("# Tags\n");
-				String[] tmp = modele.split("\\\\");
-				output2.write(r.getTags(tmp[tmp.length-1].toLowerCase())+"");
+				output2.write(r.getTags(nomModele.toLowerCase()+".gts")+"\n");
+				output2.write("# Fonction\n");
+				output2.write(function+"");
 
 				if(map != null){
 					ObjectOutputStream oos = null;
 
 					try {
-						FileOutputStream fichier = new FileOutputStream(save.getSelectedFile().getAbsolutePath() + "_map");
+						FileOutputStream fichier = new FileOutputStream(save.getSelectedFile().getAbsolutePath() + "_data/" + save.getSelectedFile().getName() + "_map");
 						oos = new ObjectOutputStream(fichier);
 						oos.writeObject(map);
 						oos.flush();
@@ -713,12 +723,11 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	}
 
 	private void updateModel(){
-		String[] tmp = modele.split("\\\\");
-		setTitle(Data.TITLE + " - " + tmp[tmp.length-1].toLowerCase() + " - Tags: " + r.getTags(tmp[tmp.length-1].toLowerCase()));
-		reader = new GtsReader(modele);
+		setTitle(Data.TITLE + " - " + nomModele.toLowerCase() + ".gts - Tags: " + r.getTags(nomModele.toLowerCase()+".gts"));
+		reader = new GtsReader(cheminModele);
 		reset();
 		Data.alphaX = Data.alphaY = 0; // recentrage de la figure
-		if(new File(modele.substring(0, modele.length()-4) + "_properties").exists())
+		if(new File(cheminModele.substring(0, cheminModele.length()-4) + "_data/" + nomModele + "_properties").exists())
 			deserialization();
 		paintComponent(getGraphics());
 	}
@@ -738,7 +747,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		ObjectInputStream ois = null;
 
 		try{
-			file = new BufferedReader(new FileReader(modele.substring(0, modele.length()-4) + "_properties"));
+			file = new BufferedReader(new FileReader(cheminModele.substring(0, cheminModele.length()-4) + "_data/" + nomModele + "_properties"));
 			String str = file.readLine();
 			
 			while(str != null){
@@ -750,20 +759,20 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 				else if(str.equals("# Degrade"))
 					degrade = Boolean.parseBoolean(str = file.readLine());
 				else if(str.equals("# Tags")){
-					String[] tmp = modele.split("\\\\");
-
-					r.deleteAllTag(tmp[tmp.length-1]);
+					r.deleteAllTag(nomModele.toLowerCase()+".gts");
 					str = file.readLine();
 					String tab[] = str.substring(1, str.length()-1).split(", ");
 					for(String s2 : tab)
-						r.addTag(tmp[tmp.length-1], s2);
-					setTitle(Data.TITLE + " - " + tmp[tmp.length-1].toLowerCase() + " - Tags: " + r.getTags(tmp[tmp.length-1].toLowerCase()));	
+						r.addTag(nomModele.toLowerCase()+".gts", s2);
+					setTitle(Data.TITLE + " - " + nomModele.toLowerCase() + ".gts - Tags: " + r.getTags(nomModele.toLowerCase()+".gts"));	
 				}
+				else if(str.equals("# Fonction"))
+					function = Integer.parseInt((str = file.readLine()));
 				str = file.readLine();
 			}
 			File fichier = null;
-			if(new File(modele.substring(0, modele.length()-4) + "_map").exists()){
-				fichier = new File(modele.substring(0, modele.length()-4) + "_map");
+			if(new File(cheminModele.substring(0, cheminModele.length()-4) + "_data/" + nomModele + "_map").exists()){
+				fichier = new File(cheminModele.substring(0, cheminModele.length()-4) + "_data/" + nomModele + "_map");
 				ois = new ObjectInputStream(new FileInputStream(fichier));
 				Map<Face, Color> mapTmp = (Map<Face, Color>) ois.readObject();
 				List<Color> color = new LinkedList<Color>();
@@ -832,7 +841,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 			double scal = 0.0; // Produit scalaire pour la lumiere
 			
 			offgc.drawImage(Data.WALLPAPER, 0, 0, this);
-			if(modele != null){
+			if(cheminModele != null){
 				// Dessin des points
 				if(function == 1){
 					offgc.setFont(new Font("Arial", Font.BOLD, 18));
@@ -931,7 +940,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	public void mouseWheelMoved(MouseWheelEvent e) {
 		double zoom;
 		
-		if(modele != null){
+		if(cheminModele != null){
  			if (e.getWheelRotation() < 0)
 				zoom = 1.1;
 			else
@@ -944,7 +953,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	@SuppressWarnings("deprecation")
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		if(modele != null){
+		if(cheminModele != null){
 			if (SwingUtilities.isLeftMouseButton(e)) {
 				setCursor(Cursor.HAND_CURSOR);
 				Point p = new Point(e.getX(), e.getY(), 0);
@@ -1002,7 +1011,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		if(modele != null){
+		if(cheminModele != null){
 			if (current == null)
 				current = new Point(e.getX(), e.getY(), 0);
 			else {
@@ -1022,7 +1031,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	public void keyPressed(KeyEvent e) {
 		if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_O)
 			openFile();
-		if(modele != null){
+		if(cheminModele != null){
 			if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_S)
 				saveAs();
 			if (e.getKeyCode() == KeyEvent.VK_F1)
