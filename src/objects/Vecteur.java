@@ -1,7 +1,10 @@
 package objects;
 
-public class Vecteur {
-	double x, y, z;
+import java.io.Serializable;
+
+public class Vecteur implements Serializable{
+	private static final long serialVersionUID = 1L;
+	private double x, y, z;
 
 	// un vecteur
 	public Vecteur(double x, double y, double z) {

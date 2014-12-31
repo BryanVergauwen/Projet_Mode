@@ -30,9 +30,13 @@ import java.awt.event.MouseWheelListener;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -40,7 +44,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Random;
 
 import javax.swing.BoxLayout;
@@ -594,6 +597,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 				FileWriter fw = new FileWriter(save.getSelectedFile().getAbsolutePath()+".gts");
 				FileWriter fw2 = new FileWriter(save.getSelectedFile().getAbsolutePath() + "_properties");
 				BufferedWriter output = new BufferedWriter(fw);
+				BufferedWriter output2 = new BufferedWriter(fw2);
 				
 				// Ecriture fichier gts
 				output.write(reader.getNbPoints() + " "  + reader.getNbSegments() + " " + reader.getNbFaces() + "\n");
@@ -615,24 +619,39 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 				
 
 				// Ecriture fichier properties
-				output = new BufferedWriter(fw2);
+				output2.write("# Couleur\n");
+				output2.write(color.getRed() + " " + color.getGreen() + " " + color.getBlue() + "\n");
 				
-				output.write("# Couleur simple\n");
-				output.write(color.getRed() + " " + color.getGreen() + " " + color.getBlue() + "\n");
-				output.write("# Map\n");
-				if(map == null)
-					output.write("null\n");
-				else{
-					Properties p = new Properties();
-					
-					p.putAll(map);
-					p.store(fw2, null);
+				if(map != null){
+					ObjectOutputStream oos = null;
+
+					try {
+						FileOutputStream fichier = new FileOutputStream(save.getSelectedFile().getAbsolutePath() + "_map");
+						oos = new ObjectOutputStream(fichier);
+						oos.writeObject(map);
+						oos.flush();
+					} 
+					catch (IOException e) {
+						e.printStackTrace();
+					} 
+					finally {
+						try {
+							if (oos != null) {
+								oos.flush();
+								oos.close();
+							}
+						} 
+						catch (final IOException ex) {
+							ex.printStackTrace();
+						}
+					}
 				}
-				
 				
 				// Fermeture
 				output.flush();
+				output2.flush();
 				output.close();
+				output2.close();
 			}
 			catch(IOException ioe){
 				ioe.printStackTrace();
@@ -682,21 +701,61 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		String[] tmp = modele.split("\\\\");
 		setTitle(Data.TITLE + " - " + tmp[tmp.length-1].toLowerCase() + " - Tags: " + r.getTags(tmp[tmp.length-1].toLowerCase()));
 		reader = new GtsReader(modele);
+		map = null;
+		if(new File(modele.substring(0, modele.length()-4) + "_properties").exists())
+			deserialization();
 		tailleSegment = -1;
 		listeFaces = reader.getListFaces();
 		listePoints = reader.getListPoint();
 		listeSegments = reader.getListSegments();
-		map = null;
 		color = new Color(100, 100, 100);
 		Data.alphaX = Data.alphaY = 0; // recentrage de la figure
 		paintComponent(getGraphics());
+	}
+
+	@SuppressWarnings("unchecked")
+	private void deserialization() {
+		BufferedReader file = null;
+		ObjectInputStream ois = null;
+
+		try{
+			file = new BufferedReader(new FileReader(modele.substring(0, modele.length()-4) + "_properties"));
+			String str = file.readLine();
+			
+			while(str != null){
+				if(str.equals("# Couleur")){
+					str = file.readLine();
+					String[] tmp = str.split(" ");
+					color = new Color(Integer.parseInt(tmp[0]), Integer.parseInt(tmp[1]), Integer.parseInt(tmp[2]));
+				}
+				str = file.readLine();
+			}
+			File fichier = null;
+			if(new File(modele.substring(0, modele.length()-4) + "_map").exists()){
+				fichier = new File(modele.substring(0, modele.length()-4) + "_map");
+				ois = new ObjectInputStream(new FileInputStream(fichier));
+				map = (Map<Face, Color>) ois.readObject();
+			}
+		} 
+		catch (IOException | ClassNotFoundException e) {
+			e.printStackTrace();
+		} 
+		finally {
+			try {
+				if (ois != null)
+					ois.close();
+			} 
+			catch (final IOException ex) {
+				ex.printStackTrace();
+			}
+		}
 	}
 
 	public void paintComponent(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
 		Graphics offgc;
 		Image offscreen = null;
-		Color tmp;
+		Color tmp = null;
 		
 		decalX = listeModeles.getFixedCellWidth() + 27;
 		decalY = 52;
@@ -783,6 +842,14 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 
 						if(map != null){
 							color = new Color(255, 255, 255);
+							
+						 /* Face newF = f.valAbs();
+							for(Face f2 : map.keySet()){
+								Face newF2 = f2.valAbs();
+
+								if(newF.toString().equals(newF2.toString()))
+									tmp = map.get(f2);
+							} */
 							tmp = map.get(f);
 							offgc.setColor(new Color((int)(tmp.getRed() * scal), (int)(tmp.getGreen() * scal), (int)(tmp.getBlue() * scal)));
 						}

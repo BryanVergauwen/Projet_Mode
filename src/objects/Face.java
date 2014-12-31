@@ -1,9 +1,11 @@
 package objects;
 
-import data.Data;
-import exceptions.MalFormedFaceException;
+import java.io.Serializable;
 
-public class Face implements Comparable<Face>{
+import data.Data;
+
+public class Face implements Comparable<Face>, Serializable{
+	private static final long serialVersionUID = 1L;
 	private Point a, b, c;
 	private Vecteur normal;
 	private double barycentre;
@@ -16,8 +18,6 @@ public class Face implements Comparable<Face>{
 			this.c = b.getOrigine();
 		else if(!b.getFin().equals(this.a) && !b.getFin().equals(this.b))
 			this.c = b.getFin();
-		else
-			throw new MalFormedFaceException();
 		normalisation();
 		barycentre();
 	}
@@ -92,5 +92,24 @@ public class Face implements Comparable<Face>{
 			tmp[i] += Data.COEFF2;
 		
 		return tmp;
+	}
+	public Face valAbs(){
+		double a1 = Math.abs(getSommetA().getX());
+		double a2 = Math.abs(getSommetA().getY());
+		double a3 = Math.abs(getSommetA().getZ());
+		double a4 = Math.abs(getSommetB().getX());
+		double a5 = Math.abs(getSommetB().getY());
+		double a6 = Math.abs(getSommetB().getZ());
+		double a7 = Math.abs(getSommetC().getX());
+		double a8 = Math.abs(getSommetC().getY());
+		double a9 = Math.abs(getSommetC().getZ());
+		Point p1 = new Point(a1, a2, a3);
+		Point p2 = new Point(a4, a5, a6);
+		Point p3 = new Point(a7, a8, a9);
+		Segment s1 = new Segment(p1, p2);
+		Segment s2 = new Segment(p2, p3);
+		Segment s3 = new Segment(p3, p1);
+		
+		return new Face(s1, s2, s3);
 	}
 }
