@@ -828,18 +828,25 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		offscreen = createImage(this.getWidth() - decalX, this.getHeight() - decalY);
 		if(offscreen != null){
 			offgc = offscreen.getGraphics();
-			
-			// Dessin des faces
+			offgc.setColor(Color.black);
 			double scal = 0.0; // Produit scalaire pour la lumiere
 			
 			offgc.drawImage(Data.WALLPAPER, 0, 0, this);
 			if(modele != null){
-				offgc.setColor(color);
+				// Dessin des points
 				if(function == 1){
+					offgc.setFont(new Font("Arial", Font.BOLD, 18));
+					offgc.drawString("Points", getWidth() - 320, 30);
+					offgc.setColor(color);
 					for(Point p : listePoints) 
 						offgc.fillOval((int)(p.getX() + Data.COEFF1 + Data.alphaX), (int)(p.getY() + Data.COEFF2 + Data.alphaY), 3, 3);
 				}
+				// Dessin des segments
 				else if(function == 2){
+					offgc.setFont(new Font("Arial", Font.BOLD, 18));
+					offgc.drawString("Segments", getWidth() - 350, 30);
+					offgc.setFont(new Font("Arial", Font.BOLD, 14));
+					offgc.setColor(color);
 					for (Segment s : listeSegments)
 						offgc.drawLine(s.getSegment1(), s.getSegment2(), s.getSegment3(), s.getSegment4());
 					
@@ -898,7 +905,10 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 					offgc.setColor(new Color(0, 255, 0));
 					offgc.drawString(Lz+" profondeur", 20, 80);
 				}
+				// Dessin des faces
 				else if(function == 3){
+					offgc.setFont(new Font("Arial", Font.BOLD, 18));
+					offgc.drawString("Faces", getWidth() - 320, 30);
 					for (Face f : listeFaces) {
 						scal = Math.abs(Data.LUMIERE.prodScalaire(f.getNormal()));
 						offgc.setColor((new Color((int)(color.getRed() * scal), (int)(color.getGreen() * scal), (int)(color.getBlue() * scal))));
@@ -906,13 +916,6 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 						if(map != null){
 							color = new Color(255, 255, 255);
 							
-						 /* Face newF = f.valAbs();
-							for(Face f2 : map.keySet()){
-								Face newF2 = f2.valAbs();
-
-								if(newF.toString().equals(newF2.toString()))
-									tmp = map.get(f2);
-							} */
 							tmp = map.get(f);
 							offgc.setColor(new Color((int)(tmp.getRed() * scal), (int)(tmp.getGreen() * scal), (int)(tmp.getBlue() * scal)));
 						}
