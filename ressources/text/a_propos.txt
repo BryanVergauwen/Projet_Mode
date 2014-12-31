@@ -52,7 +52,8 @@ CALCULS :
 En mode segments (F2), un calcul du volume est fait, ainsi que de l'échelle du modèle.
 
 ENREGISTREMENT/CHARGEMENT (TODO: à modifier car non fini)
-Il est possible d'enregistrer le modèle courant dans son état actuel (couleurs, taille).
+Il est possible d'enregistrer le modèle courant dans son état actuel (couleurs, taille) 
+et de le recharger dans le même état.
 
 EXPORT
 Il est possible de prendre des screenshots du modèle courant en allant dans Fichier > Exporter.
@@ -67,7 +68,9 @@ Vous pouvez changer l'image de fond via Affichage > Changer image de fond.
 Des images sont disponibles dans ressources/images, mais vous 
 pouvez également selectionner vos propres images.
 
-Vous pouvez également changer la couleur des modèles grâce aux différentes rubriques du menu Outils : 
+Vous pouvez également changer la couleur des modèles 
+grâce aux différentes rubriques du menu Outils : 
+
  - couleur aléatoire uniforme
  - couleur aléatoire de votre choix
  - couleur aléatoire par face
