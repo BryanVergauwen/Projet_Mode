@@ -1,5 +1,5 @@
-GTSReader est un logiciel permettant de visualiser des modèles 3D au format gts (GTS : GNU Triangulated Surface)
-et d'utiliser ces modèles de manière intuitive.
+GTSReader est un logiciel permettant de visualiser des modèles 3D au format gts 
+(GTS : GNU Triangulated Surface) et d'utiliser ces modèles de manière intuitive.
 
 SOURIS
 Bouton gauche : faire pivoter le modèle
@@ -51,16 +51,17 @@ Pour voir l'intégralité des tags sur chaque modèle: Outils > Modeles > Lister le
 CALCULS :
 En mode segments (F2), un calcul du volume est fait, ainsi que de l'échelle du modèle.
 
-ENREGISTREMENT/CHARGEMENT (TODO: à modifier car non fini)
-Il est possible d'enregistrer le modèle courant dans son état actuel (couleurs, taille) 
+ENREGISTREMENT/CHARGEMENT
+Il est possible d'enregistrer le modèle courant dans son état actuel 
+(couleurs, taille, tags, type d'affichage (points/segments/faces)) 
 et de le recharger dans le même état.
 
 EXPORT
 Il est possible de prendre des screenshots du modèle courant en allant dans Fichier > Exporter.
 
 AFFICHAGE
-Le logiciel inclut une gestion de la lumière et des ombrages sur les faces plus ou moins éloignées
-de la source de lumière, pour un rendu très réaliste.
+Le logiciel inclut une gestion de la lumière et des ombrages sur les 
+faces plus ou moins éloignées de la source de lumière, pour un rendu très réaliste.
 
 Le mode plein écran est disponible dans la rubrique Affichage du menu.
 

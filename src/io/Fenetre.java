@@ -60,6 +60,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
@@ -374,7 +375,8 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		jMenuItems.get(2).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				exportImage();
+				if(cheminModele != null)
+					exportImage();
 			}
 		});
 		
@@ -382,7 +384,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		jMenuItems.get(3).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				dispose(); // Dans le cas ou plusieurs fenetres sont ouvertes, une seule est fermee
+				System.exit(0);
 			}
 		});
 		
@@ -390,7 +392,8 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		jMenuItems.get(4).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				editSize();
+				if(cheminModele != null)
+					editSize();
 			}
 		});
 		
@@ -423,10 +426,12 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		jMenuItems.get(7).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				map = null;
-				degrade = false;
-				color = JColorChooser.showDialog(null, "Palette de couleur", null);
-				paintComponent(getGraphics());
+				if(cheminModele != null){
+					map = null;
+					degrade = false;
+					color = JColorChooser.showDialog(null, "Palette de couleur", null);
+					paintComponent(getGraphics());
+				}
 			}
 		});
 		
@@ -434,25 +439,27 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		jMenuItems.get(8).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				map = new HashMap<Face, Color>();
-				degrade = true;
-				int etape = listeFaces.size() / 255;
-				Color tmp = degradeColor();
-
-				Collections.sort(listeFaces, new Comparator<Face>() {
-					@Override
-					public int compare(Face o1, Face o2) {
-						return o1.compareTo2(o2);
+				if(cheminModele != null){
+					map = new HashMap<Face, Color>();
+					degrade = true;
+					int etape = listeFaces.size() / 255;
+					Color tmp = degradeColor();
+	
+					Collections.sort(listeFaces, new Comparator<Face>() {
+						@Override
+						public int compare(Face o1, Face o2) {
+							return o1.compareTo2(o2);
+						}
+					});
+					for(int i = 0; i < listeFaces.size(); i++){
+						if(i % etape == 0 && green < 255 && red < 255)
+							tmp = degradeColor();
+						map.put(listeFaces.get(i), tmp);
 					}
-				});
-				for(int i = 0; i < listeFaces.size(); i++){
-					if(i % etape == 0 && green < 255 && red < 255)
-						tmp = degradeColor();
-					map.put(listeFaces.get(i), tmp);
+					green = blue = 0;
+					red = rd.nextInt(256);
+					paintComponent(getGraphics());
 				}
-				green = blue = 0;
-				red = rd.nextInt(256);
-				paintComponent(getGraphics());
 			}
 		});
 		
@@ -460,10 +467,12 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		jMenuItems.get(9).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				map = null;
-				degrade = false;
-				color = randomColor();
-				paintComponent(getGraphics());
+				if(cheminModele != null){
+					map = null;
+					degrade = false;
+					color = randomColor();
+					paintComponent(getGraphics());
+				}
 			}
 		});
 		
@@ -471,12 +480,14 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		jMenuItems.get(10).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				map = new HashMap<Face, Color>();
-				degrade = false;
-				
-				for(int i = 0; i < listeFaces.size(); i++)
-					map.put(listeFaces.get(i), randomColor());
-				paintComponent(getGraphics());
+				if(cheminModele != null){
+					map = new HashMap<Face, Color>();
+					degrade = false;
+					
+					for(int i = 0; i < listeFaces.size(); i++)
+						map.put(listeFaces.get(i), randomColor());
+					paintComponent(getGraphics());
+				}
 			}
 		});
 		
@@ -484,15 +495,17 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		jMenuItems.get(11).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				for(int i = 0; i < 51; i++){
-					new Rotation(listePoints, listeFaces, Math.toRadians(10), "X");
-					new Rotation(listePoints, listeFaces, Math.toRadians(10), "Y");
-					try {
-						Thread.sleep(100);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
+				if(cheminModele != null){
+					for(int i = 0; i < 51; i++){
+						new Rotation(listePoints, listeFaces, Math.toRadians(10), "X");
+						new Rotation(listePoints, listeFaces, Math.toRadians(10), "Y");
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+						paintComponent(getGraphics());
 					}
-					paintComponent(getGraphics());
 				}
 			}
 		});
@@ -533,22 +546,30 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				JFrame jf = new JFrame("Tags");
+				String[] columnNames = {"Noms", "Tags"};
+				String[][] dataTab;
+				JTable jtable;
+				
 				jf.setSize(890, 500);
 				jf.setLocationRelativeTo(null);
 				jf.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 				jf.setIconImage(Data.ICON3D);
-				JTextArea jta = new JTextArea();
 				List<String> noms = r.select("nom", true);
 				List<String> tags = r.select("tags", false);
 				
+				dataTab = new String[noms.size()][tags.size()];
 				Iterator<String> it = noms.iterator();
 				Iterator<String> it2 = tags.iterator();
-				while(it.hasNext())
-					jta.append(it.next() + ": " + it2.next() + "\n");
-				
-				jta.setEditable(false);
+				for(int i = 0; it.hasNext(); i++){
+					for(int j = 0; it2.hasNext(); j++){
+						dataTab[j][i] = it.next();
+						dataTab[j][i+1] = it2.next();	
+					}
+				}
+				jtable = new JTable(dataTab, columnNames);
+				jtable.setEnabled(false);
 				jf.setVisible(true);
-				jf.add(new JScrollPane(jta));
+				jf.add(new JScrollPane(jtable));
 			}
 		});
 		
