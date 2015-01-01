@@ -2,6 +2,7 @@ package io;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -67,8 +68,13 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TableColumnModelEvent;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableColumnModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumnModel;
 
 import objects.Face;
 import objects.Point;
@@ -567,6 +573,20 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 					}
 				}
 				jtable = new JTable(dataTab, columnNames);
+				jtable.setDefaultRenderer(Object.class, new TableCellRenderer() {
+					@Override
+					public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+						Component cell = new DefaultTableCellRenderer().getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);       
+						
+						if (row % 2 == 0) 
+							cell.setBackground(new Color(184, 207, 229));
+						else
+							cell.setBackground(Color.WHITE);
+						return cell;
+					}
+				});
+				jtable.setFont(new Font("Arial", Font.PLAIN, 16));
+				jtable.setRowHeight(25);
 				jtable.setEnabled(false);
 				jf.setVisible(true);
 				jf.add(new JScrollPane(jtable));
