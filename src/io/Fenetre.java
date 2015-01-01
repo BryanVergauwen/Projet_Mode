@@ -322,7 +322,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		jMenuItems.add(new JMenuItem("Retirer un tag au modele courant"));
 		jMenuItems.add(new JMenuItem("Lister les tags"));
 		// Aide
-		jMenuItems.add(new JMenuItem("A propos"));
+		jMenuItems.add(new JMenuItem("Mode d'emploi"));
 		
 		jMenuItems.get(0).setIcon(Data.OPEN);
 		jMenuItems.get(1).setIcon(Data.SAVE);
@@ -414,7 +414,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 
 				int ret = fileopen.showDialog(null, "Open file");
 				if (ret == JFileChooser.APPROVE_OPTION)
-					Data.WALLPAPER = Toolkit.getDefaultToolkit().getImage(fileopen.getSelectedFile().getAbsolutePath());
+					Data.wallpaperPath = fileopen.getSelectedFile().getAbsolutePath();
 			}
 		});
 		
@@ -591,11 +591,11 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 			}
 		});
 		
-		// Bouton A propos
+		// Bouton Mode d'emploi
 		jMenuItems.get(15).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				JFrame jf = new JFrame("A propos");
+				JFrame jf = new JFrame("Mode d'emploi");
 				jf.setSize(890, 500);
 				jf.setLocationRelativeTo(null);
 				jf.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -684,7 +684,9 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 				output2.write("# Tags\n");
 				output2.write(r.getTags(nomModele.toLowerCase()+".gts")+"\n");
 				output2.write("# Fonction\n");
-				output2.write(function+"");
+				output2.write(function+"\n");
+				output2.write("# Wallpaper\n");
+				output2.write(Data.wallpaperPath);
 
 				if(map != null){
 					ObjectOutputStream oos = null;
@@ -807,6 +809,8 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 				}
 				else if(str.equals("# Fonction"))
 					function = Integer.parseInt((str = file.readLine()));
+				else if(str.equals("# Wallpaper"))
+					Data.wallpaperPath = (str = file.readLine());
 				str = file.readLine();
 			}
 			File fichier = null;
@@ -863,7 +867,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 					for(Color c : map.values())
 						colors.add(c);
 				}
-				offgc.drawImage(Data.WALLPAPER, 0, 0, this);
+				offgc.drawImage(Toolkit.getDefaultToolkit().getImage(Data.wallpaperPath), 0, 0, this);
 				Iterator<Color> it = colors.iterator();
 
 				// Dessin des points

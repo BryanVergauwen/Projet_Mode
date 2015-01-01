@@ -1,0 +1,1 @@
+java -cp "bin;ressources\bdd\sqlite-jdbc-3.8.7.jar" main.Main
