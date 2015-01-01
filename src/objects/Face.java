@@ -22,9 +22,7 @@ public class Face implements Comparable<Face>, Serializable{
 			normalisation();
 			barycentre();
 		}
-		catch(Exception e){
-			System.out.println("Erreur, fichier incorrect");
-		}
+		catch(Exception e){}
 	}
 	
 	public void barycentre(){
