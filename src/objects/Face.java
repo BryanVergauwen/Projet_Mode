@@ -18,8 +18,13 @@ public class Face implements Comparable<Face>, Serializable{
 			this.c = b.getOrigine();
 		else if(!b.getFin().equals(this.a) && !b.getFin().equals(this.b))
 			this.c = b.getFin();
-		normalisation();
-		barycentre();
+		try{
+			normalisation();
+			barycentre();
+		}
+		catch(Exception e){
+			System.out.println("Erreur, fichier incorrect");
+		}
 	}
 	
 	public void barycentre(){

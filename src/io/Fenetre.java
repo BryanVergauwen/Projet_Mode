@@ -357,7 +357,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		// Bouton ouvrir
 		jMenuItems.get(0).addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent arg0) {
+			public void actionPerformed(ActionEvent e) {
 				openFile();
 			}
 		});
@@ -365,7 +365,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		// bouton enregistrer sous
 		jMenuItems.get(1).addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent arg0) {
+			public void actionPerformed(ActionEvent e) {
 				saveAs();
 			}
 		});
@@ -373,7 +373,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		// bouton exporter
 		jMenuItems.get(2).addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent arg0) {
+			public void actionPerformed(ActionEvent e) {
 				exportImage();
 			}
 		});
@@ -1067,11 +1067,12 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 			paintComponent(getGraphics());
 		}
 	}
+
 	@Override
 	public void keyReleased(KeyEvent arg0) {
 	}
 
 	@Override
-	public void keyTyped(KeyEvent e) {
+	public void keyTyped(KeyEvent arg0) {
 	}
 }
