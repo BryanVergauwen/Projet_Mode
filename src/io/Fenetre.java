@@ -38,6 +38,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -68,13 +69,10 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.event.TableColumnModelEvent;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumnModel;
 
 import objects.Face;
 import objects.Point;
@@ -820,30 +818,8 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 				
 				for(Color c : mapTmp.values())
 					color.add(c);
-				if(degrade){
-					Collections.sort(color, new Comparator<Color>() {
-						@Override
-						public int compare(Color o1, Color o2) {
-							int o1V = o1.getGreen();
-							int o1B = o1.getBlue();
-							int o2V = o2.getGreen();
-							int o2B = o2.getBlue();
-							
-							if(o1V < o2V)
-								return -1;
-							else if(o1V > o2V)
-								return 1;
-							else{
-								if(o1B < o2B)
-									return -1;
-								else if(o1B > o2B)
-									return 1;
-								else
-									return 0;
-							}
-						}
-					});
-				}
+				if(degrade)
+					triListeDegrade(color);
 					
 				map = new HashMap<Face, Color>();
 				for(int i = 0; i < listeFaces.size(); i++)
@@ -878,27 +854,60 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		offscreen = createImage(this.getWidth() - decalX, this.getHeight() - decalY);
 		if(offscreen != null){
 			offgc = offscreen.getGraphics();
-			offgc.setColor(Color.black);
 			double scal = 0.0; // Produit scalaire pour la lumiere
+			List<Color> colors = new ArrayList<Color>();
 			
-			offgc.drawImage(Data.WALLPAPER, 0, 0, this);
 			if(cheminModele != null){
+				// Obligatoire
+				if(map != null){
+					for(Color c : map.values())
+						colors.add(c);
+				}
+				offgc.drawImage(Data.WALLPAPER, 0, 0, this);
+				Iterator<Color> it = colors.iterator();
+
 				// Dessin des points
 				if(function == 1){
 					offgc.setFont(new Font("Arial", Font.BOLD, 18));
+					offgc.setColor(Color.black);
 					offgc.drawString("Points", getWidth() - 320, 30);
-					offgc.setColor(color);
-					for(Point p : listePoints) 
+
+					for(Point p : listePoints){
+						if(map == null)
+							offgc.setColor(color);
+						else{
+							try{
+								offgc.setColor(it.next());
+							}
+							catch(Exception e){
+								it = colors.iterator();
+								offgc.setColor(it.next());
+							}
+						}
 						offgc.fillOval((int)(p.getX() + Data.COEFF1 + Data.alphaX), (int)(p.getY() + Data.COEFF2 + Data.alphaY), 3, 3);
+					}
 				}
 				// Dessin des segments
 				else if(function == 2){
 					offgc.setFont(new Font("Arial", Font.BOLD, 18));
+					offgc.setColor(Color.black);
 					offgc.drawString("Segments", getWidth() - 350, 30);
 					offgc.setFont(new Font("Arial", Font.BOLD, 14));
-					offgc.setColor(color);
-					for (Segment s : listeSegments)
+
+					for (Segment s : listeSegments){
+						if(map == null)
+							offgc.setColor(color);
+						else{
+							try{
+								offgc.setColor(it.next());
+							}
+							catch(Exception e){
+								it = colors.iterator();
+								offgc.setColor(it.next());
+							}
+						}
 						offgc.drawLine(s.getSegment1(), s.getSegment2(), s.getSegment3(), s.getSegment4());
+					}
 					
 					int xMax, xMin, yMax, yMin, zMax, zMin;
 					
@@ -958,13 +967,14 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 				// Dessin des faces
 				else if(function == 3){
 					offgc.setFont(new Font("Arial", Font.BOLD, 18));
+					offgc.setColor(Color.black);
 					offgc.drawString("Faces", getWidth() - 320, 30);
 					for (Face f : listeFaces) {
 						scal = Math.abs(Data.LUMIERE.prodScalaire(f.getNormal()));
 						offgc.setColor((new Color((int)(color.getRed() * scal), (int)(color.getGreen() * scal), (int)(color.getBlue() * scal))));
 
 						if(map != null){
-							color = new Color(255, 255, 255);
+							color = Color.white;
 							
 							tmp = map.get(f);
 							offgc.setColor(new Color((int)(tmp.getRed() * scal), (int)(tmp.getGreen() * scal), (int)(tmp.getBlue() * scal)));
@@ -975,6 +985,31 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 			}
 			g2.drawImage(offscreen, decalX, decalY, this);
 		}
+	}
+
+	private void triListeDegrade(List<Color> colors) {
+		Collections.sort(colors, new Comparator<Color>() {
+			@Override
+			public int compare(Color o1, Color o2) {
+				int o1V = o1.getGreen();
+				int o1B = o1.getBlue();
+				int o2V = o2.getGreen();
+				int o2B = o2.getBlue();
+				
+				if(o1V < o2V)
+					return -1;
+				else if(o1V > o2V)
+					return 1;
+				else{
+					if(o1B < o2B)
+						return -1;
+					else if(o1B > o2B)
+						return 1;
+					else
+						return 0;
+				}
+			}
+		});		
 	}
 
 	@Override
