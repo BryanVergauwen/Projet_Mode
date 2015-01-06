@@ -76,15 +76,12 @@ public class Requests {
 			c = DriverManager.getConnection("jdbc:sqlite:ressources/bdd/ressources.db");
 			stmt = c.createStatement();
 			rs = stmt.executeQuery("SELECT tags FROM GTSFILES WHERE nom = '" + nomFigure + "'");
-				
+			
 			String current[] = rs.getString("tags").split("/");
 			for(String s : current)
 				tmp.add(s);
 		} 
-		catch (Exception e) {
-			e.printStackTrace();
-			System.exit(0);
-		} 
+		catch (Exception e) {}
 		finally {
 			try {
 				rs.close();

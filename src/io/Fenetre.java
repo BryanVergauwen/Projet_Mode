@@ -263,14 +263,12 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 						if(f.getAbsolutePath().substring(f.getAbsolutePath().length() - 4, f.getAbsolutePath().length()).equalsIgnoreCase(".gts")){
 							r.insert(f.getName().toLowerCase(), f.getAbsolutePath());
 							cheminModele = r.selectWhere("path", "nom = '" + f.getName().toLowerCase() + "'");
-							String[] tmp = cheminModele.split("\\\\");
+							String[] tmp = splitByOS();
 							nomModele = tmp[tmp.length-1].substring(0, tmp[tmp.length-1].length()-4);
 							updateModel();
 						}
 					} 
-					catch (Exception ex) {
-						ex.printStackTrace();
-					}
+					catch (Exception ex) {}
 				}
 			}
 		}));
@@ -282,11 +280,20 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 			@Override
 			public void valueChanged(ListSelectionEvent lse) {
 				cheminModele = r.selectWhere("path", "nom = '" + listeModeles.getSelectedValue().toString() + "'");
-				String[] tmp = cheminModele.split("\\\\");
+				String[] tmp = splitByOS();
 				nomModele = tmp[tmp.length-1].substring(0, tmp[tmp.length-1].length()-4);
 				updateModel();
 			}
 		});		
+	}
+
+	protected String[] splitByOS() {
+		String[] tmp;
+		if(System.getProperty("os.name").toLowerCase().substring(0, 3).equals("win"))
+			tmp = cheminModele.split("\\\\");
+		else
+			tmp = cheminModele.split("/");
+		return tmp;
 	}
 
 	private void initJMenuBar() {
@@ -371,7 +378,8 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		jMenuItems.get(1).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				saveAs();
+				if(cheminModele != null)
+					saveAs();
 			}
 		});
 		
@@ -638,7 +646,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		if (ret == JFileChooser.APPROVE_OPTION && f.getAbsolutePath().substring(f.getAbsolutePath().length() - 4, f.getAbsolutePath().length()).equalsIgnoreCase(".gts")){
 			r.insert(fileopen.getSelectedFile().getName().toLowerCase(), fileopen.getSelectedFile().getAbsolutePath());
 			cheminModele = r.selectWhere("path", "nom = '" + fileopen.getSelectedFile().getName().toLowerCase() + "'");
-			String[] tmp = cheminModele.split("\\\\");
+			String[] tmp = splitByOS();
 			nomModele = tmp[tmp.length-1].substring(0, tmp[tmp.length-1].length()-4);
 			updateModel();
 		}		
@@ -764,6 +772,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	}
 
 	private void updateModel(){
+		JOptionPane.showMessageDialog(this, nomModele.toLowerCase() + ".gts", "Chargement en cours...", JOptionPane.NO_OPTION);
 		setTitle(Data.TITLE + " - " + nomModele.toLowerCase() + ".gts - Tags: " + r.getTags(nomModele.toLowerCase()+".gts"));
 		reader = new GtsReader(cheminModele);
 		reset();
@@ -779,7 +788,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		listePoints = reader.getListPoint();
 		listeSegments = reader.getListSegments();
 		tailleSegment = -1;
-		color = new Color(100, 100, 100);		
+		color = new Color(100, 100, 100);
 	}
 
 	@SuppressWarnings("unchecked")
