@@ -30,7 +30,7 @@ public class Requests {
 				stmt.close();
 				c.close();
 			} 
-			catch (SQLException e) {
+			catch (Exception e) {
 				e.printStackTrace();
 			}
 		}

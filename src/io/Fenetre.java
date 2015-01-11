@@ -997,7 +997,9 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 				}
 				// Dessin des coupes
 				else if(function == 4){
-					//TODO coupes
+					offgc.setFont(new Font("Arial", Font.BOLD, 18));
+					offgc.setColor(Color.black);
+					offgc.drawString("Coupes", getWidth() - 320, 30);
 				}
 			}
 			g2.drawImage(offscreen, decalX, decalY, this);

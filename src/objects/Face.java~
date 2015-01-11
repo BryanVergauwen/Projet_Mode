@@ -81,6 +81,7 @@ public class Face implements Comparable<Face>, Serializable{
 	
 		for (int i = 0; i < tmp.length; i++)
 			tmp[i] += Data.COEFF1;
+	
 		return tmp;
 	}
 	public int[] getTriangleY(){

@@ -38,7 +38,7 @@ public class Vecteur implements Serializable{
 	// produit scalaire : si le produit scalaire de deux vecteurs est negatif
 	// alors on affiche sinon on affiche pas
 	public double prodScalaire(Vecteur v) {
-		return this.x * v.x + this.y * v.y + this.z * v.z;
+			return this.x * v.x + this.y * v.y + this.z * v.z;
 	}
 
 	private double getX() {
