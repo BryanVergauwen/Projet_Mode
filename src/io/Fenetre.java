@@ -733,7 +733,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 		}
 	}
 
-	protected Color degradeColor() {
+	public Color degradeColor() {
 		return new Color(red, green++, blue++);
 	}
 	
@@ -772,7 +772,7 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 	}
 
 	private void updateModel(){
-		JOptionPane.showMessageDialog(this, nomModele.toLowerCase() + ".gts", "Chargement en cours...", JOptionPane.NO_OPTION);
+		JOptionPane.showMessageDialog(this, nomModele.toLowerCase() + ".gts\n Faites ok, si le modele est lent a charger, patientez...", "Chargement en cours...", JOptionPane.NO_OPTION);
 		setTitle(Data.TITLE + " - " + nomModele.toLowerCase() + ".gts - Tags: " + r.getTags(nomModele.toLowerCase()+".gts"));
 		reader = new GtsReader(cheminModele);
 		reset();
@@ -995,6 +995,10 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 						offgc.fillPolygon(f.getTriangleX(), f.getTriangleY(), 3);
 					}
 				}
+				// Dessin des coupes
+				else if(function == 4){
+					//TODO coupes
+				}
 			}
 			g2.drawImage(offscreen, decalX, decalY, this);
 		}
@@ -1129,6 +1133,8 @@ public class Fenetre extends JFrame implements KeyListener, MouseWheelListener, 
 				function = 2;
 			else if (e.getKeyCode() == KeyEvent.VK_F3)
 				function = 3;
+			else if (e.getKeyCode() == KeyEvent.VK_F4)
+				function = 4;
 			if (e.getKeyCode() == KeyEvent.VK_Z)
 				new Rotation(listePoints, listeFaces, Math.toRadians(10), "X");
 			if (e.getKeyCode() == KeyEvent.VK_Q)
